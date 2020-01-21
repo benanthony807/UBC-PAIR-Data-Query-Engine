@@ -1,0 +1,54 @@
+{
+    "title": "invalid: referenced dataset not added yet",
+    "query": {
+        "WHERE": {
+            "NOT": {
+                "OR": [
+                    {
+                        "NOT":{
+                            "AND": [
+                                {
+                                    "AND": [
+                                        {
+                                            "GT": {
+                                                "courses_avg": 90
+                                            }
+                                        },
+                                        {
+                                            "IS": {
+                                                "courses_dept": "adhe"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "GT": {
+                                        "courses_avg": 90
+                                    }
+                                },
+                                {
+                                    "IS": {
+                                        "courses_dept": "adhe"
+                                    }
+                                }
+                            ]
+                        }},
+                    {
+                        "EQ": {
+                            "courses_avg": 95
+                        }
+                    }
+                ]
+            }},
+        "OPTIONS": {
+            "COLUMNS": [
+                "ccourses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_id"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

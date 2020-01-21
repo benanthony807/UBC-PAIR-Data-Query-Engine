@@ -1,0 +1,56 @@
+{
+    "title": "invalid value type in LT: should be number",
+    "query": {
+        "WHERE": {
+            "NOT": {
+                "OR": [
+                    {
+                        "NOT": {
+                            "AND": [
+                                {
+                                    "AND": [
+                                        {
+                                            "LT": {
+                                                "courses_avg": "90"
+                                            }
+                                        },
+                                        {
+                                            "IS": {
+                                                "courses_dept": "adhe"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "GT": {
+                                        "courses_avg": 90
+                                    }
+                                },
+                                {
+                                    "IS": {
+                                        "courses_dept": "adhe"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "EQ": {
+                            "courses_avg": 95
+                        }
+                    }
+                ]
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_id"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

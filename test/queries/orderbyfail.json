@@ -1,0 +1,120 @@
+{
+    "title": "queries ordered by fail",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_id": "425"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_dept": "econ"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_fail"
+            ],
+            "ORDER": "courses_fail"
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 0
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 0
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 0
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 0
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 0
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 0
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 0
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 0
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 0
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 0
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 0
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 0
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 1
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 1
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 1
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 1
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 2
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_fail": 2
+        }
+    ]
+}

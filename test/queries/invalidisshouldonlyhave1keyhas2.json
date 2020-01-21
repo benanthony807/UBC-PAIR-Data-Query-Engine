@@ -1,0 +1,23 @@
+{
+    "title": "invalid: GT should only have one key, has 2",
+    "query": { "WHERE": {
+        "IS": {
+            "courses_avg": 3.23939495568950940,
+            "courses_pass": 23.4
+        }
+    },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg",
+                "courses_id"
+            ],
+            "ORDER": "courses_avg",
+            "ORDER": "courses_dept",
+            "ORDER": "courses_id"
+
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

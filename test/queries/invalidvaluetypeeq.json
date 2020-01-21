@@ -1,0 +1,20 @@
+{
+    "title": "gives error: Unexpected response status 400: Invalid value type in EQ, should be number",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "courses_avg": "65"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

@@ -1,0 +1,27 @@
+{
+    "title": "invalid: excess keys in query",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_id": "425"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_dept": "econ"
+                    }
+                }
+            ]
+        },
+        "COLUMNS": [
+            "courses_dept",
+            "courses_id",
+            "courses_year"
+        ],
+        "ORDER": "courses_year"
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

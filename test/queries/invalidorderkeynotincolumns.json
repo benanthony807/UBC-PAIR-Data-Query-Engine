@@ -1,0 +1,24 @@
+{
+    "title": "order key isn't in columns",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "LT": {
+                        "courses_avg": 50
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_fail"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

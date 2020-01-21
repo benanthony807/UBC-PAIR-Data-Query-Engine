@@ -1,0 +1,30 @@
+{
+    "title": "invalid ORDER type, gave it a boolean",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "NOT": {
+                        "GT": {
+                            "courses_avg": 22
+                        }
+                    }
+                },
+                {"IS": {
+                    "courses_id": "22"
+                }}
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_audit"
+            ],
+            "ORDER": true
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}
