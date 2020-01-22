@@ -1,0 +1,24 @@
+{
+    "title": "All The Filters",
+    "query": {
+
+        "WHERE": {
+            "OR": [
+                {"AND": [{"GT": {"courses_avg": 90}},{"IS": {"courses_dept":  "adhe"}}]},
+                {"AND": [{"NOT": {"LT": {"courses_avg": 10}}}, {"EQ": {"courses_avg":  25}}]}
+                ]
+        },
+
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg",
+                "courses_title"
+            ],
+            "ORDER": "courses_avg"
+        }
+
+    },
+    "isQueryValid": true,
+    "result":[{"courses_dept":"adhe","courses_avg":90.02,"courses_title":"dev wkshp/sem"},{"courses_dept":"adhe","courses_avg":90.16,"courses_title":"adul educ"},{"courses_dept":"adhe","courses_avg":90.17,"courses_title":"com adult educ"},{"courses_dept":"adhe","courses_avg":90.18,"courses_title":"adul educ"},{"courses_dept":"adhe","courses_avg":90.5,"courses_title":"com adult educ"},{"courses_dept":"adhe","courses_avg":90.72,"courses_title":"com adult educ"},{"courses_dept":"adhe","courses_avg":90.82,"courses_title":"dev wkshp/sem"},{"courses_dept":"adhe","courses_avg":90.85,"courses_title":"com adult educ"},{"courses_dept":"adhe","courses_avg":91.29,"courses_title":"com adult educ"},{"courses_dept":"adhe","courses_avg":91.33,"courses_title":"com adult educ"},{"courses_dept":"adhe","courses_avg":91.33,"courses_title":"com adult educ"},{"courses_dept":"adhe","courses_avg":91.48,"courses_title":"com adult educ"},{"courses_dept":"adhe","courses_avg":92.54,"courses_title":"dev wkshp/sem"},{"courses_dept":"adhe","courses_avg":93.33,"courses_title":"dev wkshp/sem"},{"courses_dept":"adhe","courses_avg":96.11,"courses_title":"dev wkshp/sem"}]
+}

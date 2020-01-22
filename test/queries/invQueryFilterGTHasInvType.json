@@ -1,0 +1,19 @@
+{
+    "title": "Unexpected response status 400: Invalid value type in GT, should be number",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": "a"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

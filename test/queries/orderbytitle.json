@@ -1,0 +1,120 @@
+{
+    "title": "queries ordered by title",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_id": "425"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_dept": "econ"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_title"
+            ],
+            "ORDER": "courses_title"
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_title": "econometrics"
+        }
+    ]
+}

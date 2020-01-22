@@ -1,0 +1,17 @@
+{
+    "title": "invalid filter key: OPTIONS",
+    "query": {
+        "WHERE": {
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_dept",
+                    "courses_avg",
+                    "courses_id"
+                ],
+                "ORDER": "courses_id"
+            }
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

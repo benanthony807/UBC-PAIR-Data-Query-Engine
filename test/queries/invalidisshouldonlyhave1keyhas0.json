@@ -1,0 +1,20 @@
+{
+    "title": "invalid: LT should only have one key, has zero",
+    "query": {
+        "WHERE": {
+            "IS": {
+
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg",
+                "courses_id"
+            ],
+            "ORDER": "courses_id"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

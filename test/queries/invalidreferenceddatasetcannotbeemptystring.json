@@ -1,0 +1,17 @@
+{
+    "title": "error: referenced data cannot be empty string",
+    "query": {
+        "WHERE": {
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "_courses_dept",
+                "courses_id",
+                "courses_avg",
+                "courses_audit"
+            ]
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}
