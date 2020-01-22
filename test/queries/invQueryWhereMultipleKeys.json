@@ -1,0 +1,22 @@
+{
+    "title": "Unexpected response status 400: WHERE should only have 1 key, has 2",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 97
+            },
+            "LT": {
+                "courses_pass": 50
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

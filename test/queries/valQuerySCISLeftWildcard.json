@@ -1,0 +1,38 @@
+{
+    "title": "Valid Query - Left Wildcard",
+    "query": {
+        "WHERE": {
+            "OR": [
+                {
+                    "AND": [
+                        {
+                            "GT": {
+                                "courses_avg": 90
+                            }
+                        },
+                        {
+                            "IS": {
+                                "courses_dept": "*a"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "EQ": {
+                        "courses_avg": 98
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_dept":"bota","courses_id":"501","courses_avg":90.71},{"courses_dept":"bota","courses_id":"501","courses_avg":90.71},{"courses_dept":"bota","courses_id":"544","courses_avg":91},{"courses_dept":"bota","courses_id":"544","courses_avg":91},{"courses_dept":"bota","courses_id":"528","courses_avg":92},{"courses_dept":"bota","courses_id":"528","courses_avg":92},{"courses_dept":"crwr","courses_id":"599","courses_avg":98},{"courses_dept":"crwr","courses_id":"599","courses_avg":98}]
+}

@@ -1,0 +1,29 @@
+{
+    "title": "response status 400: Invalid filter key: AT",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "AT": {
+                        "courses_avg": 97
+                    }
+                },
+                {
+                    "LT": {
+                        "courses_avg": 97
+                    }
+                }
+                ]
+
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

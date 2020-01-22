@@ -1,0 +1,19 @@
+{
+    "title": "Unexpected response status 400: Invalid key coursesinvalidkey in IS",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "coursesinvalidkey": 97
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

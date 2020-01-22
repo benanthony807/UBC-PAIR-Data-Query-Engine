@@ -1,0 +1,19 @@
+{
+    "title": "Unexpected response status 400: Missing WHERE",
+    "query": {
+        "NOTANOPTION": {
+            "GT": {
+                "courses_avg": 97
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

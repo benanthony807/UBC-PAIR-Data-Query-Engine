@@ -1,0 +1,24 @@
+{
+    "title": "Three Parallel ANDs in OR",
+    "query": {
+
+        "WHERE": {
+            "AND": [
+                {"AND": [{"GT": {"courses_avg": 90}},{"IS": {"courses_dept":  "adhe"}}]},
+                {"AND": [{"NOT": {"LT": {"courses_avg": 10}}}, {"EQ": {"courses_avg":  25}}]},
+                {"AND": [{"LT": {"courses_avg": 30}},{"NOT": {"IS": {"courses_dept": "adhe"}}}]}
+                ]
+        },
+
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+
+    },
+    "isQueryValid": true,
+    "result":[]
+}

@@ -1,0 +1,16 @@
+{
+    "title": "Valid Query - only audit",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 99
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_audit"
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_audit":0},{"courses_audit":0},{"courses_audit":0}]}
