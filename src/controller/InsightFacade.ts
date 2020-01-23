@@ -22,6 +22,7 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public performQuery(query: any): Promise <any[]> {
+        // Adding this line to make sure I can commit to the new performQuery branch and reflect on the github graph
         return Promise.reject("Not implemented.");
     }
 
