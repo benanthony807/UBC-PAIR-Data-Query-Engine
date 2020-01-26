@@ -43,4 +43,8 @@ export default class DatasetHelper {
         }
         return ids;
     }
+
+    public removeFromDisk(id: string) {
+        return;
+    }
 }

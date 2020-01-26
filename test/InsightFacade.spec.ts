@@ -81,7 +81,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
     it("Should add a valid dataset with 1 course", function () {
-        const id: string = "valid1course";
+        const id: string = "AAN";
         const expected: string[] = [id];
         return insightFacade
             .addDataset(id, datasets[id], InsightDatasetKind.Courses)
@@ -127,7 +127,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
                 expect.fail("should have rejected, id contains underscore");
             })
             .catch((err: any) => {
-                expect(err).to.deep.equal(new InsightError("id contains underscore"));
+                expect(err).to.deep.equal(new InsightError("id invalid: contains underscore"));
             });
     });
 
@@ -139,7 +139,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
                 expect.fail("should have rejected, kind rooms is invalid");
             })
             .catch((err: any) => {
-                expect(err).to.deep.equal(new InsightError("kind InsightDatasetKind.Rooms is invalid"));
+                expect(err).to.deep.equal(new InsightError("kind invalid: rooms is not allowed"));
             });
     });
 
@@ -175,7 +175,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
                 expect.fail("should have rejected, id contains only whitespace (space)");
             })
             .catch((err: any) => {
-                expect(err).to.deep.equal(new InsightError("id contains only whitespace"));
+                expect(err).to.deep.equal(new InsightError("id invalid: contains only whitespace characters"));
             });
     });
 
@@ -187,7 +187,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
                 expect.fail("should have rejected, id contains only whitespace");
             })
             .catch((err: any) => {
-                expect(err).to.deep.equal(new InsightError("id contains only whitespace"));
+                expect(err).to.deep.equal(new InsightError("id invalid: contains only whitespace characters"));
             });
     });
 

@@ -1,6 +1,5 @@
 import Log from "../Util";
-import {IInsightFacade, InsightDataset, InsightDatasetKind} from "./IInsightFacade";
-import * as JSZip from "jszip";
+import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
 import Dataset from "./Dataset";
 import DatasetHelper from "./DatasetHelper";
 
@@ -49,12 +48,23 @@ export default class InsightFacade implements IInsightFacade {
                     return Promise.resolve(this.datasetHelper.getIds(this.datasets));
                 });
         } else {
-            return Promise.reject(this.datasetHelper.diagnoseIssue(id, kind, this.datasets));
+            return Promise.reject(new InsightError(this.datasetHelper.diagnoseIssue(id, kind, this.datasets)));
         }
     }
 
     public removeDataset(id: string): Promise<string> {
-        return Promise.reject("Not implemented.");
+        if (this.datasetHelper.idValid(id, this.datasets)) {
+            for (let dataset of this.datasets) {
+                if (dataset.getId() === id) {
+                    this.datasets.splice(this.datasets.indexOf(dataset));
+                    this.datasetHelper.removeFromDisk(id);
+                    return Promise.resolve(id);
+                }
+            }
+            return Promise.reject(new NotFoundError());
+        }
+        return Promise.reject
+        (new InsightError(this.datasetHelper.diagnoseIssue(id, InsightDatasetKind.Courses, this.datasets)));
     }
 
     public performQuery(query: any): Promise<any[]> {

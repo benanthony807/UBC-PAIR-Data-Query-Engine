@@ -45,10 +45,14 @@ export default class Dataset {
         const files: Array<Promise<string>> = [];
         return zip.loadAsync(content, {base64: true})
             .then((result: JSZip) => {
-                zip.folder("courses").forEach((relativePath, file) => {
-                    files.push(file.async("text"));
-                    return files;
-                });
+                try {
+                    result.folder("courses").forEach((relativePath, file) => {
+                        files.push(file.async("text"));
+                        return files;
+                    });
+                } catch (err) {
+                    return Promise.reject(err);
+                }
                 return files;
             })
             .then((promises: Array<Promise<string>>) => {
