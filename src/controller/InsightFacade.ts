@@ -1,7 +1,8 @@
 import Log from "../Util";
-import {IInsightFacade, InsightDataset, InsightDatasetKind, } from "./IInsightFacade";
+import {IInsightFacade, InsightDataset, InsightDatasetKind} from "./IInsightFacade";
 import * as JSZip from "jszip";
 import Dataset from "./Dataset";
+import DatasetHelper from "./DatasetHelper";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -11,10 +12,12 @@ import Dataset from "./Dataset";
 export default class InsightFacade implements IInsightFacade {
 
     private datasets: Dataset[];
+    private datasetHelper: DatasetHelper;
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
         this.datasets = [];
+        this.datasetHelper = new DatasetHelper();
     }
 
     public addDataset(
@@ -22,61 +25,32 @@ export default class InsightFacade implements IInsightFacade {
         content: string,
         kind: InsightDatasetKind,
     ): Promise<string[]> {
-        if (this.idValid(id) && kind === InsightDatasetKind.Courses) {
-            try {
-                let dataset = new Dataset(id, kind, content);
-                // this.writeToDisk(id, dataset);
-                // this.datasets.push(dataset);
-                return Promise.resolve(this.getIds());
-            } catch (err) {
-                return Promise.reject(err);
-            }
+        if (this.datasetHelper.idValid(id, this.datasets) && kind === InsightDatasetKind.Courses) {
+            new Promise((resolve, reject) => {
+                return new Dataset(id, kind, content);
+            })
+                .then((dataset: Dataset) => {
+                    dataset.filterInvalidSections();
+                    return dataset;
+                })
+                .then((dataset: Dataset) => {
+                    dataset.checkCoursesNotEmpty();
+                    return dataset;
+                })
+                .catch((err: any) => {
+                    return Promise.reject(err);
+                })
+                .then((dataset: Dataset) => {
+                    // this.writeToDisk(id, dataset);
+                    return dataset;
+                })
+                .then((dataset: Dataset) => {
+                    this.datasets.push(dataset);
+                    return Promise.resolve(this.datasetHelper.getIds(this.datasets));
+                });
         } else {
-            return Promise.reject(this.diagnoseIssue(id, content, kind));
+            return Promise.reject(this.datasetHelper.diagnoseIssue(id, kind, this.datasets));
         }
-    }
-
-
-    private idValid(id: string): boolean {
-        // whitespace check taken from https://stackoverflow.com/questions/2031085/how-can-i-check-if-string-contains-
-        // characters-whitespace-not-just-whitespace/2031119
-        if (id.includes("_") || /^\s+$/.test(id)) {
-            return false;
-        }
-        for (let ds of this.datasets) {
-            if (id === ds.getId()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private diagnoseIssue(id: string, content: string, kind: InsightDatasetKind): string {
-        if (id.includes("_")) {
-            return "id invalid: contains underscore";
-        } else if (/^\s+$/.test(id)) {
-            return "id invalid: contains only whitespace characters";
-        } else if (kind !== InsightDatasetKind.Courses) {
-            return `kind invalid: ${kind} is not allowed`;
-        }
-        for (let ds of this.datasets) {
-            if (id === ds.getId()) {
-                return "dataset invalid: dataset with same id already added";
-            }
-        }
-        return "dataset invalid: contains no valid sections";
-    }
-
-    public writeToDisk(id: string, dataset: Dataset) {
-        return;
-    }
-
-    private getIds(): string[] {
-        let ids: string[] = [];
-        for (let dataset of this.datasets) {
-            ids.push(dataset.getId());
-        }
-        return ids;
     }
 
     public removeDataset(id: string): Promise<string> {

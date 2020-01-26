@@ -1,6 +1,6 @@
 export default class Course {
 
-private "result": object[];
-private "rank": number;
+public "result": object[];
+public "rank": number;
 
 }

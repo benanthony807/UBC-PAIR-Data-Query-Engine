@@ -31,20 +31,16 @@ export default class Dataset {
 
     private id: string;
     private kind: InsightDatasetKind;
-    private courses: object[];
+    private courses: Course[];
 
     constructor(id: string, kind: InsightDatasetKind, content: string) {
         this.id = id;
         this.kind = kind;
-        this.setCourses(content)
-            .then((result: any) => {
-                // this.filterInvalidSections();
-                // this.checkCoursesNotEmpty();
-            });
+        this.setCourses(content);
     }
 
     private setCourses(content: string): Promise<any> {
-        let courses: object[] = [];
+        let courses: Course[] = [];
         const zip = new JSZip();
         const files: Array<Promise<string>> = [];
         return zip.loadAsync(content, {base64: true})
@@ -58,11 +54,10 @@ export default class Dataset {
             .then((promises: Array<Promise<string>>) => {
                 Promise.all(promises)
                     .then((coursesAsStrings: string[]) => {
-                        let isEmpty: boolean = true;
                         for (let course of coursesAsStrings) {
                             courses.push(JSON.parse(course));
                         }
-                        this.courses = courses;
+                        this.courses = courses as Course[];
                     });
             });
     }
@@ -77,32 +72,56 @@ export default class Dataset {
         return this.kind;
     }
 
-    public getNumRows():
-        number {
-        // TODO: implement
-        return 0;
+    public getNumRows(): number {
+        let count: number = 0;
+        for (let course of this.courses) {
+            for (let section of course["result"]) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public getCourses(): Course[] {
+        return this.courses;
     }
 
 
-    // private checkCoursesNotEmpty() {
-    //     for (let course of this.courses) {
-    //         if (course["result"] !== []) {
-    //             Promise.resolve();
-    //         } else {
-    //             Promise.reject("invalid dataset: contains no valid sections");
-    //         }
-    //     }
-    // }
+    public checkCoursesNotEmpty() {
+        for (let course of this.courses) {
+            if (course["result"] !== []) {
+                return Promise.resolve();
+            } else {
+                return Promise.reject("invalid dataset: contains no valid sections");
+            }
+        }
+    }
 
-    // private filterInvalidSections() {
-    //     for (let course in this.courses) {
-    //         for (let section in course["result"]) {
-    //             if (!("Subject" in section && "Course" in section && "Avg" in section && "Professor" in section &&
-    //                 "Title" in section && "Pass" in section && "Fail" in section && "id" in section &&
-    //                 "Year" in section)) {
-    //             course["result"].splice(course["result"].indexOf(section));
-    //             }
-    //         }
-    //     }
-    // }
+    public filterInvalidSections(): Promise<any> {
+        for (let course of this.courses) {
+            for (let section of course["result"]) {
+                if (!this.hasAllRequiredFields(section)) {
+                course["result"].splice(course["result"].indexOf(section));
+                }
+            }
+        }
+        return Promise.resolve();
+    }
+
+    public hasAllRequiredFields(section: object) {
+        return  "Subject" in section &&
+                "Course" in section &&
+                "Avg" in section &&
+                "Professor" in section &&
+                "Title" in section &&
+                "Pass" in section &&
+                "Fail" in section &&
+                "id" in section &&
+                "Year" in section;
+    }
+
+    public setCoursesForTesting(courses: Course[]) {
+        this.courses = courses;
+    }
+
 }
