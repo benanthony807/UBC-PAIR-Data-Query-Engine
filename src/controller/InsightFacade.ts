@@ -2,6 +2,7 @@ import Log from "../Util";
 import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
 import Dataset from "./Dataset";
 import DatasetHelper from "./DatasetHelper";
+import Course from "./Course";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -25,9 +26,13 @@ export default class InsightFacade implements IInsightFacade {
         kind: InsightDatasetKind,
     ): Promise<string[]> {
         if (this.datasetHelper.idValid(id, this.datasets) && kind === InsightDatasetKind.Courses) {
-            new Promise((resolve, reject) => {
-                return new Dataset(id, kind, content);
-            })
+            return this.datasetHelper.readContent(content)
+                .catch((err: any) => {
+                    return Promise.reject(new InsightError(err));
+                })
+                .then((courses: Course[]) => {
+                    return new Dataset(id, kind, courses);
+                })
                 .then((dataset: Dataset) => {
                     dataset.filterInvalidSections();
                     return dataset;
@@ -40,7 +45,7 @@ export default class InsightFacade implements IInsightFacade {
                     return Promise.reject(err);
                 })
                 .then((dataset: Dataset) => {
-                    // this.writeToDisk(id, dataset);
+                    this.datasetHelper.writeToDisk(id, dataset);
                     return dataset;
                 })
                 .then((dataset: Dataset) => {
@@ -74,12 +79,12 @@ export default class InsightFacade implements IInsightFacade {
     public listDatasets(): Promise<InsightDataset[]> {
         let insightDatasets: InsightDataset[] = [];
         for (let dataset of this.datasets) {
-            const ids: InsightDataset = {
+            const insightDataset: InsightDataset = {
                 id: dataset.getId(),
                 kind: dataset.getKind(),
                 numRows: dataset.getNumRows(),
             };
-            insightDatasets.push(ids);
+            insightDatasets.push(insightDataset);
         }
         return Promise.resolve(insightDatasets);
     }

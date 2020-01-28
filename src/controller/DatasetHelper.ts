@@ -1,5 +1,7 @@
 import {InsightDatasetKind} from "./IInsightFacade";
 import Dataset from "./Dataset";
+import Course from "./Course";
+import * as JSZip from "jszip";
 
 export default class DatasetHelper {
 
@@ -32,7 +34,8 @@ export default class DatasetHelper {
         }
     }
 
-    public writeToDisk(id: string, dataset: Dataset, datasets: Dataset[]) {
+    public writeToDisk(id: string, dataset: Dataset) {
+        // TODO: implement
         return;
     }
 
@@ -45,6 +48,40 @@ export default class DatasetHelper {
     }
 
     public removeFromDisk(id: string) {
+        // TODO: implement
         return;
+    }
+
+    public readContent(content: string): Promise<any> {
+        let courses: Course[] = [];
+        const zip = new JSZip();
+        const files: Array<Promise<string>> = [];
+        return new Promise<any>((resolve, reject) => {
+            zip.loadAsync(content, {base64: true})
+                .then((result: JSZip) => {
+                    try {
+                        result.folder("courses").forEach((relativePath, file) => {
+                            files.push(file.async("text"));
+                            return files;
+                        });
+                    } catch (err) {
+                       reject(err);
+                    }
+                    return files;
+                })
+                .then((promises: Array<Promise<string>>) => {
+                    Promise.all(promises)
+                        .then((coursesAsStrings: string[]) => {
+                            for (let course of coursesAsStrings) {
+                                try {
+                                    courses.push(JSON.parse(course));
+                                } catch (err) {
+                                    continue;
+                                }
+                            }
+                            resolve(courses as Course[]);
+                        });
+                });
+        });
     }
 }

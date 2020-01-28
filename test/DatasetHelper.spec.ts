@@ -4,6 +4,7 @@ import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import Dataset from "../src/controller/Dataset";
 import DatasetHelper from "../src/controller/DatasetHelper";
+import Course from "../src/controller/Course";
 let assert = require("chai").assert;
 
 describe("InsightFacade Dataset Helper Methods", function () {
@@ -53,7 +54,8 @@ describe("InsightFacade Dataset Helper Methods", function () {
 
         it("should reject invalid id: id already exists in ds", function () {
             const id: string = "valid";
-            const dataset: Dataset = new Dataset("valid", InsightDatasetKind.Courses, "");
+            const courses: Course[] = [];
+            const dataset: Dataset = new Dataset("valid", InsightDatasetKind.Courses, courses);
             const ds: Dataset[] = [dataset];
             const datasetHelper: DatasetHelper = new DatasetHelper();
             return assert.isFalse(datasetHelper.idValid(id, ds));
@@ -61,8 +63,9 @@ describe("InsightFacade Dataset Helper Methods", function () {
 
         it("should reject invalid id: id already exists in ds, second item in array", function () {
             const id: string = "valid2";
-            const dataset1: Dataset = new Dataset("valid1", InsightDatasetKind.Courses, "");
-            const dataset2: Dataset = new Dataset("valid2", InsightDatasetKind.Courses, "");
+            const courses: Course[] = [];
+            const dataset1: Dataset = new Dataset("valid1", InsightDatasetKind.Courses, courses);
+            const dataset2: Dataset = new Dataset("valid2", InsightDatasetKind.Courses, courses);
             const ds: Dataset[] = [dataset1, dataset2];
             const datasetHelper: DatasetHelper = new DatasetHelper();
             return assert.isFalse(datasetHelper.idValid(id, ds));
@@ -113,7 +116,8 @@ describe("InsightFacade Dataset Helper Methods", function () {
         it("should return string: \"dataset invalid: dataset with same id already added\"", function () {
             const id: string = "valid";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
-            const dataset: Dataset = new Dataset("valid", InsightDatasetKind.Courses, "");
+            const courses: Course[] = [];
+            const dataset: Dataset = new Dataset("valid", InsightDatasetKind.Courses, courses);
             const ds: Dataset[] = [dataset];
             const datasetHelper: DatasetHelper = new DatasetHelper();
             const result: string = "dataset invalid: dataset with same id already added";
@@ -132,8 +136,9 @@ describe("InsightFacade Dataset Helper Methods", function () {
         });
 
         it("should return array with 2 ids", function () {
-            const dataset1: Dataset = new Dataset("valid1", InsightDatasetKind.Courses, "");
-            const dataset2: Dataset = new Dataset("valid2", InsightDatasetKind.Courses, "");
+            const courses: Course[] = [];
+            const dataset1: Dataset = new Dataset("valid1", InsightDatasetKind.Courses, courses);
+            const dataset2: Dataset = new Dataset("valid2", InsightDatasetKind.Courses, courses);
             const ds: Dataset[] = [dataset1, dataset2];
             const result: string[] = ["valid1", "valid2"];
             const datasetHelper: DatasetHelper = new DatasetHelper();

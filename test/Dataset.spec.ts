@@ -5,6 +5,7 @@ import Log from "../src/Util";
 import Dataset from "../src/controller/Dataset";
 import Course from "../src/controller/Course";
 import {expect} from "chai";
+import DatasetHelper from "../src/controller/DatasetHelper";
 
 let assert = require("chai").assert;
 const expectedCourses: Course[] = [{
@@ -257,11 +258,14 @@ describe("Dataset Methods", function () {
             const id: string = "AANB504";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
-
-            let ds: Dataset = new Dataset(id, kind, content);
-            assert.deepEqual(id, ds.getId());
-            assert.deepEqual(kind, ds.getKind());
-            assert.deepEqual(expectedCourses, ds.getCourses());
+            const datasetHelper: DatasetHelper = new DatasetHelper();
+            datasetHelper.readContent(content)
+                .then((courses: Course[]) => {
+                    let ds: Dataset = new Dataset(id, kind, courses);
+                    assert.deepEqual(id, ds.getId());
+                    assert.deepEqual(kind, ds.getKind());
+                    assert.deepEqual(expectedCourses, ds.getCourses());
+                });
         });
     });
 
@@ -271,9 +275,12 @@ describe("Dataset Methods", function () {
             const id: string = "AANB504";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
-
-            let ds: Dataset = new Dataset(id, kind, content);
-            assert.deepEqual(2, ds.getNumRows());
+            const datasetHelper: DatasetHelper = new DatasetHelper();
+            datasetHelper.readContent(content)
+                .then((courses: Course[]) => {
+                    let ds: Dataset = new Dataset(id, kind, courses);
+                    assert.deepEqual(2, ds.getNumRows());
+                });
         });
     });
 
@@ -284,14 +291,20 @@ describe("Dataset Methods", function () {
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
             const expected: void = null;
-
-            let ds: Dataset = new Dataset(id, kind, content);
-            ds.checkCoursesNotEmpty()
-                .then((result: void) => {
-                    expect(result).to.deep.equal(expected);
+            const datasetHelper: DatasetHelper = new DatasetHelper();
+            datasetHelper.readContent(content)
+                .then((courses: Course[]) => {
+                    let ds: Dataset = new Dataset(id, kind, courses);
+                    return ds;
                 })
-                .catch((err: any) => {
-                    expect.fail(err, expected, "Should not have rejected");
+                .then((ds: Dataset) => {
+                    ds.checkCoursesNotEmpty()
+                        .then((result: void) => {
+                            expect(result).to.deep.equal(expected);
+                        })
+                        .catch((err: any) => {
+                            expect.fail(err, expected, "Should not have rejected");
+                        });
                 });
         });
 
@@ -302,8 +315,8 @@ describe("Dataset Methods", function () {
             const expected: void = null;
             const emptyCourses: Course[] = [{result: [], rank: 0}, {result: [], rank: 0}];
 
-            let ds: Dataset = new Dataset(id, kind, content);
-            ds.setCoursesForTesting(emptyCourses);
+            let ds: Dataset = new Dataset(id, kind, emptyCourses);
+            // ds.setCoursesForTesting(emptyCourses);
             ds.checkCoursesNotEmpty()
                 .then((result: void) => {
                     expect.fail("should have rejected, courses is empty");
@@ -358,9 +371,12 @@ describe("Dataset Methods", function () {
                 Campus: "ubc",
                 Subject: "aanb"
             };
-
-            let ds: Dataset = new Dataset(id, kind, content);
-            assert.isTrue(ds.hasAllRequiredFields(section));
+            const datasetHelper: DatasetHelper = new DatasetHelper();
+            datasetHelper.readContent(content)
+                .then((courses: Course[]) => {
+                    let ds: Dataset = new Dataset(id, kind, courses);
+                    assert.isTrue(ds.hasAllRequiredFields(section));
+                });
         });
 
         it("should return false, section missing Subject field", function () {
@@ -404,9 +420,12 @@ describe("Dataset Methods", function () {
                 Avg: 94.44,
                 Campus: "ubc"
             };
-
-            let ds: Dataset = new Dataset(id, kind, content);
-            assert.isFalse(ds.hasAllRequiredFields(section));
+            const datasetHelper: DatasetHelper = new DatasetHelper();
+            datasetHelper.readContent(content)
+                .then((courses: Course[]) => {
+                    let ds: Dataset = new Dataset(id, kind, courses);
+                    assert.isFalse(ds.hasAllRequiredFields(section));
+                });
         });
     });
 
@@ -416,20 +435,23 @@ describe("Dataset Methods", function () {
             const id: string = "AANB504";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
-
-            let ds: Dataset = new Dataset(id, kind, content);
-            assert(expectedCourses).to.deep.equal(ds.getCourses());
+            const datasetHelper: DatasetHelper = new DatasetHelper();
+            datasetHelper.readContent(content)
+                .then((courses: Course[]) => {
+                    let ds: Dataset = new Dataset(id, kind, courses);
+                    assert(expectedCourses).to.deep.equal(ds.getCourses());
+                });
         });
 
         it("should filter out first section, missing avg field", function () {
             const id: string = "AANB504";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
-
-            let ds: Dataset = new Dataset(id, kind, content);
-            ds.setCoursesForTesting(coursesWithInvalidSection);
+            let ds: Dataset = new Dataset(id, kind, coursesWithInvalidSection);
+            // ds.setCoursesForTesting(coursesWithInvalidSection);
             assert(expectedCourses2).to.deep.equal(ds.getCourses());
         });
     });
-});
+})
+;
 

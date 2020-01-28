@@ -33,37 +33,11 @@ export default class Dataset {
     private kind: InsightDatasetKind;
     private courses: Course[];
 
-    constructor(id: string, kind: InsightDatasetKind, content: string) {
-        this.id = id;
-        this.kind = kind;
-        this.setCourses(content);
-    }
-
-    private setCourses(content: string): Promise<any> {
-        let courses: Course[] = [];
-        const zip = new JSZip();
-        const files: Array<Promise<string>> = [];
-        return zip.loadAsync(content, {base64: true})
-            .then((result: JSZip) => {
-                try {
-                    result.folder("courses").forEach((relativePath, file) => {
-                        files.push(file.async("text"));
-                        return files;
-                    });
-                } catch (err) {
-                    return Promise.reject(err);
-                }
-                return files;
-            })
-            .then((promises: Array<Promise<string>>) => {
-                Promise.all(promises)
-                    .then((coursesAsStrings: string[]) => {
-                        for (let course of coursesAsStrings) {
-                            courses.push(JSON.parse(course));
-                        }
-                        this.courses = courses as Course[];
-                    });
-            });
+    constructor(id: string, kind: InsightDatasetKind, courses: Course[]) {
+        let that = this;
+        that.id = id;
+        that.kind = kind;
+        that.courses = courses;
     }
 
     public getId():
