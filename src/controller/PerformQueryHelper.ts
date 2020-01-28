@@ -1,3 +1,6 @@
+import {promises} from "dns";
+import {resolve} from "dns";
+
 export default class PerformQueryHelper {
 
     public errorMessage: string;
@@ -114,7 +117,6 @@ export default class PerformQueryHelper {
      * Check if the other keys are different from COLUMNS (if so, then cannot reference more than one dataset)
      * Check if query keys are one of the 8 keys we accept
      */
-    // TODO: Comment in
     // public inputKeysAreValid(query: any, datasetToUse: Dataset): boolean {
     //     // Check if first key in COLUMNS is loaded
     //     if (this.keyIsLoaded(query, datasetToUse)) {
@@ -133,24 +135,50 @@ export default class PerformQueryHelper {
     //             return false;
     //         }
     //     } else {
-    //         this.errorMessage = "Referenced dataset " + "'" + "[insert datasetID]" + "'" +  " not added yet";
+    //         this.errorMessage = "Referenced dataset " + "'" + datasetID + "'" +  " not added yet";
     //         return false;
     //     }
     // }
+    //
+    //     /**
+    //      * Helper function for inputKeysAreValid
+    //      * Check if key is loaded
+    //      * The first key in COLUMNS is the key we're going to load
+    //      */
+    //     private keyIsLoaded(query: any, datasetToUse: Dataset): boolean {
+    //         // get the first key in COLUMNS
+    //         let key = query["OPTIONS"]["COLUMNS"][0]; //sets key to be the first item in the query's
+    //         return key === Dataset[0]; //Dataset[0] returns the id of the dataset we're using
+    //     }
+    //
+    //     /**
+    //      * Helper function for inputKeysAreValid
+    //      * Check if only one dataset is referenced
+    //      * Look at all other keys and see if they equal the key
+    //      */
+    //     private onlyOneDatasetReferenced(query: any, datasetID: string): boolean {
+    //         let key = query["OPTIONS"]["COLUMNS"][0];
+    //
+    //     }
+    //
+    // /**
+    //  * runQuery will return a promise:
+    //  *      rejects: if something goes wrong
+    //  *      fulfills: with query result passed on
+    //  *
+    //  */
+    // // commented out for push
+    // public runQuery(query: any, datasetToUse: Dataset): Promise<Array<any>> {
+    //     return new Promise((resolve, reject)) => {
+    //
+    //         let queryResult = null;
+    //
+    //         // logic functions that return the queryResult
+    //
+    //         Promise.resolve(queryResult);
+    //     }
+    // }
 
-        /**
-         * Helper function for inputKeysAreValid
-         * Check if key is loaded
-         */
 
-        // TODO: comment in
-        // private keyIsLoaded(query: any, datasetToUse: Dataset): boolean {
-        //     // get the first key in COLUMNS
-        //     let key = query["OPTIONS"]["COLUMNS"][0];
-        //     return key === Dataset[0];
-        // }
-
-        private onlyOneDatasetReferenced(query: any, datasetID: string): boolean {
-            return false;
-        }
+    // ************************* FILTER ************************** //
 }
