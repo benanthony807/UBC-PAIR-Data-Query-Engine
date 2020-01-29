@@ -299,7 +299,7 @@ describe("Dataset Methods", function () {
                 })
                 .then((ds: Dataset) => {
                     ds.checkCoursesNotEmpty()
-                        .then((result: void) => {
+                        .then((result: any) => {
                             expect(result).to.deep.equal(expected);
                         })
                         .catch((err: any) => {
@@ -318,7 +318,7 @@ describe("Dataset Methods", function () {
             let ds: Dataset = new Dataset(id, kind, emptyCourses);
             // ds.setCoursesForTesting(emptyCourses);
             ds.checkCoursesNotEmpty()
-                .then((result: void) => {
+                .then((result: any) => {
                     expect.fail("should have rejected, courses is empty");
                 })
                 .catch((err: any) => {
@@ -451,9 +451,8 @@ describe("Dataset Methods", function () {
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
             let ds: Dataset = new Dataset(id, kind, coursesWithInvalidSection);
-            let datasetHelper: DatasetHelper = new DatasetHelper();
             ds.filterInvalidSections()
-                .then((courses: Course[]) => {
+                .then((result: Dataset) => {
                     expect(expectedCourses).to.deep.equal(ds.getCourses());
                 })
                 .catch((err: any) => {

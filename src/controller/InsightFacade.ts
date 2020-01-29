@@ -37,24 +37,24 @@ export default class InsightFacade implements IInsightFacade {
                     return dataset;
                 })
                 .then((dataset: Dataset) => {
-                    dataset.filterInvalidSections();
-                    return dataset;
+                    return dataset.filterInvalidSections();
                 })
                 .then((dataset: Dataset) => {
-                    dataset.checkCoursesNotEmpty();
-                    return dataset;
+                    return dataset.checkCoursesNotEmpty();
                 })
                 .catch((err: any) => {
                     return Promise.reject(err);
                 })
                 .then((dataset: Dataset) => {
-                    this.datasetHelper.writeToDisk(id, dataset);
-                    return dataset;
-                })
-                .then((dataset: Dataset) => {
                     this.datasets.push(dataset);
                 })
-                .then((val: void) => {
+                .then((result: void) => {
+                    return this.datasetHelper.writeToDisk(this.datasets);
+                })
+                .catch((err: any) => {
+                    return Promise.reject(err);
+                })
+                .then((val: any) => {
                     return Promise.resolve(this.datasetHelper.getIds(this.datasets));
                 });
         } else {
@@ -63,12 +63,14 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public removeDataset(id: string): Promise<string> {
-        if (this.datasetHelper.idValid(id, this.datasets)
-        ) {
+        if (this.datasetHelper.idValid(id, this.datasets) && !this.datasetHelper.idNotInDatasets(id, this.datasets)) {
             for (let dataset of this.datasets) {
                 if (dataset.getId() === id) {
                     this.datasets.splice(this.datasets.indexOf(dataset), 1);
-                    this.datasetHelper.removeFromDisk(id);
+                    this.datasetHelper.writeToDisk(this.datasets)
+                        .then((result: any) => {
+                            return Promise.resolve(id);
+                        });
                     return Promise.resolve(id);
                 }
             }

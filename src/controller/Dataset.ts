@@ -23,7 +23,7 @@
 // 5. look through the array of datasets, return an array of strings with their ids*/
 import * as JSZip from "jszip";
 import Log from "../Util";
-import {InsightDatasetKind} from "./IInsightFacade";
+import {InsightDatasetKind, InsightError} from "./IInsightFacade";
 import {resolve} from "path";
 import Course from "./Course";
 
@@ -68,13 +68,13 @@ export default class Dataset {
     public checkCoursesNotEmpty() {
         for (let course of this.courses) {
             if (course["result"] !== []) {
-                return Promise.resolve();
+                return Promise.resolve(this);
             }
         }
-        return Promise.reject("invalid dataset: contains no valid sections");
+        return Promise.reject(new InsightError("invalid dataset: contains no valid sections"));
     }
 
-    public filterInvalidSections(): Promise<any> {
+    public filterInvalidSections(): Promise<Dataset> {
         for (let course of this.courses) {
             for (let section of course["result"]) {
                 if (!this.hasAllRequiredFields(section)) {
@@ -82,7 +82,7 @@ export default class Dataset {
                 }
             }
         }
-        return Promise.resolve();
+        return Promise.resolve(this);
     }
 
     public hasAllRequiredFields(section: object) {

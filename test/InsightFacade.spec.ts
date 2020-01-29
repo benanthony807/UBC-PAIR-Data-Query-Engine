@@ -144,8 +144,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
             });
     });
 
-    // TODO: not working, returns undefined
-    it("should fail to add invalid dataset: course has no sections", function () {
+    it("should fail to add invalid dataset: contains no valid sections", function () {
         const id: string = "onecourseemptyjson";
         return insightFacade
             .addDataset(id, datasets[id], InsightDatasetKind.Courses)
@@ -153,7 +152,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
                 expect.fail("should have rejected, no valid sections");
             })
             .catch((err: any) => {
-                assert.equal(err, new InsightError("course has no sections"));
+                assert.equal(err, new InsightError("invalid dataset: course has no sections"));
             });
     });
 
@@ -193,7 +192,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
             });
     });
 
-    // todo: rerun
     it("Should fail to add invalid dataset: id already exists", function () {
         const id: string = "courses";
         return insightFacade
@@ -209,7 +207,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
             });
     });
 
-    // todo: fix, unhandled promise rejection warning, invalid dataset, contains no valid sections isn't handled
     it("should fail to add invalid dataset: empty zip file", function () {
         const id: string = "empty";
         return insightFacade
@@ -218,11 +215,11 @@ describe("InsightFacade Add/Remove Dataset", function () {
                 expect.fail("should not have accepted, id is empty");
             })
             .catch((err: any) => {
-                assert.equal(err, new InsightError("zip file invalid: contains no valid JSON files"));
+                assert.equal(err, new InsightError("invalid dataset: contains no valid sections"));
             });
     });
 
-    // todo: same as above
+    // todo: this returns InsightError: dataset empty, but it should return no courses folder
     it("should fail to add invalid dataset: no courses folder", function () {
         const id: string = "nocoursesfolder";
         return insightFacade
@@ -344,7 +341,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
     it("should display 2 datasets: courses and valid1course", () => {
-        const id1: string = "courses";
+        const id1: string = "onevalidfileothersnot";
         const id2: string = "valid1course";
         const ids1: InsightDataset = {
             id: "courses",
@@ -358,7 +355,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         };
         const expected: InsightDataset[] = [ids1, ids2];
         return insightFacade
-            .addDataset("courses", datasets[id1], InsightDatasetKind.Courses)
+            .addDataset("onevalidfileothersnot", datasets[id1], InsightDatasetKind.Courses)
             .then((result: string[]) => {
                 return insightFacade.addDataset(id2, datasets[id2], InsightDatasetKind.Courses);
             })
