@@ -69,17 +69,16 @@ export default class Dataset {
         for (let course of this.courses) {
             if (course["result"] !== []) {
                 return Promise.resolve();
-            } else {
-                return Promise.reject("invalid dataset: contains no valid sections");
             }
         }
+        return Promise.reject("invalid dataset: contains no valid sections");
     }
 
     public filterInvalidSections(): Promise<any> {
         for (let course of this.courses) {
             for (let section of course["result"]) {
                 if (!this.hasAllRequiredFields(section)) {
-                course["result"].splice(course["result"].indexOf(section));
+                course["result"].splice(course["result"].indexOf(section), 1);
                 }
             }
         }

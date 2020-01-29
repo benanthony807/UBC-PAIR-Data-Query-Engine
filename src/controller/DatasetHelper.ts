@@ -11,6 +11,10 @@ export default class DatasetHelper {
         if (id.includes("_") || /^\s+$/.test(id)) {
             return false;
         }
+        return true;
+    }
+
+    public idNotInDatasets(id: string, datasets: Dataset[]): boolean {
         for (let ds of datasets) {
             if (id === ds.getId()) {
                 return false;

@@ -209,7 +209,7 @@ describe("Dataset Methods", function () {
         courses: "./test/data/courses.zip",
         empty: "./test/data/empty.zip",
         onecourseemptyjson: "./test/data/onecourseemptyjson.zip",
-        onecourseemptymessage: "./test/data/onecourseemptymessage.zip",
+        onecoursenosections: "./test/data/onecoursenosections.zip",
         duplicatecourse: "./test/data/duplicatecourse.zip",
         nocoursesfolder: "./test/data/nocoursesfolder.zip",
         onevalidfileothersnot: "./test/data/onevalidfileothersnot.zip",
@@ -240,7 +240,7 @@ describe("Dataset Methods", function () {
             fs.mkdirSync(cacheDir);
             insightFacade = new InsightFacade();
         } catch (err) {
-            Log.error(err);
+            Log.error("ERROR: " + err);
         }
     });
 
@@ -287,7 +287,7 @@ describe("Dataset Methods", function () {
     describe("checkCoursesNotEmpty tests", function () {
 
         it("should resolve, courses not empty", function () {
-            const id: string = "AANB504";
+            const id: string = "AAN";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
             const expected: void = null;
@@ -439,7 +439,10 @@ describe("Dataset Methods", function () {
             datasetHelper.readContent(content)
                 .then((courses: Course[]) => {
                     let ds: Dataset = new Dataset(id, kind, courses);
-                    assert(expectedCourses).to.deep.equal(ds.getCourses());
+                    expect(expectedCourses).to.deep.equal(ds.getCourses());
+                })
+                .catch((err: any) => {
+                    expect.fail(err, "should not have failed");
                 });
         });
 
@@ -448,8 +451,14 @@ describe("Dataset Methods", function () {
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
             let ds: Dataset = new Dataset(id, kind, coursesWithInvalidSection);
-            // ds.setCoursesForTesting(coursesWithInvalidSection);
-            assert(expectedCourses2).to.deep.equal(ds.getCourses());
+            let datasetHelper: DatasetHelper = new DatasetHelper();
+            ds.filterInvalidSections()
+                .then((courses: Course[]) => {
+                    expect(expectedCourses).to.deep.equal(ds.getCourses());
+                })
+                .catch((err: any) => {
+                    expect.fail(err, "should not have failed");
+                });
         });
     });
 })

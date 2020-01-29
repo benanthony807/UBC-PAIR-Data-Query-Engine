@@ -25,13 +25,16 @@ export default class InsightFacade implements IInsightFacade {
         content: string,
         kind: InsightDatasetKind,
     ): Promise<string[]> {
-        if (this.datasetHelper.idValid(id, this.datasets) && kind === InsightDatasetKind.Courses) {
+        if (this.datasetHelper.idValid(id, this.datasets) &&
+            kind === InsightDatasetKind.Courses &&
+            this.datasetHelper.idNotInDatasets(id, this.datasets)) {
             return this.datasetHelper.readContent(content)
                 .catch((err: any) => {
                     return Promise.reject(new InsightError(err));
                 })
                 .then((courses: Course[]) => {
-                    return new Dataset(id, kind, courses);
+                    let dataset: Dataset = new Dataset(id, kind, courses);
+                    return dataset;
                 })
                 .then((dataset: Dataset) => {
                     dataset.filterInvalidSections();
@@ -50,6 +53,8 @@ export default class InsightFacade implements IInsightFacade {
                 })
                 .then((dataset: Dataset) => {
                     this.datasets.push(dataset);
+                })
+                .then((val: void) => {
                     return Promise.resolve(this.datasetHelper.getIds(this.datasets));
                 });
         } else {
@@ -58,15 +63,16 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public removeDataset(id: string): Promise<string> {
-        if (this.datasetHelper.idValid(id, this.datasets)) {
+        if (this.datasetHelper.idValid(id, this.datasets)
+        ) {
             for (let dataset of this.datasets) {
                 if (dataset.getId() === id) {
-                    this.datasets.splice(this.datasets.indexOf(dataset));
+                    this.datasets.splice(this.datasets.indexOf(dataset), 1);
                     this.datasetHelper.removeFromDisk(id);
                     return Promise.resolve(id);
                 }
             }
-            return Promise.reject(new NotFoundError());
+            return Promise.reject(new NotFoundError("tried to remove nonexistent dataset"));
         }
         return Promise.reject
         (new InsightError(this.datasetHelper.diagnoseIssue(id, InsightDatasetKind.Courses, this.datasets)));
