@@ -26,7 +26,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         onecourseemptymessage: "./test/data/onecourseemptymessage.zip",
         duplicatecourse: "./test/data/duplicatecourse.zip",
         nocoursesfolder: "./test/data/nocoursesfolder.zip",
-        onevalidfileothersnot: "./test/data/onevalidfileothersnot.zip",
+        onevalidfileothersnot: "./test/dagta/onevalidfileothersnot.zip",
         valid1course: "./test/data/valid1course.zip"
     };
     let datasets: { [id: string]: string } = {};
