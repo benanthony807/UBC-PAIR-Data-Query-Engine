@@ -1,0 +1,120 @@
+{
+    "title": "ordered by dept",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_id": "425"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_dept": "econ"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_dept"
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 74.05
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 74.05
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 80.87
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 80.87
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 79.05
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 79.05
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 79.89
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 79.89
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 78.92
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 78.92
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 89.68
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 89.68
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 78.81
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 78.81
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 90.68
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 90.68
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 75.18
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_avg": 75.18
+        }
+    ]
+}

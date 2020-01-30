@@ -1,0 +1,57 @@
+{
+    "title": "have 2 IS keys in the same IS",
+    "query": {
+        "WHERE": {
+            "NOT": {
+                "OR": [
+                    {
+                        "NOT": {
+                            "AND": [
+                                {
+                                    "AND": [
+                                        {
+                                            "GT": {
+                                                "courses_avg": 90
+                                            }
+                                        },
+                                        {
+                                            "EQ": {
+                                                "courses_avg": 30
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "GT": {
+                                        "courses_avg": 90
+                                    }
+                                },
+                                {
+                                    "IS": {
+                                        "courses_dept": "adhe",
+                                        "courses_dept": "bc"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "EQ": {
+                            "courses_avg": 95
+                        }
+                    }
+                ]
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_id"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

@@ -1,0 +1,16 @@
+{
+    "title": "Valid Query - only dept",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 99
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept"
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_dept":"cnps"},{"courses_dept":"math"},{"courses_dept":"math"}]}

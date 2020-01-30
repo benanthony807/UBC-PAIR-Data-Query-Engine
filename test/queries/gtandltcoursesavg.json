@@ -1,0 +1,34 @@
+{
+    "title": "courses_avg GT 80, LT 79",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_dept": "math"
+                    }
+                },
+                {
+                    "GT": {
+                        "courses_avg": 80
+                    }
+                },
+                {
+                    "LT": {
+                        "courses_avg": 79
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

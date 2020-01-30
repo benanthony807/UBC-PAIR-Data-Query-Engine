@@ -1,0 +1,32 @@
+{
+    "title": "invalid: missing options",
+    "query": {
+        "WHERE": {
+            "NOT": {
+                "AND": [
+                    {
+                        "NOT": {
+                            "LT": {
+                                "courses_avg": 1
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+
+        "NOT": {
+            "OPTIONS": {
+                "COLUMNS": [
+                    "courses_dept",
+                    "courses_id",
+                    "courses_avg",
+                    "courses_audit"
+                ],
+                "ORDER": "courses_audit"
+            }
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

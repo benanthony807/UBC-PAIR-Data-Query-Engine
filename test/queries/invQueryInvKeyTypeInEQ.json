@@ -1,0 +1,24 @@
+{
+    "title": "Invalid Query - Inv Key type in EQ",
+    "query": {
+
+        "WHERE": {
+            "OR": [
+                {"AND": [{"GT": {"courses_avg": 50}},{"IS": {"courses_dept":  "adhe"}}]},
+                {"NOT": {"LT": {"courses_avg": 20}}},
+                {"EQ": {"courses_id":  1293}}]
+        },
+
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg",
+                "courses_title"
+            ],
+            "ORDER": "courses_avg"
+        }
+
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

@@ -1,0 +1,21 @@
+{
+    "title": "Unexpected response status 400: Invalid key WHERE in GT",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "WHERE": {
+                    "courses_avg": 97
+                }
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "course_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

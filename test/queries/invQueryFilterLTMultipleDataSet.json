@@ -1,0 +1,19 @@
+{
+    "title": "Unexpected response status 400: Cannot query more than one dataset",
+    "query": {
+        "WHERE": {
+            "LT": {
+                "course_fail": 0
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

@@ -1,0 +1,16 @@
+{
+    "title": "Valid Query - only fail",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 99
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_fail"
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_fail":0},{"courses_fail":0},{"courses_fail":0}]}

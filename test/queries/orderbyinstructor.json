@@ -1,0 +1,120 @@
+{
+    "title": "queries ordered by instructor",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "IS": {
+                        "courses_id": "425"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_dept": "econ"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_id",
+                "courses_instructor"
+            ],
+            "ORDER": "courses_instructor"
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": ""
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": ""
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": ""
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": ""
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": ""
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": ""
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": ""
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": ""
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": ""
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": ""
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": "sakata, shinichi"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": "sakata, shinichi"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": "sakata, shinichi"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": "song, kyungchul"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": "song, kyungchul"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": "song, kyungchul"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": "song, kyungchul"
+        },
+        {
+            "courses_dept": "econ",
+            "courses_id": "425",
+            "courses_instructor": "song, kyungchul"
+        }
+    ]
+}

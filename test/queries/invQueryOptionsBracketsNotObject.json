@@ -1,0 +1,13 @@
+{
+    "title": "Unexpected response status 400: OPTIONS must be object",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 97
+            }
+        },
+        "OPTIONS": []
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

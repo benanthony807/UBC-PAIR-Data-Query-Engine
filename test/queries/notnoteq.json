@@ -1,0 +1,37 @@
+{
+    "title": "used double negation on EQ",
+    "query": {
+        "WHERE": {
+            "AND": [
+                {
+                    "NOT": {
+                        "NOT": {"EQ": {
+                            "courses_avg": 75
+                        }
+                        }}},
+                {
+                    "IS": {
+                        "courses_id": "*123"
+                    }
+                },
+                {
+                    "IS": {
+                        "courses_id": "*123"
+                    }
+                }
+            ]
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_avg",
+                "courses_avg",
+                "courses_avg",
+                "courses_avg",
+                "courses_audit"
+            ],
+            "ORDER": "courses_audit"
+        }
+    },
+    "isQueryValid": true,
+    "result": []
+}

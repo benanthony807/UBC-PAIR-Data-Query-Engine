@@ -1,0 +1,21 @@
+{
+    "title": "gives error: Unexpected response status 400: The result is too big",
+    "query":
+{
+    "WHERE": {
+        "IS": {
+            "courses_instructor": "*"
+        }
+    },
+    "OPTIONS": {
+        "COLUMNS": [
+            "courses_dept",
+            "courses_id",
+            "courses_avg"
+        ],
+        "ORDER": "courses_avg"
+    }
+},
+    "isQueryValid": false,
+    "result": "ResultTooLargeError"
+}
