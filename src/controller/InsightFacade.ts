@@ -28,7 +28,9 @@ export default class InsightFacade implements IInsightFacade {
         content: string,
         kind: InsightDatasetKind,
     ): Promise<string[]> {
-        if (this.datasetHelper.idValid(id, this.datasets) && kind === InsightDatasetKind.Courses) {
+        if (this.datasetHelper.idValid(id) &&
+            kind === InsightDatasetKind.Courses &&
+            !this.datasetHelper.idInDatasets(id, this.datasets)) {
             return this.datasetHelper.readContent(content)
                 .catch((err: any) => {
                     return Promise.reject(new InsightError(err));
@@ -37,22 +39,24 @@ export default class InsightFacade implements IInsightFacade {
                     return new Dataset(id, kind, courses);
                 })
                 .then((dataset: Dataset) => {
-                    dataset.filterInvalidSections();
-                    return dataset;
+                    return dataset.filterInvalidSections();
                 })
                 .then((dataset: Dataset) => {
-                    dataset.checkCoursesNotEmpty();
-                    return dataset;
+                    return dataset.checkCoursesNotEmpty();
                 })
                 .catch((err: any) => {
                     return Promise.reject(err);
                 })
                 .then((dataset: Dataset) => {
-                    this.datasetHelper.writeToDisk(id, dataset);
-                    return dataset;
-                })
-                .then((dataset: Dataset) => {
                     this.datasets.push(dataset);
+                })
+                .then((result: void) => {
+                    return this.datasetHelper.writeToDisk(this.datasets);
+                })
+                .catch((err: any) => {
+                    return Promise.reject(err);
+                })
+                .then((val: any) => {
                     return Promise.resolve(this.datasetHelper.getIds(this.datasets));
                 });
         } else {
@@ -61,16 +65,20 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public removeDataset(id: string): Promise<string> {
-
-        if (this.datasetHelper.idValid(id, this.datasets)) {
-            for (let dataset of this.datasets) {
-                if (dataset.getId() === id) {
-                    this.datasets.splice(this.datasets.indexOf(dataset));
-                    this.datasetHelper.removeFromDisk(id);
-                    return Promise.resolve(id);
+        if (this.datasetHelper.idValid(id)) {
+            if (this.datasetHelper.idInDatasets(id, this.datasets)) {
+                for (let dataset of this.datasets) {
+                    if (dataset.getId() === id) {
+                        this.datasets.splice(this.datasets.indexOf(dataset), 1);
+                        this.datasetHelper.writeToDisk(this.datasets)
+                            .then((result: any) => {
+                                return Promise.resolve(id);
+                            });
+                        return Promise.resolve(id);
+                    }
                 }
             }
-            return Promise.reject(new NotFoundError());
+            return Promise.reject(new NotFoundError("tried to remove nonexistent dataset"));
         }
         return Promise.reject
         (new InsightError(this.datasetHelper.diagnoseIssue(id, InsightDatasetKind.Courses, this.datasets)));
