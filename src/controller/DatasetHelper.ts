@@ -4,26 +4,22 @@ import Course from "./Course";
 import * as JSZip from "jszip";
 import * as fs from "fs";
 import Log from "../Util";
-import {readFileSync} from "fs";
 
 export default class DatasetHelper {
 
-    public idValid(id: string, datasets: Dataset[]): boolean {
+    public idValid(id: string): boolean {
         // whitespace check taken from https://stackoverflow.com/questions/2031085/how-can-i-check-if-string-contains-
         // characters-whitespace-not-just-whitespace/2031119
-        if (id.includes("_") || /^\s+$/.test(id)) {
-            return false;
-        }
-        return true;
+        return !(id.includes("_") || /^\s+$/.test(id));
     }
 
-    public idNotInDatasets(id: string, datasets: Dataset[]): boolean {
+    public idInDatasets(id: string, datasets: Dataset[]): boolean {
         for (let ds of datasets) {
             if (id === ds.getId()) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public diagnoseIssue(id: string, kind: InsightDatasetKind, datasets: Dataset[]): string {
@@ -92,7 +88,7 @@ export default class DatasetHelper {
                                 try {
                                     courses.push(JSON.parse(course));
                                 } catch (err) {
-                                    continue;
+                                //
                                 }
                             }
                             resolve(courses as Course[]);

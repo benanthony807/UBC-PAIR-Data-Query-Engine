@@ -21,10 +21,7 @@
 
 
 // 5. look through the array of datasets, return an array of strings with their ids*/
-import * as JSZip from "jszip";
-import Log from "../Util";
 import {InsightDatasetKind, InsightError} from "./IInsightFacade";
-import {resolve} from "path";
 import Course from "./Course";
 
 export default class Dataset {
@@ -67,7 +64,7 @@ export default class Dataset {
 
     public checkCoursesNotEmpty() {
         for (let course of this.courses) {
-            if (course["result"] !== []) {
+            if (course["result"].length > 0) {
                 return Promise.resolve(this);
             }
         }

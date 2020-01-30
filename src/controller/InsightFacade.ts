@@ -25,16 +25,15 @@ export default class InsightFacade implements IInsightFacade {
         content: string,
         kind: InsightDatasetKind,
     ): Promise<string[]> {
-        if (this.datasetHelper.idValid(id, this.datasets) &&
+        if (this.datasetHelper.idValid(id) &&
             kind === InsightDatasetKind.Courses &&
-            this.datasetHelper.idNotInDatasets(id, this.datasets)) {
+            !this.datasetHelper.idInDatasets(id, this.datasets)) {
             return this.datasetHelper.readContent(content)
                 .catch((err: any) => {
                     return Promise.reject(new InsightError(err));
                 })
                 .then((courses: Course[]) => {
-                    let dataset: Dataset = new Dataset(id, kind, courses);
-                    return dataset;
+                    return new Dataset(id, kind, courses);
                 })
                 .then((dataset: Dataset) => {
                     return dataset.filterInvalidSections();
@@ -63,15 +62,17 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public removeDataset(id: string): Promise<string> {
-        if (this.datasetHelper.idValid(id, this.datasets) && !this.datasetHelper.idNotInDatasets(id, this.datasets)) {
-            for (let dataset of this.datasets) {
-                if (dataset.getId() === id) {
-                    this.datasets.splice(this.datasets.indexOf(dataset), 1);
-                    this.datasetHelper.writeToDisk(this.datasets)
-                        .then((result: any) => {
-                            return Promise.resolve(id);
-                        });
-                    return Promise.resolve(id);
+        if (this.datasetHelper.idValid(id)) {
+            if (this.datasetHelper.idInDatasets(id, this.datasets)) {
+                for (let dataset of this.datasets) {
+                    if (dataset.getId() === id) {
+                        this.datasets.splice(this.datasets.indexOf(dataset), 1);
+                        this.datasetHelper.writeToDisk(this.datasets)
+                            .then((result: any) => {
+                                return Promise.resolve(id);
+                            });
+                        return Promise.resolve(id);
+                    }
                 }
             }
             return Promise.reject(new NotFoundError("tried to remove nonexistent dataset"));
