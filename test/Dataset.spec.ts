@@ -1,5 +1,5 @@
 import * as fs from "fs-extra";
-import {InsightDatasetKind} from "../src/controller/IInsightFacade";
+import {InsightDatasetKind, InsightError} from "../src/controller/IInsightFacade";
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import Dataset from "../src/controller/Dataset";
@@ -209,11 +209,12 @@ describe("Dataset Methods", function () {
         courses: "./test/data/courses.zip",
         empty: "./test/data/empty.zip",
         onecourseemptyjson: "./test/data/onecourseemptyjson.zip",
-        onecourseemptymessage: "./test/data/onecourseemptymessage.zip",
+        onecoursenosections: "./test/data/onecoursenosections.zip",
         duplicatecourse: "./test/data/duplicatecourse.zip",
         nocoursesfolder: "./test/data/nocoursesfolder.zip",
         onevalidfileothersnot: "./test/data/onevalidfileothersnot.zip",
-        valid1course: "./test/data/valid1course.zip"
+        valid1course: "./test/data/valid1course.zip",
+        AAN: "./test/data/AAN.zip"
     };
     let datasets: { [id: string]: string } = {};
     let insightFacade: InsightFacade;
@@ -227,7 +228,6 @@ describe("Dataset Methods", function () {
             datasets[id] = fs
                 .readFileSync(datasetsToLoad[id])
                 .toString("base64");
-            Log.test(datasets[id]);
         }
     });
 
@@ -240,7 +240,7 @@ describe("Dataset Methods", function () {
             fs.mkdirSync(cacheDir);
             insightFacade = new InsightFacade();
         } catch (err) {
-            Log.error(err);
+            Log.error("ERROR: " + err);
         }
     });
 
@@ -255,7 +255,7 @@ describe("Dataset Methods", function () {
     describe("constructor tests", function () {
 
         it("should produce a dataset", function () {
-            const id: string = "AANB504";
+            const id: string = "AAN";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
             const datasetHelper: DatasetHelper = new DatasetHelper();
@@ -272,7 +272,7 @@ describe("Dataset Methods", function () {
     describe("getNumRows tests", function () {
 
         it("should return 2", function () {
-            const id: string = "AANB504";
+            const id: string = "AAN";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
             const datasetHelper: DatasetHelper = new DatasetHelper();
@@ -287,20 +287,20 @@ describe("Dataset Methods", function () {
     describe("checkCoursesNotEmpty tests", function () {
 
         it("should resolve, courses not empty", function () {
-            const id: string = "AANB504";
+            const id: string = "AAN";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
             const expected: void = null;
             const datasetHelper: DatasetHelper = new DatasetHelper();
-            datasetHelper.readContent(content)
+            return datasetHelper.readContent(content)
                 .then((courses: Course[]) => {
-                    let ds: Dataset = new Dataset(id, kind, courses);
-                    return ds;
+                    return new Dataset(id, kind, courses);
                 })
                 .then((ds: Dataset) => {
                     ds.checkCoursesNotEmpty()
-                        .then((result: void) => {
-                            expect(result).to.deep.equal(expected);
+                        .then((result: any) => {
+                            assert.equal(result, ds);
+                            // expect(result).to.deep.equal(expected);
                         })
                         .catch((err: any) => {
                             expect.fail(err, expected, "Should not have rejected");
@@ -309,20 +309,19 @@ describe("Dataset Methods", function () {
         });
 
         it("should reject, courses empty", function () {
-            const id: string = "AANB504";
+            const id: string = "AAN";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
             const expected: void = null;
             const emptyCourses: Course[] = [{result: [], rank: 0}, {result: [], rank: 0}];
 
             let ds: Dataset = new Dataset(id, kind, emptyCourses);
-            // ds.setCoursesForTesting(emptyCourses);
-            ds.checkCoursesNotEmpty()
-                .then((result: void) => {
+            return ds.checkCoursesNotEmpty()
+                .then((result: any) => {
                     expect.fail("should have rejected, courses is empty");
                 })
                 .catch((err: any) => {
-                    expect(err).to.deep.equal(expected);
+                    assert.instanceOf(err, InsightError);
                 });
         });
     });
@@ -330,7 +329,7 @@ describe("Dataset Methods", function () {
     describe("hasAllRequiredFields tests", function () {
 
         it("should return true, section has all required fields", function () {
-            const id: string = "AANB504";
+            const id: string = "AAN";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
             const section: object = {
@@ -380,7 +379,7 @@ describe("Dataset Methods", function () {
         });
 
         it("should return false, section missing Subject field", function () {
-            const id: string = "AANB504";
+            const id: string = "AAN";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
             const section: object = {
@@ -432,26 +431,39 @@ describe("Dataset Methods", function () {
     describe("filterInvalidSections tests", function () {
 
         it("should not filter any sections", function () {
-            const id: string = "AANB504";
+            const id: string = "AAN";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
             const datasetHelper: DatasetHelper = new DatasetHelper();
-            datasetHelper.readContent(content)
+            return datasetHelper.readContent(content)
                 .then((courses: Course[]) => {
-                    let ds: Dataset = new Dataset(id, kind, courses);
-                    assert(expectedCourses).to.deep.equal(ds.getCourses());
+                    return new Dataset(id, kind, courses);
+                })
+                .then((ds: Dataset) => {
+                    ds.filterInvalidSections();
+                    return ds;
+                })
+                .then((ds: Dataset) => {
+                    expect(expectedCourses).to.deep.equal(ds.getCourses());
+                })
+                .catch((err: any) => {
+                    expect.fail(err, "should not have failed");
                 });
         });
 
         it("should filter out first section, missing avg field", function () {
-            const id: string = "AANB504";
+            const id: string = "AAN";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
             const content: string = datasets[id];
             let ds: Dataset = new Dataset(id, kind, coursesWithInvalidSection);
-            // ds.setCoursesForTesting(coursesWithInvalidSection);
-            assert(expectedCourses2).to.deep.equal(ds.getCourses());
+            return ds.filterInvalidSections()
+                .then((result: Dataset) => {
+                    expect(expectedCourses2).to.deep.equal(result.getCourses());
+                })
+                .catch((err: any) => {
+                    expect.fail(err, expectedCourses2, "should not have failed");
+                });
         });
     });
-})
-;
+});
 
