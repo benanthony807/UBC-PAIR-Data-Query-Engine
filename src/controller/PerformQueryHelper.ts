@@ -1,5 +1,6 @@
 import {promises} from "dns";
 import {resolve} from "dns";
+import Dataset from "./Dataset";
 
 export default class PerformQueryHelper {
 
@@ -80,7 +81,6 @@ export default class PerformQueryHelper {
              */
             private orderIsValid(query: any) {
 
-
                 // the order key must be called "ORDER"
                 if (Object.keys(query["OPTIONS"])[1] === "ORDER") {
 
@@ -117,57 +117,73 @@ export default class PerformQueryHelper {
      * Check if the other keys are different from COLUMNS (if so, then cannot reference more than one dataset)
      * Check if query keys are one of the 8 keys we accept
      */
-    // public inputKeysAreValid(query: any, datasetToUse: Dataset): boolean {
-    //     // Check if first key in COLUMNS is loaded
-    //     if (this.keyIsLoaded(query, datasetToUse)) {
-    //         // Check if only one dataset is referenced
-    //         if (this.onlyOneDatasetReferenced(query, datasetToUse)) {
-    //             // Check if query keys are one of the 8 keys that are allowed
-    //             if (this.allKeysAllowed(query)) {
-    //                 return true;
-    //             } else {
-    //                 // TODO: Find out how to fill in the blanks
-    //                 this.errorMessage = "Invalid key ___(ex. courses_session)___ in ___(ex. COLUMNS || GT)___"
-    //                 return false;
-    //             }
-    //         } else {
-    //             this.errorMessage = "Cannot query more than one dataset";
-    //             return false;
-    //         }
-    //     } else {
-    //         this.errorMessage = "Referenced dataset " + "'" + datasetID + "'" +  " not added yet";
-    //         return false;
-    //     }
+    public inputKeysAreValid(query: any, datasetToUse: Dataset): boolean {
+        // Check if first key in COLUMNS is loaded
+        if (this.keyIsLoaded(query, datasetToUse)) {
+            // Check if only one dataset is referenced
+            if (this.onlyOneDatasetReferenced(query, datasetToUse)) {
+                // Check if query keys are one of the 10 keys that are allowed
+                if (this.allKeysAllowed(query)) {
+                    return true;
+                } else {
+                    // TODO: Find out how to fill in the blanks
+                    this.errorMessage = "Invalid key ___(ex. courses_session)___ in ___(ex. COLUMNS || GT)___";
+                    return false;
+                }
+            } else {
+                this.errorMessage = "Cannot query more than one dataset";
+                return false;
+            }
+        } else {
+            this.errorMessage = "Referenced dataset " + "'" + datasetToUse + "'" +  " not added yet";
+            return false;
+        }
+    }
+
+        /**
+         * Helper function for inputKeysAreValid
+         * Check if key is loaded
+         * The first key in COLUMNS is the key we're going to load
+         */
+        private keyIsLoaded(query: any, datasetToUse: Dataset): boolean {
+            let key = query["OPTIONS"]["COLUMNS"][0]; // sets key to be the first item in the query's COLUMN
+            return key === datasetToUse.getId(); // returns the id of the dataset we're using
+        }
+
+        /**
+         * Helper function for inputKeysAreValid
+         * Check if only one dataset is referenced
+         * Look at all other keys and see if they equal the key
+         */
+        private onlyOneDatasetReferenced(query: any, datasetID: Dataset): boolean {
+            let key = query["OPTIONS"]["COLUMNS"][0];
+            // traverse the query and check if the key
+            return false;
+        }
+
+    /**
+     * Helpfer function for inputKeysAreValid
+     * Check if all the keys in the query are one of the 10 keys allowed
+     */
+    private allKeysAllowed(query: any): boolean {
+        return false;
+    }
+
+    /**
+     * structureQuery will structure the query such that the query can be performed (so that we can
+     * recursively go through a layer of comparators)
+     */
+    // commented out for push
+    // public structureQuery(query: any):  {
     // }
-    //
-    //     /**
-    //      * Helper function for inputKeysAreValid
-    //      * Check if key is loaded
-    //      * The first key in COLUMNS is the key we're going to load
-    //      */
-    //     private keyIsLoaded(query: any, datasetToUse: Dataset): boolean {
-    //         // get the first key in COLUMNS
-    //         let key = query["OPTIONS"]["COLUMNS"][0]; //sets key to be the first item in the query's
-    //         return key === Dataset[0]; //Dataset[0] returns the id of the dataset we're using
-    //     }
-    //
-    //     /**
-    //      * Helper function for inputKeysAreValid
-    //      * Check if only one dataset is referenced
-    //      * Look at all other keys and see if they equal the key
-    //      */
-    //     private onlyOneDatasetReferenced(query: any, datasetID: string): boolean {
-    //         let key = query["OPTIONS"]["COLUMNS"][0];
-    //
-    //     }
-    //
-    // /**
-    //  * runQuery will return a promise:
-    //  *      rejects: if something goes wrong
-    //  *      fulfills: with query result passed on
-    //  *
-    //  */
-    // // commented out for push
+
+    /**
+     * runQuery will return a promise:
+     *      rejects: if something goes wrong
+     *      fulfills: with query result passed on
+     *
+     */
+    // commented out for push
     // public runQuery(query: any, datasetToUse: Dataset): Promise<Array<any>> {
     //     return new Promise((resolve, reject)) => {
     //
@@ -180,5 +196,25 @@ export default class PerformQueryHelper {
     // }
 
 
-    // ************************* FILTER ************************** //
+    // ************************* FILTER **************************//
+
+    /**
+     * courses_dept: string; The department that offered the course.
+     * courses_id: string; The course number (will be treated as a string (e.g., 499b)).
+     * courses_avg: number; The average of the course offering.
+     * courses_instructor: string; The instructor teaching the course offering.
+     * courses_title: string; The name of the course.
+     * courses_pass: number; The number of students that passed the course offering.
+     * courses_fail: number; The number of students that failed the course offering.
+     * courses_audit: number; The number of students that audited the course offering.
+     * courses_uuid: string; The unique id of a course offering.
+     * courses_year: number; The year the course offering ran. If the "Section"
+     * property in the source data is set to "overall", you should set the year for that
+     * section to 1900.
+     */
+
+    /**
+     * Use a recursive call
+     * Traverse the comparitor
+     */
 }
