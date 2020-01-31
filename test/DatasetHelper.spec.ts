@@ -52,11 +52,11 @@ describe("InsightFacade Dataset Helper Methods", function () {
         });
     });
 
-    describe("idNotInDatasets tests", function () {
+    describe("idInDatasets tests", function () {
         it("should reject: id already exists in ds", function () {
-            const id: string = "valid";
+            const id: string = "courses";
             const courses: Course[] = [];
-            const dataset: Dataset = new Dataset("valid", InsightDatasetKind.Courses, courses);
+            const dataset: Dataset = new Dataset("course", InsightDatasetKind.Courses, courses);
             const ds: Dataset[] = [dataset];
             const datasetHelper: DatasetHelper = new DatasetHelper();
             return assert.isTrue(datasetHelper.idInDatasets(id, ds));

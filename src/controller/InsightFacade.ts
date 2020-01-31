@@ -67,7 +67,7 @@ export default class InsightFacade implements IInsightFacade {
                 for (let dataset of this.datasets) {
                     if (dataset.getId() === id) {
                         this.datasets.splice(this.datasets.indexOf(dataset), 1);
-                        this.datasetHelper.writeToDisk(this.datasets)
+                        this.datasetHelper.removeFromDisk(this.datasets)
                             .then((result: any) => {
                                 return Promise.resolve(id);
                             });

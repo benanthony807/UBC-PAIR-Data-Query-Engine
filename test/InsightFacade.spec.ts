@@ -44,19 +44,20 @@ describe("InsightFacade Add/Remove Dataset", function () {
                 .readFileSync(datasetsToLoad[id])
                 .toString("base64");
         }
+        insightFacade = new InsightFacade();
     });
 
     beforeEach(function () {
         // This section resets the data directory (removing any cached data) and resets the InsightFacade instance
         // This runs before each test, which should make each test independent from the previous one
         Log.test(`BeforeTest: ${this.currentTest.title}`);
-        try {
-            fs.removeSync(cacheDir);
-            fs.mkdirSync(cacheDir);
-            insightFacade = new InsightFacade();
-        } catch (err) {
-            Log.error(err);
-        }
+        // try {
+        //     fs.removeSync(cacheDir);
+        //     fs.mkdirSync(cacheDir);
+        //     insightFacade = new InsightFacade();
+        // } catch (err) {
+        //     Log.error(err);
+        // }
     });
 
     after(function () {
@@ -261,7 +262,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
     it("should fail to remove a non-existent dataset", () => {
-        const id: string = "courses";
+        const id: string = "AAN";
         return insightFacade
             .removeDataset(id)
             .then((result: string) => {

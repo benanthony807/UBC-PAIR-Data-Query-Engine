@@ -19,6 +19,20 @@ export default class DatasetHelper {
                 return true;
             }
         }
+        let diskDatasets: Dataset[];
+        try {
+            let utf8Dataset: string = fs.readFileSync
+            ("/Users/benanthony/WebstormProjects/project_team097/data/datasets", "utf8");
+            diskDatasets = JSON.parse(utf8Dataset) as Dataset[];
+
+            for (let ds of diskDatasets) {
+                if (id === ds["id"]) {
+                    return true;
+                }
+            }
+        } catch (err) {
+            //
+        }
         return false;
     }
 
@@ -41,18 +55,49 @@ export default class DatasetHelper {
     // (right click on data, copy path)
     public writeToDisk(datasets: Dataset[]): Promise<any> {
         // writing behaviour taken from https://stackoverflow.com/questions/2496710/writing-files-in-node-js
+        // reading behaviour taken from https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
+        let diskDatasets: Dataset[];
         try {
-            fs.unlinkSync("/Users/benanthony/WebstormProjects/project_team097/data/datasets");
+            let utf8Dataset: string = fs.readFileSync
+            ("/Users/benanthony/WebstormProjects/project_team097/data/datasets", "utf8");
+            diskDatasets = JSON.parse(utf8Dataset) as Dataset[];
+
+            for (let ds of diskDatasets) {
+                if (!datasets.includes(ds)) {
+                    datasets.push(ds);
+                }
+            }
         } catch (err) {
             // do nothing
         }
         fs.writeFile("/Users/benanthony/WebstormProjects/project_team097/data/datasets", JSON.stringify(datasets),
             function (err: any) {
-            if (err) {
-                return Promise.reject(err);
+                if (err) {
+                    return Promise.reject(err);
+                }
+                Log.test("The file was saved!");
+            });
+        return Promise.resolve();
+    }
+
+    public removeFromDisk(datasets: Dataset[]) {
+        let diskDatasets: Dataset[];
+        let utf8Dataset: string = fs.readFileSync
+        ("/Users/benanthony/WebstormProjects/project_team097/data/datasets", "utf8");
+        diskDatasets = JSON.parse(utf8Dataset) as Dataset[];
+
+        for (let ds of diskDatasets) {
+            if (!datasets.includes(ds)) {
+                diskDatasets.splice(diskDatasets.indexOf(ds), 1);
             }
-            Log.test("The file was saved!");
-        });
+        }
+        fs.writeFile("/Users/benanthony/WebstormProjects/project_team097/data/datasets", JSON.stringify(datasets),
+            function (err: any) {
+                if (err) {
+                    return Promise.reject(err);
+                }
+                Log.test("The file was saved!");
+            });
         return Promise.resolve();
     }
 
@@ -69,31 +114,31 @@ export default class DatasetHelper {
         const zip = new JSZip();
         const files: Array<Promise<string>> = [];
         return new Promise<any>((resolve, reject) => {
-            zip.loadAsync(content, {base64: true})
-                .then((result: JSZip) => {
-                    try {
+            try {
+                zip.loadAsync(content, {base64: true})
+                    .then((result: JSZip) => {
                         result.folder("courses").forEach((relativePath, file) => {
                             files.push(file.async("text"));
                             return files;
                         });
-                    } catch (err) {
-                       return reject(err);
-                    }
-                    return files;
-                })
-                .then((promises: Array<Promise<string>>) => {
-                    Promise.all(promises)
-                        .then((coursesAsStrings: string[]) => {
-                            for (let course of coursesAsStrings) {
-                                try {
-                                    courses.push(JSON.parse(course));
-                                } catch (err) {
-                                //
+                        return files;
+                    })
+                    .then((promises: Array<Promise<string>>) => {
+                        Promise.all(promises)
+                            .then((coursesAsStrings: string[]) => {
+                                for (let course of coursesAsStrings) {
+                                    try {
+                                        courses.push(JSON.parse(course));
+                                    } catch (err) {
+                                        //
+                                    }
                                 }
-                            }
-                            resolve(courses as Course[]);
-                        });
-                });
+                                resolve(courses as Course[]);
+                            });
+                    });
+            } catch (err) {
+                return reject(err);
+            }
         });
     }
 }

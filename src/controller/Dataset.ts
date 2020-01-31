@@ -23,6 +23,7 @@
 // 5. look through the array of datasets, return an array of strings with their ids*/
 import {InsightDatasetKind, InsightError} from "./IInsightFacade";
 import Course from "./Course";
+import Log from "../Util";
 
 export default class Dataset {
 
@@ -74,8 +75,9 @@ export default class Dataset {
     public filterInvalidSections(): Promise<Dataset> {
         for (let course of this.courses) {
             for (let section of course["result"]) {
-                if (!this.hasAllRequiredFields(section)) {
-                course["result"].splice(course["result"].indexOf(section), 1);
+                section = this.formatFields(section);
+                if (!this.hasAllRequiredFields(section) || !this.propertiesHaveCorrectTypes(section)) {
+                    course["result"].splice(course["result"].indexOf(section), 1);
                 }
             }
         }
@@ -83,19 +85,52 @@ export default class Dataset {
     }
 
     public hasAllRequiredFields(section: object) {
-        return  "Subject" in section &&
-                "Course" in section &&
-                "Avg" in section &&
-                "Professor" in section &&
-                "Title" in section &&
-                "Pass" in section &&
-                "Fail" in section &&
-                "id" in section &&
-                "Year" in section;
+        return "Subject" in section &&
+            "Course" in section &&
+            "Avg" in section &&
+            "Professor" in section &&
+            "Title" in section &&
+            "Pass" in section &&
+            "Fail" in section &&
+            "Audit" in section &&
+            "id" in section &&
+            "Year" in section;
     }
 
-    public setCoursesForTesting(courses: Course[]) {
-        this.courses = courses;
+    public propertiesHaveCorrectTypes(section: object) {
+        return typeof "Subject" === "string" &&
+            typeof "Course" === "string" &&
+            typeof "Avg" === "number" &&
+            typeof "Professor" === "string" &&
+            typeof "Title" === "string" &&
+            typeof "Pass" === "number" &&
+            typeof "Fail" === "number" &&
+            typeof "Audit" === "number" &&
+            typeof "id" === "string" &&
+            typeof "year" === "number";
     }
 
+    public formatFields(section: object): object {
+        // if (section.hasOwnProperty("year")) {
+        //     let yearString: string =  section["year"];
+        //     section["year"] = parseInt(yearString, 10);
+        // }
+        // if (section.hasOwnProperty("id")) {
+        //     let idNumber: number = section["id"];
+        //     section["id"] = idNumber.toString(10);
+        // }
+        // if (section["Section"] === "overall") {
+        //     section["Year"] = 1900;
+        // }
+        return section;
+        // if section is overall set year to 1900
+        // set all years to be numbers
+        // set all ids to be strings
+    }
 }
+
+// todo: test format fields
+// todo: test propertiesHaveCorrectTypes
+// todo: test writeToDisk
+// todo: test removeFromDisk
+
