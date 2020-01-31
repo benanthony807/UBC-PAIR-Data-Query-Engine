@@ -110,18 +110,18 @@ export default class Dataset {
             typeof "year" === "number";
     }
 
-    public formatFields(section: object): object {
-        // if (section.hasOwnProperty("year")) {
-        //     let yearString: string =  section["year"];
-        //     section["year"] = parseInt(yearString, 10);
-        // }
-        // if (section.hasOwnProperty("id")) {
-        //     let idNumber: number = section["id"];
-        //     section["id"] = idNumber.toString(10);
-        // }
-        // if (section["Section"] === "overall") {
-        //     section["Year"] = 1900;
-        // }
+    public formatFields(section: {[index: string]: any}): object {
+        if (section.hasOwnProperty("year")) {
+            let yearString: string =  section["year"];
+            section["year"] = parseInt(yearString, 10);
+        }
+        if (section.hasOwnProperty("id")) {
+            let idNumber: number = section["id"];
+            section["id"] = idNumber.toString(10);
+        }
+        if (section["Section"] === "overall") {
+            section["Year"] = 1900;
+        }
         return section;
         // if section is overall set year to 1900
         // set all years to be numbers
