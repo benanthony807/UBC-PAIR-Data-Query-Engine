@@ -3,7 +3,6 @@ import Dataset from "./Dataset";
 import Course from "./Course";
 import * as JSZip from "jszip";
 import * as fs from "fs";
-import Log from "../Util";
 
 export default class DatasetHelper {
 
@@ -52,7 +51,7 @@ export default class DatasetHelper {
         for (let diskDataset of diskDatasets) {
             let diskDatasetSeenOnCache: boolean = false;
             for (let cacheDataset of datasets) {
-                if (diskDataset.getId() === cacheDataset.getId()) {
+                if (diskDataset["id"] === cacheDataset.getId()) {
                     diskDatasetSeenOnCache = true;
                     break;
                 }
@@ -64,23 +63,6 @@ export default class DatasetHelper {
         this.writeDatasets(datasets);
         return Promise.resolve();
     }
-
-    //     let diskDatasets: Dataset[] = this.readDatasets();
-    //     for (let diskDataset of diskDatasets) {
-    //         let diskDatasetSeenOnCache: boolean = false;
-    //         for (let cacheDataset of datasets) {
-    //             if (diskDataset.getId() === cacheDataset.getId()) {
-    //                 diskDatasetSeenOnCache = true;
-    //                 break;
-    //             }
-    //         }
-    //         if (!diskDatasetSeenOnCache) {
-    //             datasets.push(diskDataset);
-    //         }
-    //     }
-    //     this.writeDatasets(datasets);
-    //     return Promise.resolve();
-    // }
 
     public removeFromDisk(id: string) {
         let diskDatasets: Dataset[];
@@ -99,7 +81,7 @@ export default class DatasetHelper {
     private readDatasets() {
         try {
             let utf8Dataset: string = fs.readFileSync
-            ("data/datasets", "utf8");
+            ("data/datasets.txt", "utf8");
             return JSON.parse(utf8Dataset) as Dataset[];
         } catch (err) {
             return [] as Dataset[];
@@ -107,17 +89,13 @@ export default class DatasetHelper {
     }
 
     private writeDatasets(diskDatasets: Dataset[]) {
+        // use of renameSync + appendFileSync taken from https://stackoverflow.com/questions/5315138/node-js-remove-file
         try {
-            fs.truncateSync("data/datasets", 0);
+            fs.renameSync("data/datesets.txt", "data/datesetsbackup.txt");
         } catch (err) {
             //
         }
-        fs.writeFile("data/datasets", JSON.stringify(diskDatasets),
-            function (err: any) {
-                if (err) {
-                    return Promise.reject(err);
-                }
-            });
+        fs.appendFileSync("data/datesets.txt", JSON.stringify(diskDatasets));
     }
 
     public getIds(datasets: Dataset[]): string[] {

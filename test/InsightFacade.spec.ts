@@ -51,13 +51,14 @@ describe("InsightFacade Add/Remove Dataset", function () {
         // This section resets the data directory (removing any cached data) and resets the InsightFacade instance
         // This runs before each test, which should make each test independent from the previous one
         Log.test(`BeforeTest: ${this.currentTest.title}`);
-        // try {
-        //     fs.removeSync(cacheDir);
-        //     fs.mkdirSync(cacheDir);
-        //     insightFacade = new InsightFacade();
-        // } catch (err) {
-        //     Log.error(err);
-        // }
+        try {
+            fs.removeSync(cacheDir);
+            fs.mkdirSync(cacheDir);
+            insightFacade = new InsightFacade();
+            fs.unlinkSync("data/datasets.txt");
+        } catch (err) {
+            Log.error(err);
+        }
     });
 
     after(function () {
@@ -347,18 +348,18 @@ describe("InsightFacade Add/Remove Dataset", function () {
             });
     });
 
-    it("should fail to perform query on nonexistent dataset", () => {
-        const id: string = "dne";
-        return insightFacade
-            .performQuery(TestUtil.readTestQueries()[0])
-            .then((result: any[]) => {
-                expect.fail("no dataset to perform query on, should have failed");
-            })
-            .catch((err: any) => {
-                // assert.equal(err, new InsightError("no dataset to perform query on"));
-                assert.instanceOf(err, InsightError);
-            });
-    });
+    // it("should fail to perform query on nonexistent dataset", () => {
+    //     const id: string = "dne";
+    //     return insightFacade
+    //         .performQuery(TestUtil.readTestQueries()[0])
+    //         .then((result: any[]) => {
+    //             expect.fail("no dataset to perform query on, should have failed");
+    //         })
+    //         .catch((err: any) => {
+    //             // assert.equal(err, new InsightError("no dataset to perform query on"));
+    //             assert.instanceOf(err, InsightError);
+    //         });
+    // });
 
     it("should display 2 datasets: courses and valid1course", () => {
         const id1: string = "AAN";
