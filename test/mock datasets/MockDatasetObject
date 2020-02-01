@@ -2,7 +2,7 @@
 // courses is an array of Course objects, courses[0] has one section, courses[1] is empty
 {
     id: "mockdataset",
-    kind: InsightDatasetKind.Courses,
+    kind: "courses",
     courses: [{
             "result":
                 [{
@@ -15,7 +15,7 @@
                     "Other": 1,
                     "Low": 89,
                     "tier_sixty_four": 0,
-                    "id": 31379,
+                    "id": "31379",
                     "tier_sixty_eight": 0,
                     "tier_zero": 0,
                     "tier_seventy_six": 0,
@@ -26,7 +26,7 @@
                     "tier_g_fifty": 0,
                     "tier_forty": 0,
                     "Withdrew": 1,
-                    "Year": "2015",
+                    "Year": 2015,
                     "tier_twenty": 0,
                     "Stddev": 2.65,
                     "Enrolled": 20,
@@ -52,7 +52,7 @@
                     "Other": 1,
                     "Low": 89,
                     "tier_sixty_four": 0,
-                    "id": 31380,
+                    "id": "31380",
                     "tier_sixty_eight": 0,
                     "tier_zero": 0,
                     "tier_seventy_six": 0,
@@ -63,7 +63,7 @@
                     "tier_g_fifty": 0,
                     "tier_forty": 0,
                     "Withdrew": 1,
-                    "Year": "2015",
+                    "Year": 1900,
                     "tier_twenty": 0,
                     "Stddev": 2.65,
                     "Enrolled": 20,

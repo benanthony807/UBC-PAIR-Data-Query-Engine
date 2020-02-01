@@ -67,7 +67,7 @@ export default class InsightFacade implements IInsightFacade {
                 this.datasetHelper.removeFromDisk(id)
                     .then((result: void) => {
                         for (let dataset of this.datasets) {
-                            if (dataset.getId() === id) {
+                            if (dataset["id"] === id) {
                                 this.datasets.splice(this.datasets.indexOf(dataset), 1);
                                 break;
                             }
@@ -89,8 +89,8 @@ export default class InsightFacade implements IInsightFacade {
         let insightDatasets: InsightDataset[] = [];
         for (let dataset of this.datasets) {
             const insightDataset: InsightDataset = {
-                id: dataset.getId(),
-                kind: dataset.getKind(),
+                id: dataset["id"],
+                kind: dataset["kind"],
                 numRows: dataset.getNumRows(),
             };
             insightDatasets.push(insightDataset);

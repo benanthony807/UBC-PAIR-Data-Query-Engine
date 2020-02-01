@@ -1,4 +1,4 @@
-import {InsightDatasetKind} from "./IInsightFacade";
+import {InsightDatasetKind, InsightError} from "./IInsightFacade";
 import Dataset from "./Dataset";
 import Course from "./Course";
 import * as JSZip from "jszip";
@@ -14,7 +14,7 @@ export default class DatasetHelper {
 
     public idInDatasets(id: string, datasets: Dataset[]): boolean {
         for (let ds of datasets) {
-            if (id === ds.getId()) {
+            if (id === ds["id"]) {
                 return true;
             }
         }
@@ -36,7 +36,7 @@ export default class DatasetHelper {
             return `kind invalid: ${kind} is not allowed`;
         }
         for (let ds of datasets) {
-            if (id === ds.getId()) {
+            if (id === ds["id"]) {
                 return "dataset invalid: dataset with same id already added";
             }
         }
@@ -51,7 +51,7 @@ export default class DatasetHelper {
         for (let diskDataset of diskDatasets) {
             let diskDatasetSeenOnCache: boolean = false;
             for (let cacheDataset of datasets) {
-                if (diskDataset["id"] === cacheDataset.getId()) {
+                if (diskDataset["id"] === cacheDataset["id"]) {
                     diskDatasetSeenOnCache = true;
                     break;
                 }
@@ -78,17 +78,18 @@ export default class DatasetHelper {
         return Promise.resolve();
     }
 
-    private readDatasets() {
+    public readDatasets() {
         try {
             let utf8Dataset: string = fs.readFileSync
-            ("data/datasets.txt", "utf8");
+                // todo: this isn't reading the file
+            ("data/datesets.txt", "utf8");
             return JSON.parse(utf8Dataset) as Dataset[];
         } catch (err) {
             return [] as Dataset[];
         }
     }
 
-    private writeDatasets(diskDatasets: Dataset[]) {
+    public writeDatasets(diskDatasets: Dataset[]) {
         // use of renameSync + appendFileSync taken from https://stackoverflow.com/questions/5315138/node-js-remove-file
         try {
             fs.renameSync("data/datesets.txt", "data/datesetsbackup.txt");
@@ -102,12 +103,12 @@ export default class DatasetHelper {
         let idsFromCache: string[] = [];
         let idsFromDisk: string[] = [];
         for (let dataset of datasets) {
-            idsFromCache.push(dataset.getId());
+            idsFromCache.push(dataset["id"]);
         }
 
         let diskDatasets: Dataset[] = this.readDatasets();
         for (let dataset of diskDatasets) {
-            idsFromDisk.push(dataset.getId());
+            idsFromDisk.push(dataset["id"]);
         }
 
         if (idsFromDisk.length > idsFromCache.length) {
@@ -142,6 +143,9 @@ export default class DatasetHelper {
                                 }
                                 resolve(courses as Course[]);
                             });
+                    })
+                    .catch((err: any) => {
+                        reject(new InsightError(err));
                     });
             } catch (err) {
                 return reject(err);

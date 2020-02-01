@@ -19,7 +19,7 @@ const expectedCourses: Course[] = [{
         Other: 1,
         Low: 89,
         tier_sixty_four: 0,
-        id: 31379,
+        id: "31379",
         tier_sixty_eight: 0,
         tier_zero: 0,
         tier_seventy_six: 0,
@@ -30,7 +30,7 @@ const expectedCourses: Course[] = [{
         tier_g_fifty: 0,
         tier_forty: 0,
         Withdrew: 1,
-        Year: "2015",
+        Year: 2015,
         tier_twenty: 0,
         Stddev: 2.65,
         Enrolled: 20,
@@ -56,7 +56,7 @@ const expectedCourses: Course[] = [{
         Other: 1,
         Low: 89,
         tier_sixty_four: 0,
-        id: 31380,
+        id: "31380",
         tier_sixty_eight: 0,
         tier_zero: 0,
         tier_seventy_six: 0,
@@ -67,7 +67,7 @@ const expectedCourses: Course[] = [{
         tier_g_fifty: 0,
         tier_forty: 0,
         Withdrew: 1,
-        Year: "2015",
+        Year: 1900,
         tier_twenty: 0,
         Stddev: 2.65,
         Enrolled: 20,
@@ -262,9 +262,9 @@ describe("Dataset Methods", function () {
             datasetHelper.readContent(content)
                 .then((courses: Course[]) => {
                     let ds: Dataset = new Dataset(id, kind, courses);
-                    assert.deepEqual(id, ds.getId());
-                    assert.deepEqual(kind, ds.getKind());
-                    assert.deepEqual(expectedCourses, ds.getCourses());
+                    assert.deepEqual(id, ds["id"]);
+                    assert.deepEqual(kind, ds["kind"]);
+                    assert.deepEqual(expectedCourses, ds["courses"]);
                 });
         });
     });

@@ -23,7 +23,6 @@
 // 5. look through the array of datasets, return an array of strings with their ids*/
 import {InsightDatasetKind, InsightError} from "./IInsightFacade";
 import Course from "./Course";
-import Log from "../Util";
 
 export default class Dataset {
 
@@ -153,4 +152,3 @@ export default class Dataset {
 
 // todo: test writeToDisk
 // todo: test removeFromDisk
-
