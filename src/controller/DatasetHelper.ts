@@ -19,19 +19,11 @@ export default class DatasetHelper {
                 return true;
             }
         }
-        let diskDatasets: Dataset[];
-        try {
-            let utf8Dataset: string = fs.readFileSync
-            ("/Users/benanthony/WebstormProjects/project_team097/data/datasets", "utf8");
-            diskDatasets = JSON.parse(utf8Dataset) as Dataset[];
-
-            for (let ds of diskDatasets) {
-                if (id === ds["id"]) {
-                    return true;
-                }
+        let diskDatasets: Dataset[] = this.readDatasets();
+        for (let ds of diskDatasets) {
+            if (id === ds["id"]) {
+                return true;
             }
-        } catch (err) {
-            //
         }
         return false;
     }
@@ -56,57 +48,94 @@ export default class DatasetHelper {
     public writeToDisk(datasets: Dataset[]): Promise<any> {
         // writing behaviour taken from https://stackoverflow.com/questions/2496710/writing-files-in-node-js
         // reading behaviour taken from https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
-        let diskDatasets: Dataset[];
-        try {
-            let utf8Dataset: string = fs.readFileSync
-            ("/Users/benanthony/WebstormProjects/project_team097/data/datasets", "utf8");
-            diskDatasets = JSON.parse(utf8Dataset) as Dataset[];
-
-            for (let ds of diskDatasets) {
-                if (!datasets.includes(ds)) {
-                    datasets.push(ds);
+        let diskDatasets: Dataset[] = this.readDatasets();
+        for (let diskDataset of diskDatasets) {
+            let diskDatasetSeenOnCache: boolean = false;
+            for (let cacheDataset of datasets) {
+                if (diskDataset.getId() === cacheDataset.getId()) {
+                    diskDatasetSeenOnCache = true;
+                    break;
                 }
             }
-        } catch (err) {
-            // do nothing
+            if (!diskDatasetSeenOnCache) {
+                datasets.push(diskDataset);
+            }
         }
-        fs.writeFile("/Users/benanthony/WebstormProjects/project_team097/data/datasets", JSON.stringify(datasets),
-            function (err: any) {
-                if (err) {
-                    return Promise.reject(err);
-                }
-                Log.test("The file was saved!");
-            });
+        this.writeDatasets(datasets);
         return Promise.resolve();
     }
 
-    public removeFromDisk(datasets: Dataset[]) {
+    //     let diskDatasets: Dataset[] = this.readDatasets();
+    //     for (let diskDataset of diskDatasets) {
+    //         let diskDatasetSeenOnCache: boolean = false;
+    //         for (let cacheDataset of datasets) {
+    //             if (diskDataset.getId() === cacheDataset.getId()) {
+    //                 diskDatasetSeenOnCache = true;
+    //                 break;
+    //             }
+    //         }
+    //         if (!diskDatasetSeenOnCache) {
+    //             datasets.push(diskDataset);
+    //         }
+    //     }
+    //     this.writeDatasets(datasets);
+    //     return Promise.resolve();
+    // }
+
+    public removeFromDisk(id: string) {
         let diskDatasets: Dataset[];
-        let utf8Dataset: string = fs.readFileSync
-        ("/Users/benanthony/WebstormProjects/project_team097/data/datasets", "utf8");
-        diskDatasets = JSON.parse(utf8Dataset) as Dataset[];
+        diskDatasets = this.readDatasets();
 
         for (let ds of diskDatasets) {
-            if (!datasets.includes(ds)) {
+            if (id === ds["id"]) {
                 diskDatasets.splice(diskDatasets.indexOf(ds), 1);
+                break;
             }
         }
-        fs.writeFile("/Users/benanthony/WebstormProjects/project_team097/data/datasets", JSON.stringify(datasets),
+        this.writeDatasets(diskDatasets);
+        return Promise.resolve();
+    }
+
+    private readDatasets() {
+        try {
+            let utf8Dataset: string = fs.readFileSync
+            ("data/datasets", "utf8");
+            return JSON.parse(utf8Dataset) as Dataset[];
+        } catch (err) {
+            return [] as Dataset[];
+        }
+    }
+
+    private writeDatasets(diskDatasets: Dataset[]) {
+        try {
+            fs.truncateSync("data/datasets", 0);
+        } catch (err) {
+            //
+        }
+        fs.writeFile("data/datasets", JSON.stringify(diskDatasets),
             function (err: any) {
                 if (err) {
                     return Promise.reject(err);
                 }
-                Log.test("The file was saved!");
             });
-        return Promise.resolve();
     }
 
     public getIds(datasets: Dataset[]): string[] {
-        let ids: string[] = [];
+        let idsFromCache: string[] = [];
+        let idsFromDisk: string[] = [];
         for (let dataset of datasets) {
-            ids.push(dataset.getId());
+            idsFromCache.push(dataset.getId());
         }
-        return ids;
+
+        let diskDatasets: Dataset[] = this.readDatasets();
+        for (let dataset of diskDatasets) {
+            idsFromDisk.push(dataset.getId());
+        }
+
+        if (idsFromDisk.length > idsFromCache.length) {
+            return idsFromDisk;
+        }
+        return idsFromCache;
     }
 
     public readContent(content: string): Promise<any> {

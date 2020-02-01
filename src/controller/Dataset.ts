@@ -84,36 +84,58 @@ export default class Dataset {
         return Promise.resolve(this);
     }
 
-    public hasAllRequiredFields(section: object) {
-        return "Subject" in section &&
-            "Course" in section &&
-            "Avg" in section &&
-            "Professor" in section &&
-            "Title" in section &&
-            "Pass" in section &&
-            "Fail" in section &&
-            "Audit" in section &&
-            "id" in section &&
-            "Year" in section;
+    public hasAllRequiredFields(section: object): boolean {
+        return section.hasOwnProperty("Subject") &&
+               section.hasOwnProperty("Course") &&
+               section.hasOwnProperty("Avg") &&
+               section.hasOwnProperty("Professor") &&
+               section.hasOwnProperty("Title") &&
+               section.hasOwnProperty("Pass") &&
+               section.hasOwnProperty("Fail") &&
+               section.hasOwnProperty("Audit") &&
+               section.hasOwnProperty("id") &&
+               section.hasOwnProperty("Year");
     }
 
-    public propertiesHaveCorrectTypes(section: object) {
-        return typeof "Subject" === "string" &&
-            typeof "Course" === "string" &&
-            typeof "Avg" === "number" &&
-            typeof "Professor" === "string" &&
-            typeof "Title" === "string" &&
-            typeof "Pass" === "number" &&
-            typeof "Fail" === "number" &&
-            typeof "Audit" === "number" &&
-            typeof "id" === "string" &&
-            typeof "year" === "number";
+    public propertiesHaveCorrectTypes(section: any): boolean {
+        if (typeof section["Subject"] === "string") {
+            if (typeof section["Course"] === "string") {
+                if (typeof section["Avg"] === "number") {
+                    if (typeof section["Professor"] === "string") {
+                        if (typeof section["Title"] === "string") {
+                            if (typeof section["Pass"] === "number") {
+                                if (typeof section["Fail"] === "number") {
+                                    if (typeof section["Audit"] === "number") {
+                                        if (typeof section["id"] === "string") {
+                                            if (typeof section["Year"] === "number") {
+                                                return true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+        // return typeof "Subject" === "string" &&
+        //     typeof "Course" === "string" &&
+        //     typeof "Avg" === "number" &&
+        //     typeof "Professor" === "string" &&
+        //     typeof "Title" === "string" &&
+        //     typeof "Pass" === "number" &&
+        //     typeof "Fail" === "number" &&
+        //     typeof "Audit" === "number" &&
+        //     typeof "id" === "string" &&
+        //     typeof "year" === "number";
     }
 
-    public formatFields(section: {[index: string]: any}): object {
-        if (section.hasOwnProperty("year")) {
-            let yearString: string =  section["year"];
-            section["year"] = parseInt(yearString, 10);
+    public formatFields(section: { [index: string]: any }): any {
+        if (section.hasOwnProperty("Year")) {
+            let yearString: string = section["Year"];
+            section["Year"] = parseInt(yearString, 10);
         }
         if (section.hasOwnProperty("id")) {
             let idNumber: number = section["id"];
@@ -129,8 +151,6 @@ export default class Dataset {
     }
 }
 
-// todo: test format fields
-// todo: test propertiesHaveCorrectTypes
 // todo: test writeToDisk
 // todo: test removeFromDisk
 

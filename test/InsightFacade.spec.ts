@@ -246,7 +246,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
 
     it("Should remove an existing dataset", function () {
-        const id: string = "courses";
+        const id: string = "AAN";
         const expected: string = id;
         return insightFacade
             .addDataset(id, datasets[id], InsightDatasetKind.Courses)
@@ -254,7 +254,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
                 return insightFacade.removeDataset(id);
             })
             .then((result: string) => {
-                assert.equal(result, "courses");
+                assert.equal(result, "AAN");
             })
             .catch((err: any) => {
                 expect.fail(err, expected, `should not have rejected: ${err}`);
@@ -361,12 +361,12 @@ describe("InsightFacade Add/Remove Dataset", function () {
     });
 
     it("should display 2 datasets: courses and valid1course", () => {
-        const id1: string = "courses";
+        const id1: string = "AAN";
         const id2: string = "valid1course";
         const ids1: InsightDataset = {
-            id: "courses",
+            id: "AAN",
             kind: InsightDatasetKind.Courses,
-            numRows: 64612,
+            numRows: 2,
         };
         const ids2: InsightDataset = {
             id: "valid1course",
