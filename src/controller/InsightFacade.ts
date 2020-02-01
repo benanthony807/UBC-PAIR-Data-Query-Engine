@@ -54,7 +54,7 @@ export default class InsightFacade implements IInsightFacade {
                     return Promise.reject(err);
                 })
                 .then((val: any) => {
-                    return Promise.resolve(this.datasetHelper.getIds(this.datasets));
+                    return this.datasetHelper.getIds(this.datasets);
                 });
         } else {
             return Promise.reject(new InsightError(this.datasetHelper.diagnoseIssue(id, kind, this.datasets)));
@@ -64,16 +64,16 @@ export default class InsightFacade implements IInsightFacade {
     public removeDataset(id: string): Promise<string> {
         if (this.datasetHelper.idValid(id)) {
             if (this.datasetHelper.idInDatasets(id, this.datasets)) {
-                for (let dataset of this.datasets) {
-                    if (dataset.getId() === id) {
-                        this.datasets.splice(this.datasets.indexOf(dataset), 1);
-                        this.datasetHelper.writeToDisk(this.datasets)
-                            .then((result: any) => {
-                                return Promise.resolve(id);
-                            });
-                        return Promise.resolve(id);
-                    }
-                }
+                this.datasetHelper.removeFromDisk(id)
+                    .then((result: void) => {
+                        for (let dataset of this.datasets) {
+                            if (dataset["id"] === id) {
+                                this.datasets.splice(this.datasets.indexOf(dataset), 1);
+                                break;
+                            }
+                        }
+                    });
+                return Promise.resolve(id);
             }
             return Promise.reject(new NotFoundError("tried to remove nonexistent dataset"));
         }
@@ -89,8 +89,8 @@ export default class InsightFacade implements IInsightFacade {
         let insightDatasets: InsightDataset[] = [];
         for (let dataset of this.datasets) {
             const insightDataset: InsightDataset = {
-                id: dataset.getId(),
-                kind: dataset.getKind(),
+                id: dataset["id"],
+                kind: dataset["kind"],
                 numRows: dataset.getNumRows(),
             };
             insightDatasets.push(insightDataset);
