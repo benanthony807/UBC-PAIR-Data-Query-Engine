@@ -362,7 +362,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
     //         });
     // });
 
-    it("should display 2 datasets: courses and valid1course", () => {
+    it("should display 2 datasets: AAN and valid1course", () => {
         const id1: string = "AAN";
         const id2: string = "valid1course";
         const ids1: InsightDataset = {
