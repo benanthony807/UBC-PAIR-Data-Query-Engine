@@ -136,6 +136,19 @@ describe("InsightFacade Add/Remove Dataset", function () {
             });
     });
 
+    it("should fail to add invalid dataset: id is null", function () {
+        const id: string = null;
+        return insightFacade
+            .addDataset(id, datasets[id], InsightDatasetKind.Courses)
+            .then((result: string[]) => {
+                expect.fail("should have rejected, id is null");
+            })
+            .catch((err: any) => {
+                // assert.equal(err, new InsightError("id invalid: contains underscore"));
+                assert.instanceOf(err, InsightError);
+            });
+    });
+
     it("should fail to add invalid dataset: kind rooms is invalid", function () {
         const id: string = "courses";
         return insightFacade

@@ -9,7 +9,7 @@ export default class DatasetHelper {
     public idValid(id: string): boolean {
         // whitespace check taken from https://stackoverflow.com/questions/2031085/how-can-i-check-if-string-contains-
         // characters-whitespace-not-just-whitespace/2031119
-        return !(id.includes("_") || /^\s+$/.test(id));
+        return id !== null && !(id.includes("_") || /^\s+$/.test(id)) ;
     }
 
     public idInDatasets(id: string, datasets: Dataset[]): boolean {
@@ -28,6 +28,9 @@ export default class DatasetHelper {
     }
 
     public diagnoseIssue(id: string, kind: InsightDatasetKind, datasets: Dataset[]): string {
+        if (id === null) {
+            return "id is null";
+        }
         if (id.includes("_")) {
             return "id invalid: contains underscore";
         } else if (/^\s+$/.test(id)) {

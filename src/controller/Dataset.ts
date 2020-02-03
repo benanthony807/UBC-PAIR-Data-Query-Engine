@@ -1,26 +1,3 @@
-// * a Dataset is an object with 2 member vars, id and courses
-// id is a string, the id of the dataset (pretty sure that's just the file name)
-// kind is an InsightDatasetKind, the kind of the dataset
-// courses is an array of course objects, a course is just how the course it set up in the json
-// courses have 2 member vars, "result" and "rank"
-// "result" is an array of section objects, already formatted in the json
-// "rank" is a number, unsure what it does*/
-
-// * addDataset should
-// 1. check to see if the id is valid
-//      - does it have an _ or is only whitespace
-//      - does a dataset with the same id already exist
-// 1.a make sure dataset kind is Courses
-// 1.b unzip the dataset with jszip
-// 2. check to see if the dataset has at least one valid section
-//      - I believe we just skip over any incorrectly formatted sections, so there will have to be some check
-//        to ensure proper formatting
-// 2.a make content into a dataset object
-// 3. write the dataset to disk somewhere
-// 4. add that dataset to the array of other datasets in memory
-
-
-// 5. look through the array of datasets, return an array of strings with their ids*/
 import {InsightDatasetKind, InsightError} from "./IInsightFacade";
 import Course from "./Course";
 
@@ -85,50 +62,28 @@ export default class Dataset {
 
     public hasAllRequiredFields(section: object): boolean {
         return section.hasOwnProperty("Subject") &&
-               section.hasOwnProperty("Course") &&
-               section.hasOwnProperty("Avg") &&
-               section.hasOwnProperty("Professor") &&
-               section.hasOwnProperty("Title") &&
-               section.hasOwnProperty("Pass") &&
-               section.hasOwnProperty("Fail") &&
-               section.hasOwnProperty("Audit") &&
-               section.hasOwnProperty("id") &&
-               section.hasOwnProperty("Year");
+            section.hasOwnProperty("Course") &&
+            section.hasOwnProperty("Avg") &&
+            section.hasOwnProperty("Professor") &&
+            section.hasOwnProperty("Title") &&
+            section.hasOwnProperty("Pass") &&
+            section.hasOwnProperty("Fail") &&
+            section.hasOwnProperty("Audit") &&
+            section.hasOwnProperty("id") &&
+            section.hasOwnProperty("Year");
     }
 
     public propertiesHaveCorrectTypes(section: any): boolean {
-        if (typeof section["Subject"] === "string") {
-            if (typeof section["Course"] === "string") {
-                if (typeof section["Avg"] === "number") {
-                    if (typeof section["Professor"] === "string") {
-                        if (typeof section["Title"] === "string") {
-                            if (typeof section["Pass"] === "number") {
-                                if (typeof section["Fail"] === "number") {
-                                    if (typeof section["Audit"] === "number") {
-                                        if (typeof section["id"] === "string") {
-                                            if (typeof section["Year"] === "number") {
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-        // return typeof "Subject" === "string" &&
-        //     typeof "Course" === "string" &&
-        //     typeof "Avg" === "number" &&
-        //     typeof "Professor" === "string" &&
-        //     typeof "Title" === "string" &&
-        //     typeof "Pass" === "number" &&
-        //     typeof "Fail" === "number" &&
-        //     typeof "Audit" === "number" &&
-        //     typeof "id" === "string" &&
-        //     typeof "year" === "number";
+        return  typeof section["Subject"] === "string" &&
+                typeof section["Course"] === "string" &&
+                typeof section["Avg"] === "number" &&
+                typeof section["Professor"] === "string" &&
+                typeof section["Title"] === "string" &&
+                typeof section["Pass"] === "number" &&
+                typeof section["Fail"] === "number" &&
+                typeof section["Audit"] === "number" &&
+                typeof section["id"] === "string" &&
+                typeof section["Year"] === "number";
     }
 
     public formatFields(section: { [index: string]: any }): any {
@@ -144,11 +99,5 @@ export default class Dataset {
             section["Year"] = 1900;
         }
         return section;
-        // if section is overall set year to 1900
-        // set all years to be numbers
-        // set all ids to be strings
     }
 }
-
-// todo: test writeToDisk
-// todo: test removeFromDisk
