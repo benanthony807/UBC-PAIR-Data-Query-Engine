@@ -3,6 +3,8 @@ import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFou
 import Dataset from "./Dataset";
 import DatasetHelper from "./DatasetHelper";
 import Course from "./Course";
+import PerformQueryHelper from "./PerformQueryHelper";
+import {resolve} from "dns";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -13,6 +15,7 @@ export default class InsightFacade implements IInsightFacade {
 
     private datasets: Dataset[];
     private datasetHelper: DatasetHelper;
+    private performQueryHelper: PerformQueryHelper;
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
@@ -81,8 +84,57 @@ export default class InsightFacade implements IInsightFacade {
         (new InsightError(this.datasetHelper.diagnoseIssue(id, InsightDatasetKind.Courses, this.datasets)));
     }
 
-    public performQuery(query: any): Promise<any[]> {
-        return Promise.reject("Not implemented.");
+    public performQuery(query: any): Promise <any[]> {
+        let dataSetIDToUse = null;
+        let datasetToUse = null;
+        return Promise.reject("Not implemented."); // for pushing
+        // return new Promise((resolve, reject)) =>
+        // {
+        //     /**
+        //      * Step1: Check the grammar and semantics
+        //      * Semantics: ORDER's key (type string) is the column name to sort on and must be in COLUMNS array
+        //      */
+        //     if (this.performQueryHelper.inputQueryIsValid(query)) {
+        //
+        //         /**
+        //          * Step2: Set the dataset
+        //          * 1. Look in datasets, which is a list of Dataset
+        //          * 2. If we find the dataset with the id we want, set datasetToUse to be that dataset
+        //          * 3. Otherwise do a promise reject because we can't find the dataset
+        //          */
+        //         dataSetIDToUse = "courses";
+        //         let indexOfDataset = this.datasets.indexOf(dataSetIDToUse);
+        //         if (indexOfDataset === -1) { //indexOf returns -1 if target value is not found
+        //             return Promise.reject("dataset not found");
+        //         } else {
+        //             datasetToUse = this.datasets[indexOfDataset]; //now datasetToUse will use courses
+        //         }
+        //
+        //         /**
+        //          * Step3: Now that the dataset is loaded, the query keys can be validated against the dataset
+        //          */
+        //         if (this.performQueryHelper.inputKeysAreValid(query, datasetToUse)) {
+        //
+        //
+        //             /**
+        //              * Step4: Store the query in a structure such that the query can be performed.
+        //              * The hierarchy should match the incoming JSON
+        //              * per TA: this means we need to be able to go through a layer of comparators
+        //              *
+        //              *
+        //              */
+        //             let structuredQuery = this.performQueryHelper.structureQuery(query);
+        //
+        //             /**
+        //              * Step5: Run the query
+        //              */
+        //             this.performQueryHelper.runQuery(query /* or structuredQuery */, datasetToUse)
+        //                 .then((queryResult) => {
+        //                     return Promise.resolve(queryResult)
+        //                 })
+        //         }
+        //     }
+        // }
     }
 
     public listDatasets(): Promise<InsightDataset[]> {

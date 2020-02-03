@@ -84,7 +84,6 @@ export default class DatasetHelper {
     public readDatasets() {
         try {
             let utf8Dataset: string = fs.readFileSync
-                // todo: this isn't reading the file
             ("data/datesets.txt", "utf8");
             return JSON.parse(utf8Dataset) as Dataset[];
         } catch (err) {
