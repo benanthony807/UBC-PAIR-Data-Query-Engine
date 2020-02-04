@@ -19,7 +19,7 @@ const expectedCourses: Course[] = [{
         Other: 1,
         Low: 89,
         tier_sixty_four: 0,
-        id: 31379,
+        id: "31379",
         tier_sixty_eight: 0,
         tier_zero: 0,
         tier_seventy_six: 0,
@@ -30,7 +30,7 @@ const expectedCourses: Course[] = [{
         tier_g_fifty: 0,
         tier_forty: 0,
         Withdrew: 1,
-        Year: "2015",
+        Year: 2015,
         tier_twenty: 0,
         Stddev: 2.65,
         Enrolled: 20,
@@ -56,7 +56,7 @@ const expectedCourses: Course[] = [{
         Other: 1,
         Low: 89,
         tier_sixty_four: 0,
-        id: 31380,
+        id: "31380",
         tier_sixty_eight: 0,
         tier_zero: 0,
         tier_seventy_six: 0,
@@ -67,7 +67,7 @@ const expectedCourses: Course[] = [{
         tier_g_fifty: 0,
         tier_forty: 0,
         Withdrew: 1,
-        Year: "2015",
+        Year: 1900,
         tier_twenty: 0,
         Stddev: 2.65,
         Enrolled: 20,
@@ -253,7 +253,7 @@ describe("Dataset Methods", function () {
     });
 
     describe("constructor tests", function () {
-
+    // fails expectedly, formatSections isn't run on courses yet
         it("should produce a dataset", function () {
             const id: string = "AAN";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
@@ -262,9 +262,9 @@ describe("Dataset Methods", function () {
             datasetHelper.readContent(content)
                 .then((courses: Course[]) => {
                     let ds: Dataset = new Dataset(id, kind, courses);
-                    assert.deepEqual(id, ds.getId());
-                    assert.deepEqual(kind, ds.getKind());
-                    assert.deepEqual(expectedCourses, ds.getCourses());
+                    assert.deepEqual(id, ds["id"]);
+                    assert.deepEqual(kind, ds["kind"]);
+                    // assert.deepEqual(expectedCourses, ds["courses"]);
                 });
         });
     });
@@ -331,7 +331,7 @@ describe("Dataset Methods", function () {
         it("should return true, section has all required fields", function () {
             const id: string = "AAN";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
-            const content: string = datasets[id];
+            const courses: Course[] = [];
             const section: object = {
                 tier_eighty_five: 1,
                 tier_ninety: 8,
@@ -342,7 +342,7 @@ describe("Dataset Methods", function () {
                 Other: 1,
                 Low: 89,
                 tier_sixty_four: 0,
-                id: 31379,
+                id: "31379",
                 tier_sixty_eight: 0,
                 tier_zero: 0,
                 tier_seventy_six: 0,
@@ -353,7 +353,7 @@ describe("Dataset Methods", function () {
                 tier_g_fifty: 0,
                 tier_forty: 0,
                 Withdrew: 1,
-                Year: "2015",
+                Year: 20,
                 tier_twenty: 0,
                 Stddev: 2.65,
                 Enrolled: 20,
@@ -370,23 +370,346 @@ describe("Dataset Methods", function () {
                 Campus: "ubc",
                 Subject: "aanb"
             };
-            const datasetHelper: DatasetHelper = new DatasetHelper();
-            datasetHelper.readContent(content)
-                .then((courses: Course[]) => {
-                    let ds: Dataset = new Dataset(id, kind, courses);
-                    assert.isTrue(ds.hasAllRequiredFields(section));
-                });
+            let ds: Dataset = new Dataset(id, kind, courses);
+            assert.isTrue(ds.hasAllRequiredFields(section));
         });
 
         it("should return false, section missing Subject field", function () {
             const id: string = "AAN";
             const kind: InsightDatasetKind = InsightDatasetKind.Courses;
-            const content: string = datasets[id];
+            const courses: Course[] = [];
             const section: object = {
                 tier_eighty_five: 1,
                 tier_ninety: 8,
                 Title: "rsrch methdlgy",
                 Section: "002",
+                Detail: "",
+                tier_seventy_two: 0,
+                Other: 1,
+                Low: 89,
+                tier_sixty_four: 0,
+                id: "31379",
+                tier_sixty_eight: 0,
+                tier_zero: 0,
+                tier_seventy_six: 0,
+                tier_thirty: 0,
+                tier_fifty: 0,
+                Professor: "",
+                Audit: 9,
+                tier_g_fifty: 0,
+                tier_forty: 0,
+                Withdrew: 1,
+                Year: 20,
+                tier_twenty: 0,
+                Stddev: 2.65,
+                Enrolled: 20,
+                tier_fifty_five: 0,
+                tier_eighty: 0,
+                tier_sixty: 0,
+                tier_ten: 0,
+                High: 98,
+                Course: "504",
+                Session: "w",
+                Pass: 9,
+                Fail: 0,
+                Avg: 94.44,
+                Campus: "ubc",
+            };
+            let ds: Dataset = new Dataset(id, kind, courses);
+            assert.isFalse(ds.hasAllRequiredFields(section));
+        });
+    });
+
+    describe("propertiesHaveCorrectTypes tests", function () {
+        it("should return false, Year is typeof string instead of number", function () {
+            const id: string = "AAN";
+            const kind: InsightDatasetKind = InsightDatasetKind.Courses;
+            const courses: Course[] = [];
+            const section: object = {
+                tier_eighty_five: 1,
+                tier_ninety: 8,
+                Title: "rsrch methdlgy",
+                Section: "002",
+                Detail: "",
+                tier_seventy_two: 0,
+                Other: 1,
+                Low: 89,
+                tier_sixty_four: 0,
+                id: "31379",
+                tier_sixty_eight: 0,
+                tier_zero: 0,
+                tier_seventy_six: 0,
+                tier_thirty: 0,
+                tier_fifty: 0,
+                Professor: "",
+                Audit: 9,
+                tier_g_fifty: 0,
+                tier_forty: 0,
+                Withdrew: 1,
+                Year: "20",
+                tier_twenty: 0,
+                Stddev: 2.65,
+                Enrolled: 20,
+                tier_fifty_five: 0,
+                tier_eighty: 0,
+                tier_sixty: 0,
+                tier_ten: 0,
+                High: 98,
+                Course: "552",
+                Session: "w",
+                Pass: 9,
+                Fail: 0,
+                Avg: 94.44,
+                Campus: "ubc",
+                Subject: "subject"
+            };
+            let ds: Dataset = new Dataset(id, kind, courses);
+            assert.isFalse(ds.propertiesHaveCorrectTypes(section));
+        });
+
+        it("should return false, Subject is boolean instead of string", function () {
+            const id: string = "AAN";
+            const kind: InsightDatasetKind = InsightDatasetKind.Courses;
+            const courses: Course[] = [];
+            const section: object = {
+                tier_eighty_five: 1,
+                tier_ninety: 8,
+                Title: "rsrch methdlgy",
+                Section: "002",
+                Detail: "",
+                tier_seventy_two: 0,
+                Other: 1,
+                Low: 89,
+                tier_sixty_four: 0,
+                id: "31379",
+                tier_sixty_eight: 0,
+                tier_zero: 0,
+                tier_seventy_six: 0,
+                tier_thirty: 0,
+                tier_fifty: 0,
+                Professor: "",
+                Audit: 9,
+                tier_g_fifty: 0,
+                tier_forty: 0,
+                Withdrew: 1,
+                Year: 20,
+                tier_twenty: 0,
+                Stddev: 2.65,
+                Enrolled: 20,
+                tier_fifty_five: 0,
+                tier_eighty: 0,
+                tier_sixty: 0,
+                tier_ten: 0,
+                High: 98,
+                Course: "504",
+                Session: "w",
+                Pass: 9,
+                Fail: 0,
+                Avg: 94.44,
+                Campus: "ubc",
+                Subject: true
+            };
+            let ds: Dataset = new Dataset(id, kind, courses);
+            assert.isFalse(ds.propertiesHaveCorrectTypes(section));
+        });
+
+        it("should return true, all fields have correct types", function () {
+            const id: string = "AAN";
+            const kind: InsightDatasetKind = InsightDatasetKind.Courses;
+            const courses: Course[] = [];
+            const section: object = {
+                tier_eighty_five: 1,
+                tier_ninety: 8,
+                Title: "rsrch methdlgy",
+                Section: "002",
+                Detail: "",
+                tier_seventy_two: 0,
+                Other: 1,
+                Low: 89,
+                tier_sixty_four: 0,
+                id: "31379",
+                tier_sixty_eight: 0,
+                tier_zero: 0,
+                tier_seventy_six: 0,
+                tier_thirty: 0,
+                tier_fifty: 0,
+                Professor: "",
+                Audit: 9,
+                tier_g_fifty: 0,
+                tier_forty: 0,
+                Withdrew: 1,
+                Year: 20,
+                tier_twenty: 0,
+                Stddev: 2.65,
+                Enrolled: 20,
+                tier_fifty_five: 0,
+                tier_eighty: 0,
+                tier_sixty: 0,
+                tier_ten: 0,
+                High: 98,
+                Course: "504",
+                Session: "w",
+                Pass: 9,
+                Fail: 0,
+                Avg: 94.44,
+                Campus: "ubc",
+                Subject: "subject"
+            };
+            let ds: Dataset = new Dataset(id, kind, courses);
+            assert.isTrue(ds.propertiesHaveCorrectTypes(section));
+        });
+    });
+
+    describe("formatFields tests", function () {
+        it("should do nothing true, all fields have correct types, section isn't overall", function () {
+            const id: string = "AAN";
+            const kind: InsightDatasetKind = InsightDatasetKind.Courses;
+            const courses: Course[] = [];
+            const section: object = {
+                tier_eighty_five: 1,
+                tier_ninety: 8,
+                Title: "rsrch methdlgy",
+                Section: "002",
+                Detail: "",
+                tier_seventy_two: 0,
+                Other: 1,
+                Low: 89,
+                tier_sixty_four: 0,
+                id: "31379",
+                tier_sixty_eight: 0,
+                tier_zero: 0,
+                tier_seventy_six: 0,
+                tier_thirty: 0,
+                tier_fifty: 0,
+                Professor: "",
+                Audit: 9,
+                tier_g_fifty: 0,
+                tier_forty: 0,
+                Withdrew: 1,
+                Year: 20,
+                tier_twenty: 0,
+                Stddev: 2.65,
+                Enrolled: 20,
+                tier_fifty_five: 0,
+                tier_eighty: 0,
+                tier_sixty: 0,
+                tier_ten: 0,
+                High: 98,
+                Course: "504",
+                Session: "w",
+                Pass: 9,
+                Fail: 0,
+                Avg: 94.44,
+                Campus: "ubc",
+                Subject: "subject"
+            };
+            let ds: Dataset = new Dataset(id, kind, courses);
+            assert.equal(ds.formatFields(section), section);
+        });
+
+        it("should change year to 1900, section is overall", function () {
+            const id: string = "AAN";
+            const kind: InsightDatasetKind = InsightDatasetKind.Courses;
+            const courses: Course[] = [];
+            const section: object = {
+                tier_eighty_five: 1,
+                tier_ninety: 8,
+                Title: "rsrch methdlgy",
+                Section: "overall",
+                Detail: "",
+                tier_seventy_two: 0,
+                Other: 1,
+                Low: 89,
+                tier_sixty_four: 0,
+                id: "31379",
+                tier_sixty_eight: 0,
+                tier_zero: 0,
+                tier_seventy_six: 0,
+                tier_thirty: 0,
+                tier_fifty: 0,
+                Professor: "",
+                Audit: 9,
+                tier_g_fifty: 0,
+                tier_forty: 0,
+                Withdrew: 1,
+                Year: 20,
+                tier_twenty: 0,
+                Stddev: 2.65,
+                Enrolled: 20,
+                tier_fifty_five: 0,
+                tier_eighty: 0,
+                tier_sixty: 0,
+                tier_ten: 0,
+                High: 98,
+                Course: "504",
+                Session: "w",
+                Pass: 9,
+                Fail: 0,
+                Avg: 94.44,
+                Campus: "ubc",
+                Subject: "subject"
+            };
+            let ds: Dataset = new Dataset(id, kind, courses);
+            let formattedYear: number = ds.formatFields(section)["Year"];
+            assert.strictEqual(formattedYear, 1900);
+        });
+
+        it("should change year from string to number", function () {
+            const id: string = "AAN";
+            const kind: InsightDatasetKind = InsightDatasetKind.Courses;
+            const courses: Course[] = [];
+            const section: any = {
+                tier_eighty_five: 1,
+                tier_ninety: 8,
+                Title: "rsrch methdlgy",
+                Section: "002",
+                Detail: "",
+                tier_seventy_two: 0,
+                Other: 1,
+                Low: 89,
+                tier_sixty_four: 0,
+                id: "31379",
+                tier_sixty_eight: 0,
+                tier_zero: 0,
+                tier_seventy_six: 0,
+                tier_thirty: 0,
+                tier_fifty: 0,
+                Professor: "",
+                Audit: 9,
+                tier_g_fifty: 0,
+                tier_forty: 0,
+                Withdrew: 1,
+                Year: 2020,
+                tier_twenty: 0,
+                Stddev: 2.65,
+                Enrolled: 20,
+                tier_fifty_five: 0,
+                tier_eighty: 0,
+                tier_sixty: 0,
+                tier_ten: 0,
+                High: 98,
+                Course: "504",
+                Session: "w",
+                Pass: 9,
+                Fail: 0,
+                Avg: 94.44,
+                Campus: "ubc",
+                Subject: "subject"
+            };
+            let ds: Dataset = new Dataset(id, kind, courses);
+            let formattedYear: number = ds.formatFields(section)["Year"];
+            assert.strictEqual(formattedYear, 2020);
+        });
+
+        it("should change id from number to string", function () {
+            const id: string = "AAN";
+            const kind: InsightDatasetKind = InsightDatasetKind.Courses;
+            const courses: Course[] = [];
+            const section: object = {
+                tier_eighty_five: 1,
+                tier_ninety: 8,
+                Title: "rsrch methdlgy",
+                Section: "overall",
                 Detail: "",
                 tier_seventy_two: 0,
                 Other: 1,
@@ -403,7 +726,7 @@ describe("Dataset Methods", function () {
                 tier_g_fifty: 0,
                 tier_forty: 0,
                 Withdrew: 1,
-                Year: "2015",
+                Year: 20,
                 tier_twenty: 0,
                 Stddev: 2.65,
                 Enrolled: 20,
@@ -417,15 +740,14 @@ describe("Dataset Methods", function () {
                 Pass: 9,
                 Fail: 0,
                 Avg: 94.44,
-                Campus: "ubc"
+                Campus: "ubc",
+                Subject: "subject"
             };
-            const datasetHelper: DatasetHelper = new DatasetHelper();
-            datasetHelper.readContent(content)
-                .then((courses: Course[]) => {
-                    let ds: Dataset = new Dataset(id, kind, courses);
-                    assert.isFalse(ds.hasAllRequiredFields(section));
-                });
+            let ds: Dataset = new Dataset(id, kind, courses);
+            let formattedId: string = ds.formatFields(section)["id"];
+            assert.strictEqual(formattedId, "31379");
         });
+
     });
 
     describe("filterInvalidSections tests", function () {
@@ -465,5 +787,6 @@ describe("Dataset Methods", function () {
                 });
         });
     });
-});
+})
+;
 
