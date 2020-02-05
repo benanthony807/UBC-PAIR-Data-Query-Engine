@@ -85,16 +85,6 @@ describe("InsightFacade Perform Query Helper Methods", function () {
                 assert.equal(performQueryHelper.hasValidOptionsGrammar(query), false);
                 assert.equal(performQueryHelper.errorMessage, "OPTIONS missing COLUMNS");
             });
-            // This test throws an error at COLUMNS: [], thus preventing commits
-            // it("Reject: COLUMNS is empty", function () {
-            //     // @ts-ignore
-            //     let query = {
-            //         WHERE: {GT: {courses_avg: 97}},
-            //         OPTIONS: {COLUMNS: []}
-            //     };
-            //     assert.equal(performQueryHelper.hasValidOptionsGrammar(query), false);
-            //     assert.equal(performQueryHelper.errorMessage, "COLUMNS must be a non-empty array");
-            // });
             it("Reject: COLUMNS is not an array", function () {
                 let query = {
                     WHERE: {GT: {courses_avg: 97}},
