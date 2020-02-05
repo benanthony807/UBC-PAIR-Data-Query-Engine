@@ -12,8 +12,9 @@ export default class PerformQueryHelperPreQuery {
 
     constructor() {
         this.errorMessage = "";
-        this.dataSetID = "";
+        this.dataSetID = "courses"; // "courses" by default
         this.filteredResults = [];
+        // filled out all sections in dataset for testing
         this.allSectionsInDataset = [];
         this.listOfAcceptableKeyFields = [
             "courses_dept",
@@ -36,37 +37,40 @@ export default class PerformQueryHelperPreQuery {
      * incorrect formatting rejects with InsightError describing the error
      */
     public inputQueryIsValid(query: any): boolean {
-        if (this.hasBodyAndOptions(query)) {
-            return this.hasValidOptionsGrammar(query);
-        } else {
+        // Check if the query is a non-null object
+        if (typeof query === null || typeof query === "undefined") {
+            this.errorMessage = "Query was found to be null or 'undefined'";
             return false;
+        } else {
+            if (this.hasBodyAndOptions(query)) {
+                return this.hasValidOptionsGrammar(query);
+            } else {
+                return false;
+            }
         }
     }
 
     /** inputQueryIsValid helper method
      * true if input query's first key is "WHERE" and second key is "OPTIONS"
-     * Self Note: Object.keys returns an array of the given object's property names.
-     * keys takes the object of interest (query) as a parameter
      */
     public hasBodyAndOptions(query: any): boolean {
 
         // Step 1: Query should have two keys
         if (Object.keys(query).length !== 2) {
             this.errorMessage = "Query should have two root keys";
-            return false;
-        }
+            return false; }
         // Step 2: Query's first key should be "WHERE"
         if (Object.keys(query)[0] !== "WHERE") {
             this.errorMessage = "Missing WHERE";
             return false;
             // Step 3: Query's second key should be "OPTIONS"
-        } else if (Object.keys(query)[1] !== "OPTIONS") {
-            this.errorMessage = "Missing OPTIONS";
-            return false;
+            } else if (Object.keys(query)[1] !== "OPTIONS") {
+                this.errorMessage = "Missing OPTIONS";
+                return false;
             // Step 4: possibly redundant, but make sure there are exactly two keys the way we want them to be
-        } else if (Object.keys(query)[0] === "WHERE" && Object.keys(query)[1] === "OPTIONS") {
-            return true;
-        }
+            } else if (Object.keys(query)[0] === "WHERE" && Object.keys(query)[1] === "OPTIONS") {
+                return true;
+            }
     }
 
     /** inputQueryIsValid helper method
@@ -128,7 +132,7 @@ export default class PerformQueryHelperPreQuery {
                 if (columns.includes(orderValue)) {
                     return true;
                 } else {
-                    this.errorMessage = "ORDER key must be in COLUMNS";
+                    this.errorMessage = "ORDER key: " + orderValue + " must be in COLUMNS";
                     return false;
                 }
             } else {
@@ -148,8 +152,10 @@ export default class PerformQueryHelperPreQuery {
      * passing the dataset through resolve
      * Stores the field this.dataSetID to be the existent dataset
      */
-    public queryEstablishDataset(datasetIDToUse: string, datasets: Dataset[]): Promise<any> {
+    public queryEstablishDataset(query: any, datasets: Dataset[]): Promise<any> {
         return new Promise<any>((resolve, reject) => {
+            let keyVal = query["OPTIONS"]["COLUMNS"][0];
+            let datasetIDToUse = keyVal.substring(0, keyVal.indexOf("_"));
             for (let dataset of datasets) {
                 if (dataset.getId() === datasetIDToUse) {
                     this.dataSetID = datasetIDToUse; // sets the class field dataSetID

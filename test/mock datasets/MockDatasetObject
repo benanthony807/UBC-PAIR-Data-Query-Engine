@@ -80,8 +80,5 @@
                     "Campus": "ubc",
                     "Subject": "aanb"
                 }], "rank": 0
-        }, {
-        "result": [],
-        "rank": 0
-    }]
+        },  ]
 }

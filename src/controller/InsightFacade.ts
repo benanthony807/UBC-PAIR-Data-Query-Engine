@@ -1,5 +1,12 @@
 import Log from "../Util";
-import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
+import {
+    IInsightFacade,
+    InsightDataset,
+    InsightDatasetKind,
+    InsightError,
+    NotFoundError,
+    ResultTooLargeError
+} from "./IInsightFacade";
 import Dataset from "./Dataset";
 import DatasetHelper from "./DatasetHelper";
 import Course from "./Course";
@@ -63,7 +70,7 @@ export default class InsightFacade implements IInsightFacade {
                     return this.datasetHelper.getIds(this.datasets);
                 });
         } else {
-            return Promise.reject(new InsightError(this.datasetHelper.diagnoseIssue(id, kind, this.datasets)));
+            // return Promise.reject(new InsightError(this.datasetHelper.diagnoseIssue(id, kind, this.datasets)));
         }
     }
 
@@ -89,17 +96,12 @@ export default class InsightFacade implements IInsightFacade {
 
 
     public performQuery(query: any): Promise <any[]> {
-        let dataSetIDToUse: string = "courses";
         let datasetToUse: Dataset = null;
         // return Promise.reject("Not implemented."); // for pushing
-        /**
-         * Step1: Check the query grammar
-         */
+        /** Step1: Check the query grammar */
         if (this.performQueryHelperPreQuery.inputQueryIsValid(query)) {
-            /**
-             * Step2: Set the dataset we're going to use
-             */
-            return this.performQueryHelperPreQuery.queryEstablishDataset(dataSetIDToUse, this.datasets)
+            /** Step2: Set the dataset we're going to use */
+            return this.performQueryHelperPreQuery.queryEstablishDataset(query, this.datasets)
                 .catch((err: any) => { // the err passed is "Dataset not found"
                 return Promise.reject(new InsightError(err));
                 })
@@ -125,6 +127,15 @@ export default class InsightFacade implements IInsightFacade {
                     return Promise.reject(new InsightError(this.performQueryHelperPreQuery.errorMessage));
                 })
                 .then((queriedList: any[]) => {
+                    // CHECK SIZE (if > 5000, result too large error)
+                    if (queriedList.length > 5000) {
+                        let errMsg = "The result is too big. Only queries with a maximum of 5000 results are supported";
+                        return Promise.reject(new ResultTooLargeError(errMsg));
+                    }
+                    // // must return a string ?
+                    // if (typeof queriedList !== "string") {
+                    //     queriedList.toString();
+                    // }
                     return Promise.resolve(queriedList);
                 });
             } else {

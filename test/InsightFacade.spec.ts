@@ -5,6 +5,8 @@ import {InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from ".
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
+import PerformQueryHelperQueryHelper from "../src/controller/PerformQueryHelperQueryHelper";
+import PerformQueryHelperQuery from "../src/controller/PerformQueryHelperQuery";
 
 
 // This should match the schema given to TestUtil.validate(..) in TestUtil.readTestQueries(..)
@@ -35,18 +37,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
     let datasets: { [id: string]: string } = {};
     let insightFacade: InsightFacade;
     const cacheDir = __dirname + "/../data";
-
-    before(function () {
-        // This section runs once and loads all datasets specified in the datasetsToLoad object
-        // into the datasets object
-        Log.test(`Before all`);
-        for (const id of Object.keys(datasetsToLoad)) {
-            datasets[id] = fs
-                .readFileSync(datasetsToLoad[id])
-                .toString("base64");
-        }
-        insightFacade = new InsightFacade();
-    });
 
     beforeEach(function () {
         // This section resets the data directory (removing any cached data) and resets the InsightFacade instance
@@ -532,3 +522,9 @@ describe("InsightFacade PerformQuery", () => {
         });
     });
 });
+
+// TODO: ask TA how to do runquery tests with adding dataset because I need to put the courses dataset in datasets then
+//  populate this.allSectionsList to be able to iterate through each section in courses.
+// TODO: right now runQuery is returning with sections including their junk keys, but the expected results in tests
+// don't include the junk values. Is this okay or do I have to trim it?
+// TODO: ask why the runQuery test isn't actually running test queries in the IDE (but yarn test works?)

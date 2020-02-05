@@ -116,7 +116,7 @@ describe("InsightFacade Perform Query Helper Methods", function () {
                     OPTIONS: {COLUMNS: ["courses_dept", "courses_avg"], ORDER: {}}};
                 assert.equal(performQueryHelper.hasValidOptionsGrammar(query), false);
                 assert.equal(performQueryHelper.errorMessage,
-                    "Invalid query string (ORDER must have exactly one field)");
+                    "Invalid ORDER type (ORDER must be a string)");
             });
             it("Reject: ORDER key not a string", function () {
                 let query = {
@@ -125,15 +125,15 @@ describe("InsightFacade Perform Query Helper Methods", function () {
                 };
                 assert.equal(performQueryHelper.hasValidOptionsGrammar(query), false);
                 assert.equal(performQueryHelper.errorMessage,
-                    "Invalid query string (ORDER must have exactly one field)");
+                    "Invalid ORDER type (ORDER must be a string)");
             });
             it("Reject: ORDER value not in COLUMNS", function () {
                 let query = {
                     WHERE: {GT: {courses_avg: 97}},
-                    OPTIONS: {COLUMNS: ["courses_dept", "courses_avg"], ORDER: "courses_avgzzz"}
+                    OPTIONS: {COLUMNS: ["courses_dept", "courses_avg"], ORDER: "courses_id"}
                 };
                 assert.equal(performQueryHelper.hasValidOptionsGrammar(query), false);
-                assert.equal(performQueryHelper.errorMessage, "ORDER key must be in COLUMNS");
+                assert.equal(performQueryHelper.errorMessage, "ORDER key: courses_id must be in COLUMNS");
             });
         });
     });
