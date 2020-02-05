@@ -49,6 +49,15 @@ describe("InsightFacade Perform Query Helper Methods", function () {
             let query = {WHERE: {AND: {}}};
             assert.equal(performQueryHelper.doFilter(query["WHERE"]), "AND must be a non-empty array");
         });
+
+        it("Accept: AND with same thing three times", function () {
+            let query = {
+                    AND: [{IS: {courses_id: "*123"}},
+                        {IS: {courses_id: "*123"}},
+                        {IS: {courses_id: "*123"}}]
+            };
+            assert.equal(performQueryHelper.doFilter(query), "test");
+        });
     });
 
     describe("Tests for Helper Functions", function () {
@@ -76,13 +85,14 @@ describe("InsightFacade Perform Query Helper Methods", function () {
         });
     });
 
-    // Putting this here to utilize the fact that dataset is already loaded
-    describe("My Tests for doFilter", function () {
-        it("Accept: Simple query", function () {
-            let query = {GT: {courses_avg: 99.7}};
-
-
-        });
-    });
+    // // Putting this here to utilize the fact that dataset is already loaded
+    // describe("My Tests for doFilter", function () {
+    //     it("Accept: Simple query", function () {
+    //
+    //         let query = {GT: {courses_avg: 99.7}};
+    //         assert.equal(performQueryHelper., "test");
+    //
+    //     });
+    // });
 
 });

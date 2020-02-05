@@ -1,18 +1,18 @@
 import Dataset from "./Dataset";
 import PerformQueryHelperPreQuery from "./PerformQueryHelperPreQuery";
 import PerformQueryHelperQueryHelper from "./PerformQueryHelperQueryHelper";
+import Log from "../Util";
 
 export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery {
     private performQueryHelperQH: PerformQueryHelperQueryHelper;
-
     constructor() {
         super();
         this.performQueryHelperQH = new PerformQueryHelperQueryHelper();
     }
-
     // runQuery will return a promise: rejects with an error message | resolves: with this.filteredResults
     public runQuery(query: any, datasetToUse: Dataset): Promise<any[]> {
         this.performQueryHelperQH.populateAllSections(datasetToUse);
+        Log.trace("populate All sections succeded");
         if (Object.keys(query["WHERE"]).length === 0) { // If WHERE is empty, don't filter, just return all sections
             return Promise.resolve(this.allSectionsInDataset);
         } else {
@@ -22,17 +22,25 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
                 this.errorMessage = result;
                 return Promise.reject(this.errorMessage);
             } else if (typeof result === "object") { // doFilter ran successfully and returned a list
-
-                // DO ORDER
-                if (this.OrderKey === null) {
-                    this.filteredResults = result;
-                    return Promise.resolve(this.filteredResults);
-                } else {
-                    this.filteredResults = this.doOrder(result);
-                    return Promise.resolve(this.filteredResults); }
-            } else { // doFilter somehow returned something that's neither a list nor a string
-                this.errorMessage = "doFilter returned neither string nor list";
-                return Promise.reject(this.errorMessage); }
+                // DO TRIM
+                let resultTrim: any;
+                // returns list of sections w/o junk keys (courses_tier)
+                resultTrim = this.performQueryHelperQH.doTrim(result);
+                if (typeof resultTrim === "string") {
+                    this.errorMessage = resultTrim;
+                    return Promise.reject(this.errorMessage);
+                } else if (typeof resultTrim === "object") {
+                    // DO ORDER
+                    if (this.OrderKey === null) {
+                        this.filteredResults = resultTrim;
+                        return Promise.resolve(this.filteredResults);
+                    } else {
+                        this.filteredResults = this.doOrder(resultTrim);
+                        return Promise.resolve(this.filteredResults); }
+                } else { // doFilter somehow returned something that's neither a list nor a string
+                    this.errorMessage = "doFilter returned neither string nor list";
+                    return Promise.reject(this.errorMessage); }
+                }
         }
     }
 
@@ -135,7 +143,6 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
             }
         }
     }
-
     /** Helper function for doFilter: check fields | check value types | add section to list if pass requirements */
     private doMathComparison(query: any, currFilterSubType: string): any {
         let filteredList: any[] = [];
@@ -190,7 +197,6 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
             }
         }
     }
-
     // Helper function for doFilter: populates the AND sublist, applies the AND requirements to narrow down the list
     // returns list of sections satisfying the AND
     private runAnd(listOflistOfObjects: any) { // query["AND"] is passed in and has a list of a list of sections
@@ -214,7 +220,6 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
             return this.filterViaAndOr(filteredList, "AND"); // narrowDown returns a processed list
         }
     }
-
     /** Helper function for doFilter: Takes a list of filtered lists and produces a single list of union sections */
     private runOr(listOflistOfObjects: any) { // query["OR"] is passed in and has a list of a list of sections
         let filteredList: any[] = [];
@@ -237,7 +242,6 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
         } else {
             return this.filterViaAndOr(filteredList, "OR"); } // narrowDown returns a processed list
     }
-
     /** Helper function for doFilter: query["NOT"] is input, has one obj (not a list!), returns a filtered list */
     private runNot(query: any) {
         // CHECK for double NOT - if so, just continue query as normal from the second NOT
@@ -253,7 +257,6 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
                 wantedListOfSections.push(section); } }
         return wantedListOfSections;
     }
-
     // Helper function for runAnd and runOr: Apply AND or OR logic
     private filterViaAndOr(filteredList: any[], comparison: string): any {
         for (let i = 0; i < filteredList.length - 1; i++) {
@@ -276,7 +279,6 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
         // filteredList[i + 1] has the final results and is in position length - 1
         return filteredList[filteredList.length - 1];
     }
-
     private doOrder (unsortedListOfSections: any): any[] {
         let sortedList: any[];
         let orderKey = this.OrderKey; // ex. courses_avg
@@ -285,7 +287,6 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
         sortedList = this.performQueryHelperQH.doSort(unsortedListOfSections, datasetOrderKey);
         return sortedList;
     }
-
     /** Helper function for doFilter: checks if a key's field exists in key_field */
     public doesFieldExist(query: any, currFilterSubType: string): any {
         // ex query {"GT": {"courses_avg": 97}}

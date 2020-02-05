@@ -87,4 +87,9 @@ export default class PerformQueryHelperQueryHelper extends PerformQueryHelperPre
                 this.allSectionsInDataset.push(dataset.getCourses()[i].result[j]); } }
     }
 
+    public doTrim(filteredResult: any[]): any {
+        return false;
+    }
+
+
 }

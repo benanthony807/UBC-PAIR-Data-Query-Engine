@@ -4,6 +4,7 @@ import {
     InsightDataset,
     InsightDatasetKind,
     InsightError,
+
     NotFoundError,
     ResultTooLargeError
 } from "./IInsightFacade";
@@ -70,7 +71,7 @@ export default class InsightFacade implements IInsightFacade {
                     return this.datasetHelper.getIds(this.datasets);
                 });
         } else {
-            // return Promise.reject(new InsightError(this.datasetHelper.diagnoseIssue(id, kind, this.datasets)));
+            return Promise.reject(new InsightError(this.datasetHelper.diagnoseIssue(id, kind, this.datasets)));
         }
     }
 

@@ -489,6 +489,7 @@ describe("InsightFacade PerformQuery", () => {
                 insightFacade.addDataset(id, data, ds.kind),
             );
         }
+        return Promise.all(loadDatasetPromises);
     });
 
     beforeEach(function () {
@@ -508,16 +509,34 @@ describe("InsightFacade PerformQuery", () => {
     it("Should run test queries", function () {
         describe("Dynamic InsightFacade PerformQuery tests", function () {
             for (const test of testQueries) {
-                it(`[${test.filename}] ${test.title}`, function (done) {
-                    insightFacade
-                        .performQuery(test.query)
-                        .then((result) => {
-                            TestUtil.checkQueryResult(test, result, done);
-                        })
-                        .catch((err) => {
-                            TestUtil.checkQueryResult(test, err, done);
-                        });
-                });
+                if (test.title === "same thing 3 times in AND") {
+                    Log.trace(test);
+                    it(`[${test.filename}] ${test.title}`, function (done) {
+                        let thisTest = test;
+                        insightFacade
+                            .performQuery(test.query)
+                            .then((result) => {
+                                Log.error(result);
+                                TestUtil.checkQueryResult(test, result, done);
+                            })
+                            .catch((err) => {
+                                Log.error(err);
+                                TestUtil.checkQueryResult(test, err, done);
+                            });
+                    });
+                }
+                // to run all test, comment out below:
+                // it(`[${test.filename}] ${test.title}`, function (done) {
+                //     let thisTest = test;
+                //     insightFacade
+                //         .performQuery(test.query)
+                //         .then((result) => {
+                //             TestUtil.checkQueryResult(test, result, done);
+                //         })
+                //         .catch((err) => {
+                //             TestUtil.checkQueryResult(test, err, done);
+                //         });
+                // });
             }
         });
     });
