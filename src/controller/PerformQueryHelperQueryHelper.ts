@@ -80,11 +80,11 @@ export default class PerformQueryHelperQueryHelper extends PerformQueryHelperPre
     public populateAllSections(dataset: Dataset) {
         // go into each course
         let allSectionsHolder = [];
-        let numberOfDatasetCourses = dataset.getCourses().length;
+        let numberOfDatasetCourses = dataset["courses"].length;
         for (let i = 0; i < numberOfDatasetCourses; i++) {
-            let placeHolder = dataset.getCourses()[i].result.length;
+            let placeHolder = dataset["courses"][i].result.length;
             for (let j = 0; j < placeHolder; j++) {
-                allSectionsHolder.push(dataset.getCourses()[i].result[j]); } }
+                allSectionsHolder.push(dataset["courses"][i].result[j]); } }
         return allSectionsHolder;
     }
 

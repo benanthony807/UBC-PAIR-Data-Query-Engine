@@ -123,9 +123,6 @@ export default class InsightFacade implements IInsightFacade {
                         if (runQueryResult === "Too large") {
                             let errMsg = "Result too big. Only queries with a maximum of 5000 results are supported";
                             return Promise.reject(new ResultTooLargeError(errMsg));
-                        }
-                        if (runQueryResult === "Multiple same key") {
-                            return Promise.resolve([]);
                         } else { return Promise.reject(new InsightError((runQueryResult))); }
                     // NO ERROR
                     } else {
@@ -157,3 +154,5 @@ export default class InsightFacade implements IInsightFacade {
 
 // TODO: Why is ORDER test failing even though it looks like it's returning the same thing as expected
 // TODO: Why is Reject: IS has two keys failing even though it looks like it's returning the same thing as expected
+// TODO: PerformQueryHelperQueryTest has lint error
+// TODO: Why is LT failing in smokescreen

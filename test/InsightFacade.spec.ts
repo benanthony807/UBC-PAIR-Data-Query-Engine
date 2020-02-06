@@ -554,13 +554,36 @@ describe("InsightFacade PerformQuery", () => {
     // });
 
     it("Accept: Simple AND", function () {
-        let query = {WHERE: {AND: [ {GT: {courses_avg: 91}},
-                    {IS: {courses_dept: "adhe"}}]},
+        let query = {
+            WHERE: {
+                AND: [{GT: {courses_avg: 91}},
+                    {IS: {courses_dept: "adhe"}}]
+            },
+            OPTIONS: {
+                COLUMNS: ["courses_dept", "courses_avg"],
+                ORDER: "courses_avg"
+            }
+        };
+        let result = insightFacade.performQuery(query);
+        Log.trace(result);
+    });
+
+    it("Accept: Simple LT", function () {
+        let query = {WHERE: {LT: {courses_avg: 2}},
             OPTIONS: { COLUMNS: [ "courses_dept", "courses_avg" ],
                 ORDER: "courses_avg" } };
         let result = insightFacade.performQuery(query);
         Log.trace(result);
     });
+
+    // it("Accept: Simple OR", function () {
+    //     let query = {WHERE: {AND: [ {GT: {courses_avg: 91}},
+    //                 {IS: {courses_dept: "adhe"}}]},
+    //         OPTIONS: { COLUMNS: [ "courses_dept", "courses_avg" ],
+    //             ORDER: "courses_avg" } };
+    //     let result = insightFacade.performQuery(query);
+    //     Log.trace(result);
+    // });
 
     it("Accept: Simple query", function () {
         let query = { WHERE: { GT: { courses_avg: 97 } },

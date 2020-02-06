@@ -153,7 +153,7 @@ export default class PerformQueryHelperPreQuery {
             let keyVal = query["OPTIONS"]["COLUMNS"][0];
             let datasetIDToUse = keyVal.substring(0, keyVal.indexOf("_"));
             for (let dataset of datasets) {
-                if (dataset.getId() === datasetIDToUse) {
+                if (dataset["id"] === datasetIDToUse) {
                     this.dataSetID = datasetIDToUse; // sets the class field dataSetID
                     return dataset; } }
             // Reach this point if no matching dataset is found
@@ -181,7 +181,7 @@ export default class PerformQueryHelperPreQuery {
 
             // first key in COLUMNS is not loaded
         } else {
-            this.errorMessage = "Referenced dataset " + "'" + datasetToUse.getId() + "'" + " not added yet";
+            this.errorMessage = "Referenced dataset " + "'" + datasetToUse["id"] + "'" + " not added yet";
             return this.errorMessage;
         }
     }
@@ -194,7 +194,7 @@ export default class PerformQueryHelperPreQuery {
     private keyIsLoaded(query: any, datasetToUse: Dataset): boolean {
         let firstItem = query["OPTIONS"]["COLUMNS"][0]; // ex. "courses_avg"
         let inputKey = firstItem.substring(0, firstItem.indexOf("_")); // isolates the id, ex. "courses"
-        return inputKey === datasetToUse.getId();
+        return inputKey === datasetToUse["id"];
     }
 
     /**
