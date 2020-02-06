@@ -9,37 +9,41 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
         super();
         this.performQueryHelperQH = new PerformQueryHelperQueryHelper();
     }
-    // runQuery will return a promise: rejects with an error message | resolves: with this.filteredResults
-    public runQuery(query: any, datasetToUse: Dataset): Promise<any[]> {
-        this.performQueryHelperQH.populateAllSections(datasetToUse);
-        Log.trace("populate All sections succeded");
+    // runQuery will return a string (error message) if error | returns this.filteredResults
+    public runQuery(query: any, datasetToUse: Dataset): any {
+        this.allSectionsInDataset = this.performQueryHelperQH.populateAllSections(datasetToUse);
         if (Object.keys(query["WHERE"]).length === 0) { // If WHERE is empty, don't filter, just return all sections
-            return Promise.resolve(this.allSectionsInDataset);
+            return this.allSectionsInDataset;
         } else {
-            let result: any;
-            result = this.doFilter(query["WHERE"]);
-            if (typeof result === "string") { // then we've received an error message
-                this.errorMessage = result;
-                return Promise.reject(this.errorMessage);
-            } else if (typeof result === "object") { // doFilter ran successfully and returned a list
+            let resultFilter: any;
+            resultFilter = this.doFilter(query["WHERE"]);
+            if (typeof resultFilter === "string") { // then we've received an error message
+                this.errorMessage = resultFilter;
+                return this.errorMessage;
+            } else if (typeof resultFilter === "object") { // doFilter ran successfully and returned a list
+                // DO LENGTH CHECK
+                if (resultFilter.length > 5000) {
+                    let tooLargeErrMsg = "Too large"; //  InsightFacade performQuery must receive this exactly message
+                    return tooLargeErrMsg;
+                }
                 // DO TRIM
                 let resultTrim: any;
                 // returns list of sections w/o junk keys (courses_tier)
-                resultTrim = this.performQueryHelperQH.doTrim(result);
+                resultTrim = this.performQueryHelperQH.doTrim(resultFilter, query);
                 if (typeof resultTrim === "string") {
                     this.errorMessage = resultTrim;
-                    return Promise.reject(this.errorMessage);
+                    return this.errorMessage;
                 } else if (typeof resultTrim === "object") {
                     // DO ORDER
-                    if (this.OrderKey === null) {
+                    if (Object.keys(query["OPTIONS"]).length === 1) {
                         this.filteredResults = resultTrim;
-                        return Promise.resolve(this.filteredResults);
+                        return this.filteredResults;
                     } else {
-                        this.filteredResults = this.doOrder(resultTrim);
-                        return Promise.resolve(this.filteredResults); }
+                        this.filteredResults = this.performQueryHelperQH.doOrder(resultTrim, query);
+                        return this.filteredResults; }
                 } else { // doFilter somehow returned something that's neither a list nor a string
                     this.errorMessage = "doFilter returned neither string nor list";
-                    return Promise.reject(this.errorMessage); }
+                    return this.errorMessage; }
                 }
         }
     }
@@ -48,6 +52,8 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
     // IMPORTANT for upstream error handling: Returns a list of good, otherwise RETURNS A STRING IF ERROR.
     public doFilter(query: any): any {
         let currFilterSubType = Object.keys(query)[0]; // LT GT EQ IS AND OR NOT
+        // CHECK if currFilterSubType Error:
+        if (currFilterSubType === "0") {return "currFilterSubType error"; }
 
         // REACHED A LEAF
         if (currFilterSubType === "LT" || currFilterSubType === "GT" || currFilterSubType === "EQ" ||
@@ -59,10 +65,11 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
             if (currKey !== this.dataSetID) { // okay to assume this dataSetId is one of the loaded courses in datsets
                 return "Cannot query more than one dataset"; }
 
-            // CHECK IF LEAF HAS MORE/LESS THAN ONE OBJECT ERROR
-            if (Object.keys(query[currFilterSubType]).length > 1) {
-                return currFilterSubType + " cannot have more than one object";
-            } else if (Object.keys(query[currFilterSubType]).length === 0) {
+            // CHECK IF LEAF HAS MORE/LESS THAN ONE KEY ERROR
+            let leafLength = Object.keys(query[currFilterSubType]).length;
+            if (leafLength > 1) {
+                return currFilterSubType + " cannot have more than one key";
+            } else if (leafLength === 0) {
                 return currFilterSubType + " does not have any objects"; }
 
             // RUN THE LEAF
@@ -108,18 +115,24 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
         let filteredList: any[] = [];
         // CHECK IF FIELD EXISTS
         // only returns true, otherwise returns error message
-        let doesFieldExistResult = this.doesFieldExist(query, currFilterSubType);
+        let doesFieldExistResult = this.performQueryHelperQH.doesFieldExist(query, currFilterSubType);
         if (typeof doesFieldExistResult !== "boolean") {
             return doesFieldExistResult;
         } else {
+            // CHECK IF KEY TYPE IS APPROPRIATE
+            let queryKey = Object.keys(query[currFilterSubType])[0]; // get query key: ex "courses_dept"
+            let objectKey = this.performQueryHelperQH.setObjectKeyOfInterest(queryKey); // returns string
+
+            // ex. We don't want courses_avg when comparing strings
+            if (!this.performQueryHelperQH.isKeyTypeAppropriate(queryKey, currFilterSubType)) {
+                return "key type is inappropriate";
+            }
+
             // CHECK IF VALUE TYPES MATCH
             let typeMatchResult = this.performQueryHelperQH.doesValueTypeMatch(query, currFilterSubType);
             if (typeof typeMatchResult !== "boolean") {
                 return doesFieldExistResult;
             } else {
-
-                let queryKey = Object.keys(query[currFilterSubType])[0]; // get query key: ex "courses_dept"
-                let objectKey = this.performQueryHelperQH.setObjectKeyOfInterest(queryKey); // returns string
 
                 // COMPARE AND PUSH
                 for (let section of this.allSectionsInDataset) {
@@ -149,20 +162,22 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
 
         // CHECK IF FIELD EXISTS
         // only returns true, otherwise returns error message
-        let doesFieldExistResult = this.doesFieldExist(query, currFilterSubType);
+        let doesFieldExistResult = this.performQueryHelperQH.doesFieldExist(query, currFilterSubType);
         if (typeof doesFieldExistResult !== "boolean") {
             return doesFieldExistResult;
         } else {
+            // CHECK IF KEY TYPE IS APPROPRIATE
+            let queryKey = Object.keys(query[currFilterSubType])[0]; // get query key: ex "courses_dept"
+            let objectKey = this.performQueryHelperQH.setObjectKeyOfInterest(queryKey); // returns string
+            // ex. We don't want courses_avg when comparing strings
+            if (!this.performQueryHelperQH.isKeyTypeAppropriate(queryKey, currFilterSubType)) {
+                return "key type is inappropriate";
+            }
             // CHECK IF VALUE TYPES MATCH
             let typeMatchResult = this.performQueryHelperQH.doesValueTypeMatch(query, currFilterSubType);
             if (typeof typeMatchResult !== "boolean") {
                 return doesFieldExistResult;
             } else {
-                // Find out key of interest
-                let queryKey = Object.keys(query[currFilterSubType])[0]; // ex "courses_dept"
-                // Find out what to grab in section
-                let objectKey = this.performQueryHelperQH.setObjectKeyOfInterest(queryKey); // returns string
-
                 // COMPARE AND PUSH
                 for (let section of this.allSectionsInDataset) {
                     let objectValue = section[objectKey]; // ex. section["courses_avg"] -> 97
@@ -199,7 +214,7 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
     }
     // Helper function for doFilter: populates the AND sublist, applies the AND requirements to narrow down the list
     // returns list of sections satisfying the AND
-    private runAnd(listOflistOfObjects: any) { // query["AND"] is passed in and has a list of a list of sections
+    private runAnd(listOflistOfObjects: any): any { // query["AND"] is passed in and has a list of a list of sections
         let filteredList: any[] = [];
 
         // Traverse branch, reach a leaf, put the resulting section of that leaf into DoAND's filtered list.
@@ -208,7 +223,7 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
             let result = this.doFilter(listOflistOfObjects[i]);
             if (typeof result === "string") { // then we've received an error message
                 this.errorMessage = result;
-                return Promise.reject(this.errorMessage);
+                return this.errorMessage;
             } else if (typeof result === "object") { // result is a subFilteredList
                 filteredList.push(result); } // add the list of viable sections to this OR's filteredList
         }
@@ -221,7 +236,7 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
         }
     }
     /** Helper function for doFilter: Takes a list of filtered lists and produces a single list of union sections */
-    private runOr(listOflistOfObjects: any) { // query["OR"] is passed in and has a list of a list of sections
+    private runOr(listOflistOfObjects: any): any { // query["OR"] is passed in and has a list of a list of sections
         let filteredList: any[] = [];
 
         // Traverse branch, reach a leaf, put the resulting section of that leaf into DoOR's filtered list.
@@ -230,7 +245,7 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
             let result = this.doFilter(listOflistOfObjects[i]);
             if (typeof result === "string") { // then we've received an error message
                 this.errorMessage = result;
-                return Promise.reject(this.errorMessage);
+                return this.errorMessage;
             } else if (typeof result === "object") { // result is a subFilteredList
                 filteredList.push(result); // add the list of viable sections to this OR's filteredList
             }
@@ -278,22 +293,5 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
         }
         // filteredList[i + 1] has the final results and is in position length - 1
         return filteredList[filteredList.length - 1];
-    }
-    private doOrder (unsortedListOfSections: any): any[] {
-        let sortedList: any[];
-        let orderKey = this.OrderKey; // ex. courses_avg
-        let datasetOrderKey = this.performQueryHelperQH.setObjectKeyOfInterest(orderKey);
-
-        sortedList = this.performQueryHelperQH.doSort(unsortedListOfSections, datasetOrderKey);
-        return sortedList;
-    }
-    /** Helper function for doFilter: checks if a key's field exists in key_field */
-    public doesFieldExist(query: any, currFilterSubType: string): any {
-        // ex query {"GT": {"courses_avg": 97}}
-        let keyField = Object.keys(query[currFilterSubType])[0]; // ex. "courses_avg"
-        for (let item of this.listOfAcceptableKeyFields) {
-            if (keyField === item) {
-                return true; } }
-        return ("Invalid key " + keyField + " in " + currFilterSubType);
     }
 }

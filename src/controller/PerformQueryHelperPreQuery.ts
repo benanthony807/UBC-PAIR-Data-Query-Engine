@@ -27,7 +27,6 @@ export default class PerformQueryHelperPreQuery {
             "courses_audit",
             "courses_uuid",
             "courses_year"];
-        this.OrderKey = null;
     }
 
     // Helper functions
@@ -93,8 +92,6 @@ export default class PerformQueryHelperPreQuery {
                     if (Object.keys(query["OPTIONS"]).length === 2) {
                         // return the result of isOrderValid (true or false)
                         if (this.isOrderValid(query)) {
-                            // set this.OrderKey for runQuery function
-                            this.OrderKey = query["OPTIONS"]["ORDER"]; // ex. courses_avg
                             return true;
                         } else {
                             return false;
@@ -152,20 +149,16 @@ export default class PerformQueryHelperPreQuery {
      * passing the dataset through resolve
      * Stores the field this.dataSetID to be the existent dataset
      */
-    public queryEstablishDataset(query: any, datasets: Dataset[]): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
+    public queryEstablishDataset(query: any, datasets: Dataset[]): any {
             let keyVal = query["OPTIONS"]["COLUMNS"][0];
             let datasetIDToUse = keyVal.substring(0, keyVal.indexOf("_"));
             for (let dataset of datasets) {
                 if (dataset.getId() === datasetIDToUse) {
                     this.dataSetID = datasetIDToUse; // sets the class field dataSetID
-                    return resolve(dataset);
-                }
-            }
+                    return dataset; } }
             // Reach this point if no matching dataset is found
-            return reject("Dataset not found");
-        });
-    }
+            return "Dataset not found";
+        }
 
     /**
      * inputKeysAreValid returns true if three semantic checks are passed:
@@ -174,22 +167,22 @@ export default class PerformQueryHelperPreQuery {
      * Check if the other keys are different from COLUMNS (if so, then cannot reference more than one dataset)
      * Check if query keys are one of the 8 keys we accept
      */
-    public inputOptionsKeysAreValid(query: any, datasetToUse: Dataset): Promise<any> {
+    public inputOptionsKeysAreValid(query: any, datasetToUse: Dataset): any {
         // Check if first key in COLUMNS is loaded
         if (this.keyIsLoaded(query, datasetToUse)) {
 
             // Check if all keys in inputOptions match the dataset ID (ex. "courses")
             if (this.ColumnAndOrderKeysAreValid(query)) {
-                return Promise.resolve(query);
+                return query;
             } else {
                 this.errorMessage = "Invalid key in COLUMNS or ORDER";
-                return Promise.reject(this.errorMessage);
+                return this.errorMessage;
             }
 
             // first key in COLUMNS is not loaded
         } else {
             this.errorMessage = "Referenced dataset " + "'" + datasetToUse.getId() + "'" + " not added yet";
-            return Promise.reject(this.errorMessage);
+            return this.errorMessage;
         }
     }
 
