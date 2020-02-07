@@ -63,6 +63,9 @@ export default class PerformQueryHelperPreQuery {
 
     // Check WHERE grammar
     public hasValidWhereGrammar(query: any): boolean {
+        if (query["WHERE"] === undefined || query["WHERE"] === null) {
+            return false;
+        }
         return (Object.keys(query["WHERE"]).length <= 1);
     }
 
@@ -72,10 +75,12 @@ export default class PerformQueryHelperPreQuery {
     public hasBodyAndOptions(query: any): boolean {
 
         // Step 1: Query should have two keys
+        if (query === undefined || query === null) {
+            return false;
+        }
         if (Object.keys(query).length !== 2) {
             this.errorMessage = "Query should have two root keys";
             return false; }
-        // Step 2: Query's first key should be "WHERE"
         if (Object.keys(query)[0] !== "WHERE") {
             this.errorMessage = "Missing WHERE";
             return false;
@@ -95,14 +100,19 @@ export default class PerformQueryHelperPreQuery {
      *      - COLUMNS can have identical child keys
      *  - See hasValidOptionsGrammar helper method for ORDER spec
      */
-    public hasValidOptionsGrammar(query: any) {
+    public hasValidOptionsGrammar(query: any): boolean {
         // OPTIONS must have one or two keys
+        if (query["OPTIONS"] === undefined || query["OPTIONS"] === null) {
+            return false;
+        }
         if (Object.keys(query["OPTIONS"]).length === 1 || Object.keys(query["OPTIONS"]).length === 2) {
             // The first key should be "COLUMNS"
             if (Object.keys(query["OPTIONS"])[0] === "COLUMNS") {
                 // Columns must not be empty
-                if (Object.keys(query["OPTIONS"]["COLUMNS"]).length === 0) {
-                    this.errorMessage = "COLUMNS must be a non-empty array";
+                if (query["OPTIONS"]["COLUMNS"] === null ||
+                    query["OPTIONS"]["COLUMNS"] === undefined ||
+                    Object.keys(query["OPTIONS"]["COLUMNS"]).length === 0) {
+                    this.errorMessage = "COLUMNS must be a non-empty array or ['OPTIONS']['COLUMNS'] is null/undefined";
                     return false;
                 } else {
                     // if there is a second key
@@ -135,6 +145,9 @@ export default class PerformQueryHelperPreQuery {
     private isOrderValid(query: any) {
 
         // the order key must be called "ORDER"
+        if (query["OPTIONS"] === undefined || query["OPTIONS"] === null) {
+            return false;
+        }
         if (Object.keys(query["OPTIONS"])[1] === "ORDER") {
 
             // The order key must not have a list as a value / must be a string
@@ -236,6 +249,9 @@ export default class PerformQueryHelperPreQuery {
 
         // reaches this point if COLUMNS are okay
         // step 2: check ORDER
+        if (query["OPTIONS"] === undefined || query["OPTIONS"] === null) {
+            return false;
+        }
         if (Object.keys(query["OPTIONS"]).length === 2) {
             let orderID = query["OPTIONS"]["ORDER"];
             let orderKey = orderID.substring(0, orderID.indexOf("_"));

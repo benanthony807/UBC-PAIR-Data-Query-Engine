@@ -163,6 +163,9 @@ export default class PerformQueryHelperQueryHelper extends PerformQueryHelperPre
     public doesFieldExist(query: any, currFilterSubType: string): any {
         // ex query {"GT": {"courses_avg": 97}}
 
+        if (query[currFilterSubType] === undefined || query[currFilterSubType] === null) {
+            return "object.Keys will be called on undefined / null in doesFieldExist";
+        }
         let keyField = Object.keys(query[currFilterSubType])[0]; // ex. "courses_avg"
         let field = keyField.substring(keyField.indexOf("_") + 1);
         for (let item of this.listOfAcceptableFields) {
