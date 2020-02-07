@@ -474,6 +474,11 @@ describe("InsightFacade PerformQuery", () => {
 
     // Load all the test queries, and call addDataset on the insightFacade instance for all the datasets
     before(function () {
+        try {
+            fs.unlinkSync("data/datasets.txt");
+        } catch (err) {
+            //
+        }
         Log.test(`Before: ${this.test.parent.title}`);
 
         // Load the query JSON files under test/queries.
@@ -514,6 +519,11 @@ describe("InsightFacade PerformQuery", () => {
     });
 
     beforeEach(function () {
+        try {
+            fs.unlinkSync("data/datasets.txt");
+        } catch (err) {
+            //
+        }
         Log.test(`BeforeTest: ${this.currentTest.title}`);
     });
 
@@ -552,77 +562,155 @@ describe("InsightFacade PerformQuery", () => {
     //     let result = insightFacade.performQuery(query);
     //     Log.trace(result);
     // });
-    it("Reject: Cannot read property 'GROUP' of undefined", function () {
+//     it("Reject: Cannot read property 'GROUP' of undefined", function () {
+//         let query = {
+//             WHERE: {
+//                 GT: {
+//                     courses_avg: 97
+//                 }
+//             },
+//             OPTIONS: {
+//                 COLUMNS: [
+//                     "coursesdept"
+//                 ],
+//                 ORDER: "courses_avg"
+//             }
+//         };
+//         insightFacade.performQuery(query)
+//             .then((result: any) => {
+//                 Log.trace(result);
+//             })
+//             .catch((err) => {
+//
+//                 Log.trace(err);
+//             });
+// });
+//
+//     it("Accept: Simple AND", function () {
+//         let query = {
+//             WHERE: {
+//                 AND: [{GT: {courses_avg: 91}},
+//                     {IS: {courses_dept: "adhe"}}]
+//             },
+//             OPTIONS: {
+//                 COLUMNS: ["courses_dept", "courses_avg"],
+//                 ORDER: "courses_avg"
+//             }
+//         };
+//         let result = insightFacade.performQuery(query);
+//         Log.trace(result);
+//     });
+//
+//     it("Accept: Simple LT", function () {
+//         let query = {
+//             WHERE: { LT: { courses_avg: 10 } },
+//             OPTIONS: { COLUMNS: [
+//                     "courses_dept",
+//                     "courses_avg" ],
+//             ORDER: "courses_avg" }
+//         };
+//         let result = insightFacade.performQuery(query);
+//         Log.trace(result);
+//     });
+//
+    it("Reject: NOT is empty", function () {
         let query = {
             WHERE: {
-                GT: {
-                    courses_avg: 97
-                }
+                AND: [
+                    {
+                        GT: {
+                            courses_avg: 95
+                        }
+                    },
+                    {
+                        IS: {
+                            courses_dept: "*a*"
+                        }
+                    }
+                ]
             },
             OPTIONS: {
                 COLUMNS: [
-                    "coursesdept"
+                    "courses_dept",
+                    "courses_id",
+                    "courses_avg"
                 ],
-                ORDER: "courses_avg"
-            }
-        };
-        insightFacade.performQuery(query)
-            .then((result: any) => {
-                Log.trace(result);
-            })
-            .catch((err) => {
-
-                Log.trace(err);
-            });
-});
-
-    it("Accept: Simple AND", function () {
-        let query = {
-            WHERE: {
-                AND: [{GT: {courses_avg: 91}},
-                    {IS: {courses_dept: "adhe"}}]
-            },
-            OPTIONS: {
-                COLUMNS: ["courses_dept", "courses_avg"],
-                ORDER: "courses_avg"
+                ORDER: "courses_dept"
             }
         };
         let result = insightFacade.performQuery(query);
         Log.trace(result);
     });
 
-    it("Accept: Simple LT", function () {
-        let query = {WHERE: {LT: {courses_avg: 2}},
-            OPTIONS: { COLUMNS: [ "courses_dept", "courses_avg" ],
-                ORDER: "courses_avg" } };
-        let result = insightFacade.performQuery(query);
-        Log.trace(result);
-    });
-
-    // it("Accept: Simple OR", function () {
-    //     let query = {WHERE: {AND: [ {GT: {courses_avg: 91}},
-    //                 {IS: {courses_dept: "adhe"}}]},
-    //         OPTIONS: { COLUMNS: [ "courses_dept", "courses_avg" ],
-    //             ORDER: "courses_avg" } };
-    //     let result = insightFacade.performQuery(query);
-    //     Log.trace(result);
-    // });
-
-    it("Accept: Simple query", function () {
-        let query = { WHERE: { GT: { courses_avg: 97 } },
-                OPTIONS: { COLUMNS: [ "courses_dept", "courses_avg" ],
-                    ORDER: "courses_avg" } };
-        let result = insightFacade.performQuery(query);
-        Log.trace(result);
-    });
-
-
-    it("Reject: Not must be an object", function () {
-        let query = {WHERE: {NOT: {NOT: [{GT: {courses_avg: 90}}, ]}},
-            OPTIONS: { COLUMNS: ["courses_dept"], ORDER: "courses_dept" }};
-        let result = insightFacade.performQuery(query);
-        Log.trace(result);
-    });
-
+    // {
+    //     "WHERE": {
+    //     "AND": {
+    //     }
+    // }
+//
+//     it("Reject: NOT is empty", function () {
+//         let query = {
+//             WHERE: {
+//                 NOT: {
+//                 }
+//             },
+//             OPTIONS: {
+//                 COLUMNS: [
+//                     "courses_dept",
+//                     "courses_id",
+//                     "courses_avg",
+//                     "courses_audit"
+//                 ]
+//             }
+//         };
+//         let result = insightFacade.performQuery(query);
+//         Log.trace(result);
+//     });
+//
+//     it("Reject: IS is empty", function () {
+//         let query = {
+//             WHERE: {
+//                 IS: {
+//
+//                 }
+//             },
+//             OPTIONS: {
+//                 COLUMNS: [
+//                     "courses_dept",
+//                     "courses_avg",
+//                     "courses_id"
+//                 ],
+//                 ORDER: "courses_id"
+//             }
+//         };
+//         let result = insightFacade.performQuery(query);
+//         Log.trace(result);
+//     });
+//
+//     // it("Accept: Simple OR", function () {
+//     //     let query = {WHERE: {AND: [ {GT: {courses_avg: 91}},
+//     //                 {IS: {courses_dept: "adhe"}}]},
+//     //         OPTIONS: { COLUMNS: [ "courses_dept", "courses_avg" ],
+//     //             ORDER: "courses_avg" } };
+//     //     let result = insightFacade.performQuery(query);
+//     //     Log.trace(result);
+//     // });
+//
+//     it("Accept: Simple query", function () {
+//         let query = { WHERE: { GT: { courses_avg: 97 } },
+//                 OPTIONS: { COLUMNS: [ "courses_dept", "courses_avg" ],
+//                     ORDER: "courses_avg" } };
+//         let result = insightFacade.performQuery(query);
+//         Log.trace(result);
+//     });
+//
+//
+//     it("Reject: Not must be an object", function () {
+//         let query = {WHERE: {NOT: {NOT: [{GT: {courses_avg: 90}}, ]}},
+//             OPTIONS: { COLUMNS: ["courses_dept"], ORDER: "courses_dept" }};
+//         let result = insightFacade.performQuery(query);
+//         Log.trace(result);
+//     });
+//
 
 });

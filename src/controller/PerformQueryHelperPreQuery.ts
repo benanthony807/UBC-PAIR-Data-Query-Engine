@@ -8,7 +8,7 @@ export default class PerformQueryHelperPreQuery {
     public filteredResults: any[];
     public allSectionsInDataset: any[];
     public listOfAcceptableKeyFields: string[];
-    public OrderKey: string;
+    public listOfAcceptableFields: string[];
 
     constructor() {
         this.errorMessage = "";
@@ -27,6 +27,18 @@ export default class PerformQueryHelperPreQuery {
             "courses_audit",
             "courses_uuid",
             "courses_year"];
+        this.listOfAcceptableFields = [
+            "dept",
+            "id",
+            "avg",
+            "instructor",
+            "title",
+            "pass",
+            "fail",
+            "audit",
+            "uuid",
+            "year"
+        ];
     }
 
     // Helper functions
@@ -42,11 +54,16 @@ export default class PerformQueryHelperPreQuery {
             return false;
         } else {
             if (this.hasBodyAndOptions(query)) {
-                return this.hasValidOptionsGrammar(query);
+                return (this.hasValidOptionsGrammar(query) && this.hasValidWhereGrammar(query));
             } else {
                 return false;
             }
         }
+    }
+
+    // Check WHERE grammar
+    public hasValidWhereGrammar(query: any): boolean {
+        return (Object.keys(query["WHERE"]).length <= 1);
     }
 
     /** inputQueryIsValid helper method
@@ -150,8 +167,8 @@ export default class PerformQueryHelperPreQuery {
      * Stores the field this.dataSetID to be the existent dataset
      */
     public queryEstablishDataset(query: any, datasets: Dataset[]): any {
-            let keyVal = query["OPTIONS"]["COLUMNS"][0];
-            let datasetIDToUse = keyVal.substring(0, keyVal.indexOf("_"));
+            let keyVal = query["OPTIONS"]["COLUMNS"][0]; // courses_avg
+            let datasetIDToUse = keyVal.substring(0, keyVal.indexOf("_")); // courses
             for (let dataset of datasets) {
                 if (dataset["id"] === datasetIDToUse) {
                     this.dataSetID = datasetIDToUse; // sets the class field dataSetID
@@ -210,13 +227,22 @@ export default class PerformQueryHelperPreQuery {
             if (key !== this.dataSetID) {
                 return false;
             }
+            // check fields
+            let field = keyId.substring(keyId.indexOf("_") + 1, keyId.length);
+            if (!this.listOfAcceptableFields.includes(field)) {
+                return false;
+            }
         }
 
         // reaches this point if COLUMNS are okay
         // step 2: check ORDER
-        let orderID = query["OPTIONS"]["ORDER"];
-        let orderKey = orderID.substring(0, orderID.indexOf("_"));
-        return orderKey === this.dataSetID;
+        if (Object.keys(query["OPTIONS"]).length === 2) {
+            let orderID = query["OPTIONS"]["ORDER"];
+            let orderKey = orderID.substring(0, orderID.indexOf("_"));
+            return orderKey === this.dataSetID;
+        }
+
+        return true;
     }
 
 }

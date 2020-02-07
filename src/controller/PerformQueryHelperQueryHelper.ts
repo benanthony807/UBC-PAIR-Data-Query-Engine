@@ -43,16 +43,28 @@ export default class PerformQueryHelperQueryHelper extends PerformQueryHelperPre
     }
 
     /** Helper function for doFilter->doStringComparison: Uses regex to check if strings match */
-    public stringsMatch(objectValue: string, queryValue: string): any[] {
+    public stringsMatch(objectValue: string, queryValue: string): any {
+
+        // CHECK FOR * VALID POSITIONS
+        let innerQueryValue: string = queryValue.substring(1, queryValue.length - 1);
+        if (!(queryValue === "*" || queryValue === "**") && innerQueryValue.includes("*")) {
+            return "Illegal *";
+        }
+
         // ex. queryValue = "aanb"
-        let queryRegex: RegExp =  new RegExp("^" + queryValue.replace("*", ".*") + "$");
+        let queryRegex: RegExp =  new RegExp("^" + queryValue.replace(/\*/g, ".*") + "$");
         return (objectValue.match(queryRegex)); }
 
     /** Helper function for runNot: if section is in list of unwanted sections, return true */
     public isAinB(section: any, unwantedListOfSections: any[]) {
         let placeHolder = unwantedListOfSections.length;
         for (let i = 0; i < placeHolder; i++) {
-            return unwantedListOfSections[i] === section; } }
+            if (unwantedListOfSections[i] === section) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /** Translator: returns the obj key of interest so we can go to the correct key in Section
      * ex. section["courses_avg"] = undefined
@@ -120,17 +132,17 @@ export default class PerformQueryHelperQueryHelper extends PerformQueryHelperPre
 
     public isKeyTypeAppropriate(queryKey: string, currentFilterSubtype: string) {
         if (currentFilterSubtype === "IS") {
-            return queryKey === "courses_dept" ||
-                queryKey === "courses_id" ||
-                queryKey === "courses_instructor" ||
-                queryKey === "courses_title" ||
-                queryKey === "courses_uuid";
+            return queryKey === this.dataSetID + "_dept" ||
+                queryKey === this.dataSetID + "_id" ||
+                queryKey === this.dataSetID + "_instructor" ||
+                queryKey === this.dataSetID + "_title" ||
+                queryKey === this.dataSetID + "_uuid";
             } else { // currentFilterSubtype will be "GT LS EQ"
-            return queryKey === "courses_avg" ||
-                queryKey === "courses_pass" ||
-                queryKey === "courses_fail" ||
-                queryKey === "courses_audit" ||
-                queryKey === "courses_year";
+            return queryKey === this.dataSetID + "_avg" ||
+                queryKey === this.dataSetID + "_pass" ||
+                queryKey === this.dataSetID + "_fail" ||
+                queryKey === this.dataSetID + "_audit" ||
+                queryKey === this.dataSetID + "_year";
         }
     }
 
@@ -150,9 +162,11 @@ export default class PerformQueryHelperQueryHelper extends PerformQueryHelperPre
     /** Helper function for doFilter: checks if a key's field exists in key_field */
     public doesFieldExist(query: any, currFilterSubType: string): any {
         // ex query {"GT": {"courses_avg": 97}}
+
         let keyField = Object.keys(query[currFilterSubType])[0]; // ex. "courses_avg"
-        for (let item of this.listOfAcceptableKeyFields) {
-            if (keyField === item) {
+        let field = keyField.substring(keyField.indexOf("_") + 1);
+        for (let item of this.listOfAcceptableFields) {
+            if (field === item) {
                 return true; } }
         return ("Invalid key " + keyField + " in " + currFilterSubType);
     }
