@@ -75,15 +75,15 @@ export default class Dataset {
 
     public propertiesHaveCorrectTypes(section: any): boolean {
         return  typeof section["Subject"] === "string" &&
-                typeof section["Course"] === "string" &&
-                typeof section["Avg"] === "number" &&
-                typeof section["Professor"] === "string" &&
-                typeof section["Title"] === "string" &&
-                typeof section["Pass"] === "number" &&
-                typeof section["Fail"] === "number" &&
-                typeof section["Audit"] === "number" &&
-                typeof section["id"] === "string" &&
-                typeof section["Year"] === "number";
+            typeof section["Course"] === "string" &&
+            typeof section["Avg"] === "number" &&
+            typeof section["Professor"] === "string" &&
+            typeof section["Title"] === "string" &&
+            typeof section["Pass"] === "number" &&
+            typeof section["Fail"] === "number" &&
+            typeof section["Audit"] === "number" &&
+            typeof section["id"] === "string" &&
+            typeof section["Year"] === "number";
     }
 
     public formatFields(section: { [index: string]: any }): any {

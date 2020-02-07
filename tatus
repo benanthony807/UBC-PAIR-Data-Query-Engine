@@ -1,0 +1,241 @@
+[33mcommit 9d2d03f4aed6068a8f5402cacbd8e59c62c713fe[m[33m ([m[1;36mHEAD -> [m[1;32mperformQuery[m[33m, [m[1;31morigin/performQuery[m[33m)[m
+Author: Andrew <atsai12@gmail.com>
+Date:   Wed Feb 5 01:12:21 2020 -0800
+
+    Removed @ts-ignore
+
+[33mcommit e23d8a8a666c9f7079d77f07101c6ff3649ba9bf[m
+Author: Andrew <atsai12@gmail.com>
+Date:   Wed Feb 5 01:05:30 2020 -0800
+
+    Mid testing
+
+[33mcommit ae7fe4b2883eb360fe5a66fda7f59f64e7d6d619[m
+Author: Andrew <atsai12@gmail.com>
+Date:   Tue Feb 4 12:47:51 2020 -0800
+
+    Finished implementation - preTest
+
+[33mcommit 0984754516c7eb68f21bb2373f31acea7d9f70b5[m
+Merge: 71ffe74 545342c
+Author: Andrew <atsai12@gmail.com>
+Date:   Tue Feb 4 11:43:28 2020 -0800
+
+    Merge branch 'development' of github.students.cs.ubc.ca:CPSC310-2019W-T2/project_team097 into performQuery
+
+[33mcommit 545342cc79927dbe2b06d4c96c20a2c8b2bf653e[m[33m ([m[1;31morigin/development[m[33m)[m
+Merge: fe3fca8 89aefc3
+Author: UBC Student <atsai12@students.cs.ubc.ca>
+Date:   Mon Feb 3 13:00:31 2020 -0800
+
+    Merge pull request #5 from CPSC310-2019W-T2/dev-ben
+    
+    idValid now handles case where id is null
+
+[33mcommit 89aefc3cd29d293b6b751320b91d468f167c291b[m[33m ([m[1;31morigin/dev-ben[m[33m, [m[1;32mdev-ben[m[33m)[m
+Merge: 928e91f fe3fca8
+Author: UBC Student <atsai12@students.cs.ubc.ca>
+Date:   Mon Feb 3 13:00:19 2020 -0800
+
+    Merge branch 'development' into dev-ben
+
+[33mcommit 928e91fac8a3dbc81f48efff90f6767bf502cafd[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Mon Feb 3 12:24:36 2020 -0800
+
+    idValid now handles case where id is null
+
+[33mcommit fe3fca887713c6222ad9bd8dddeb46f7e7798c2b[m
+Merge: 1000bb7 32fd8b4
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Sat Feb 1 12:53:04 2020 -0800
+
+    Merge remote-tracking branch 'origin/development' into development
+
+[33mcommit 1000bb7668fb871ca85d2db3d00d2f9576c454bc[m
+Merge: dff7817 00c8bf0
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Sat Feb 1 12:52:42 2020 -0800
+
+    Merge branch 'dev-ben' of github.students.cs.ubc.ca:CPSC310-2019W-T2/project_team097 into development
+
+[33mcommit 00c8bf05bb97263873eb9217b07bbd82834f76cf[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Sat Feb 1 12:50:23 2020 -0800
+
+    got all tests passing for read behaviour
+
+[33mcommit 8778b5b0c4ec93f937d3b568d78e68f917d23dee[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Sat Feb 1 11:33:49 2020 -0800
+
+    fixed reading behaviour
+
+[33mcommit c0d24a0a82e1944ce074256f58bff8838d5cc8bf[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Sat Feb 1 00:25:33 2020 -0800
+
+    fixed removeDataset overwriting behaviour
+
+[33mcommit 7cdbeb816641c05c57847ac87c0c560730d40709[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Fri Jan 31 19:54:37 2020 -0800
+
+    fixed read/write behaviour kind of, still not overwriting in one case
+
+[33mcommit 5760265e9c202c40aa7fdf69510de1359e9f3fe9[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Fri Jan 31 00:11:31 2020 -0800
+
+    maybe fixed formatFields
+
+[33mcommit 6d4e6987f9d47d90169cb5b2356b495ec69e4f61[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Thu Jan 30 22:39:28 2020 -0800
+
+    made reading/writing more robust, added uuid and year formatting
+
+[33mcommit 71ffe74eddf414fc0d9c6fde64018aed20f20b50[m
+Merge: 5ca6244 32fd8b4
+Author: UBC Student <atsai12@students.cs.ubc.ca>
+Date:   Thu Jan 30 00:23:38 2020 -0800
+
+    Merge pull request #2 from CPSC310-2019W-T2/development
+    
+    Development
+
+[33mcommit 32fd8b4bc2a25a60c1c2c03e543ffaedd24e492e[m
+Merge: dff7817 5ca6244
+Author: UBC Student <atsai12@students.cs.ubc.ca>
+Date:   Thu Jan 30 00:23:11 2020 -0800
+
+    Merge branch 'performQuery' into development
+
+[33mcommit 5ca624457adf532e444f02b3878ef6b2f0f57ed1[m
+Author: Andrew <atsai12@gmail.com>
+Date:   Thu Jan 30 00:10:13 2020 -0800
+
+    Pre-merging with Ben's completed addDataset
+
+[33mcommit dff7817b80902ee9e513126811943794bd0bc3b1[m
+Merge: eaa4e87 566e67a
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Wed Jan 29 17:39:32 2020 -0800
+
+    got all tests passing
+
+[33mcommit eaa4e87559232c20b2e9cb717611309f450cfec1[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Wed Jan 29 17:33:03 2020 -0800
+
+    idk
+
+[33mcommit 566e67a3748e8ca4c2523b64373473d0ef3ed2d8[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Wed Jan 29 17:22:31 2020 -0800
+
+    got all tests passing
+
+[33mcommit 0c2d621640e6320dfe3f3b2338504b27397ce827[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Tue Jan 28 22:49:42 2020 -0800
+
+    added writing functionality
+
+[33mcommit de50dd4e395047353a1af9ec24aed93cd5dccd4f[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Tue Jan 28 18:54:53 2020 -0800
+
+    more addDataset bug fixes, reading correctly but not error handling
+
+[33mcommit 85baa2c7b3253cbd79a38d89a0d1e6827d44dad6[m
+Author: Andrew <atsai12@gmail.com>
+Date:   Tue Jan 28 11:36:05 2020 -0800
+
+    committing post-merge
+
+[33mcommit a197e875cc9a4d92275a967ea4fd02d9fd36446e[m
+Merge: 6909f53 76cb22d
+Author: Andrew <atsai12@gmail.com>
+Date:   Tue Jan 28 11:17:04 2020 -0800
+
+    Merge branch 'development' of github.students.cs.ubc.ca:CPSC310-2019W-T2/project_team097 into performQuery
+
+[33mcommit 76cb22dfda27b6b0c26d174a4e400b5d69593b22[m
+Merge: 89a4857 76a3585
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Tue Jan 28 11:11:36 2020 -0800
+
+    Merge branch 'dev-ben' of github.students.cs.ubc.ca:CPSC310-2019W-T2/project_team097 into development
+
+[33mcommit 76a35855e6540adc7a655b8f179473772707eaa9[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Tue Jan 28 10:57:48 2020 -0800
+
+    got addDataset reading courses
+
+[33mcommit 6909f53b1573fb41b2dba76452fe9707ce14d572[m
+Author: Andrew <atsai12@gmail.com>
+Date:   Mon Jan 27 01:15:45 2020 -0800
+
+    Set blueprint and finished first draft of checks and set.
+    See comment for more details
+
+[33mcommit e316d496d44b5eee61a26dfdc0b48415e746c134[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Sun Jan 26 10:14:20 2020 -0800
+
+    wrote first part of removeDataset
+
+[33mcommit 00fe9f8e0d3b36ab1f53d65f3b5ccffe792182e8[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Sat Jan 25 20:04:28 2020 -0800
+
+    wrote tests for DatasetHelper and Dataset
+
+[33mcommit b6acd6d4e4ad75b3c8e494ab8ba5266bccd4bf95[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Fri Jan 24 23:41:07 2020 -0800
+
+    got setCourses in Dataset.ts working
+
+[33mcommit 83bffc0fe55df883d900c8c565bfc21e301e6c6d[m
+Author: Andrew <atsai12@gmail.com>
+Date:   Thu Jan 23 10:27:31 2020 -0800
+
+    Created performQuery branch off of development
+
+[33mcommit 89a4857b9daeddde1394054f4c9cc7c63ec19979[m[33m ([m[1;32mdevelopment[m[33m)[m
+Author: UBC Student <atsai12@students.cs.ubc.ca>
+Date:   Thu Jan 23 10:21:50 2020 -0800
+
+    Delete invalidfilterkeynot*.json
+    
+    This file was preventing me (Andrew) from checkingout/pulling the development branch due to an invalid file path error because of the *. An identical file was renamed invalidfilterkeynot_.json and sits below this one in the test/queries folder.
+
+[33mcommit bbe8734443cbebb4e56a0ab65632d7edadfb6a68[m
+Merge: fd9532e 2932228
+Author: UBC Student <atsai12@students.cs.ubc.ca>
+Date:   Tue Jan 21 18:05:44 2020 -0800
+
+    Merge pull request #1 from CPSC310-2019W-T2/Andrew'sTests
+    
+    Adding Andrew's tests to Ben's tests
+
+[33mcommit 29322285166384f67a877d281fbe664b92e9b487[m[33m ([m[1;31morigin/Andrew'sTests[m[33m, [m[1;32mAndrew'sTests[m[33m)[m
+Author: Andrew <atsai12@gmail.com>
+Date:   Tue Jan 21 17:54:20 2020 -0800
+
+    Added Andrew's tests to Ben's tests
+
+[33mcommit fd9532edb9aee008320874e48aa3dd1f9c92f45f[m
+Author: benantho <benantho@students.cs.ubc.ca>
+Date:   Tue Jan 21 11:03:32 2020 -0800
+
+    ben's tests
+
+[33mcommit f23a6a734a1a7b27ff1c49d827d81b27e19dc6ad[m[33m ([m[1;32mmaster[m[33m)[m
+Author: classy <classy@cs.ubc.ca>
+Date:   Mon Jan 20 06:51:48 2020 +0000
+
+    Starter files
