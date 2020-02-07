@@ -552,6 +552,29 @@ describe("InsightFacade PerformQuery", () => {
     //     let result = insightFacade.performQuery(query);
     //     Log.trace(result);
     // });
+    it("Reject: Cannot read property 'GROUP' of undefined", function () {
+        let query = {
+            WHERE: {
+                GT: {
+                    courses_avg: 97
+                }
+            },
+            OPTIONS: {
+                COLUMNS: [
+                    "coursesdept"
+                ],
+                ORDER: "courses_avg"
+            }
+        };
+        insightFacade.performQuery(query)
+            .then((result: any) => {
+                Log.trace(result);
+            })
+            .catch((err) => {
+
+                Log.trace(err);
+            });
+});
 
     it("Accept: Simple AND", function () {
         let query = {

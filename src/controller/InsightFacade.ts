@@ -136,6 +136,7 @@ export default class InsightFacade implements IInsightFacade {
                 }
             }
         }
+        return Promise.reject(new InsightError("query is not valid"));
     }
 
     public listDatasets(): Promise<InsightDataset[]> {
