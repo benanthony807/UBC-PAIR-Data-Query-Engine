@@ -553,134 +553,24 @@ describe("InsightFacade PerformQuery", () => {
             }
         });
     });
-    // Takes advantage that dataset has been loaded into datasets
 
-    // it("Accept: Two keys in IS", function () {
-    //     let query = { WHERE: { IS: { courses_dept: "adhe", courses_dept: "bc" } },
-    //         OPTIONS: { COLUMNS: [ "courses_dept", "courses_avg" ],
-    //             ORDER: "courses_avg" } };
-    //     let result = insightFacade.performQuery(query);
-    //     Log.trace(result);
-    // });
-    it("simple no order:", function () {
-        let query =  {
-            WHERE: {
-                NOT: {
-                    GT: {
-                        courses_avg: 20
-                    }
-                }
-            },
-            OPTIONS: {
-                COLUMNS: [
-                    "courses_dept",
-                    "courses_avg"
-                ],
-                ORDER: "courses_avg"
-            }
-        };
-
-        let result = insightFacade.performQuery(query);
-        Log.trace(result);
-});
-//
-//     it("Accept: Simple AND", function () {
-//         let query = {
-//             WHERE: {
-//                 AND: [{GT: {courses_avg: 91}},
-//                     {IS: {courses_dept: "adhe"}}]
+//     it("simple no order:", function () {
+//         let query =  {
+//             "WHERE": {
+//                 "NOT":
+//                     {"GT": {"courses_avg": 20}}
 //             },
-//             OPTIONS: {
-//                 COLUMNS: ["courses_dept", "courses_avg"],
-//                 ORDER: "courses_avg"
+//             "OPTIONS": {
+//                 "COLUMNS": [
+//                     "courses_dept",
+//                     "courses_avg"
+//                 ],
+//                 "ORDER": "courses_avg"
 //             }
 //         };
+//
 //         let result = insightFacade.performQuery(query);
 //         Log.trace(result);
-//     });
-//
-//     it("Accept: Simple LT", function () {
-//         let query = {
-//             WHERE: { LT: { courses_avg: 10 } },
-//             OPTIONS: { COLUMNS: [
-//                     "courses_dept",
-//                     "courses_avg" ],
-//             ORDER: "courses_avg" }
-//         };
-//         let result = insightFacade.performQuery(query);
-//         Log.trace(result);
-//     });
-//
-
-    // it("manyandornot", function () {
-    //     let query =  {"WHERE": {
-    //             "NOT": {
-    //                 "OR": [
-    //                     {
-    //                         "NOT": { "GT": {
-    //                                 "courses_avg": 90
-    //                             }}},
-    //                     {
-    //                         "EQ": {
-    //                             "courses_avg": 95
-    //                         }
-    //                     }]
-    //
-    //             } },
-    //         "OPTIONS": {
-    //             "COLUMNS": [
-    //                 "courses_dept",
-    //                 "courses_id",
-    //                 "courses_avg"
-    //             ],
-    //             "ORDER": "courses_id"
-    //         }
-    //
-    //     };
-    //     let result = insightFacade.performQuery(query);
-    //     Log.trace(result);
-    // });
-    //
-    // it("doublenegation", function () {
-    //     let query =  {
-    //         "WHERE": {
-    //             "NOT": {
-    //                 "NOT": {
-    //                     "OR": [
-    //                         {
-    //                             "AND": [
-    //                                 {
-    //                                     "GT": {
-    //                                         "courses_avg": 96
-    //                                     }
-    //                                 },
-    //                                 {
-    //                                     "IS": {
-    //                                         "courses_dept": "*adhe*"
-    //                                     }
-    //                                 }
-    //                             ]
-    //                         },
-    //                         {
-    //                             "EQ": {
-    //                                 "courses_avg": 95
-    //                             }
-    //                         }
-    //                     ]
-    //                 }
-    //             }
-    //         },
-    //         "OPTIONS": {
-    //             "COLUMNS": [
-    //                 "courses_dept",
-    //                 "courses_id",
-    //                 "courses_avg"
-    //             ],
-    //             "ORDER": "courses_avg"
-    //         }
-    //     };
-    //     let result = insightFacade.performQuery(query);
-    //     Log.trace(result);
-    // });
+// });
 
 });

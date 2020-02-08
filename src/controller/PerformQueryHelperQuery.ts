@@ -1,7 +1,6 @@
 import Dataset from "./Dataset";
 import PerformQueryHelperPreQuery from "./PerformQueryHelperPreQuery";
 import PerformQueryHelperQueryHelper from "./PerformQueryHelperQueryHelper";
-import Log from "../Util";
 
 export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery {
     private performQueryHelperQH: PerformQueryHelperQueryHelper;
@@ -21,7 +20,6 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
             if (typeof queryResults === "string") { // then we've received an error message
                 this.errorMessage = queryResults;
                 return this.errorMessage; } }
-
         // DO LENGTH CHECK
         if (queryResults.length > 5000) {
             let tooLargeErrMsg = "Too large"; //  InsightFacade performQuery must receive this exactly message
@@ -155,7 +153,6 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
     /** Helper function for doFilter: check fields | check value types | add section to list if pass requirements */
     private doMathComparison(query: any, currFilterSubType: string): any {
         let filteredList: any[] = [];
-
         // CHECK IF FIELD EXISTS
         // let doesFieldExistResult: string;
         if (!this.performQueryHelperQH.doesFieldExist(query, currFilterSubType)) {
@@ -163,14 +160,12 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
         } else {
             // CHECK IF KEY TYPE IS APPROPRIATE
             if (query[currFilterSubType] === undefined || query[currFilterSubType] === null) {
-                return "object.Keys will be called on undefined / null in doMathComparison";
-            }
+                return "object.Keys will be called on undefined / null in doMathComparison"; }
             let queryKey = Object.keys(query[currFilterSubType])[0]; // get query key: ex "courses_dept"
             let objectKey = this.performQueryHelperQH.setObjectKeyOfInterest(queryKey); // returns string
             // ex. We don't want courses_avg when comparing strings
             if (!this.performQueryHelperQH.isKeyTypeAppropriate(queryKey, currFilterSubType)) {
-                return "key type is inappropriate";
-            }
+                return "key type is inappropriate"; }
             // CHECK IF VALUE TYPES MATCH
             let typeMatchResult = this.performQueryHelperQH.doesValueTypeMatch(query, currFilterSubType);
             if (typeof typeMatchResult !== "boolean") {
@@ -187,11 +182,8 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
                         if (section["Section"] === "overall") {
                             objectValue = 1900;
                         }
-                        objectValue = Number(objectValue);
-                    }
-
+                        objectValue = Number(objectValue); }
                     let queryValue = Object.values(query[currFilterSubType])[0];
-
                     switch (currFilterSubType) {
                         case "LT":
                             if (objectValue < queryValue) {
@@ -204,11 +196,8 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
                         case "EQ":
                             if (objectValue === queryValue) {
                                 filteredList.push(section); }
-                            break; }
-                }
-                return filteredList;
-            }
-        }
+                            break; } }
+                return filteredList; } }
     }
     // Helper function for doFilter: populates the AND sublist, applies the AND requirements to narrow down the list
     // returns list of sections satisfying the AND
@@ -253,21 +242,29 @@ export default class PerformQueryHelperQuery extends PerformQueryHelperPreQuery 
             myCounter = 0;
             localCounter++;
         } else {
-            myCounter = localCounter + 1; }
+            myCounter = localCounter + 1;
+        }
         let wantedListOfSections: any = [];
         let unwantedListOfSections: any = [];
         let result = this.doFilter(query, localCounter);
         if (typeof result === "string") {
-                this.errorMessage = result;
-                return this.errorMessage; }
+            this.errorMessage = result;
+            return this.errorMessage;
+        }
         unwantedListOfSections = result;
 
         if (myCounter % 2 === 1) {
             for (let section of this.allSectionsInDataset) {
-                if (!this.performQueryHelperQH.isAinB(section, unwantedListOfSections)) {
-                    wantedListOfSections.push(section); } }
-            return wantedListOfSections; }
-        return unwantedListOfSections; }
+                if (!unwantedListOfSections.includes(section)) {
+                    wantedListOfSections.push(section);
+                }
+                // this.allSectionsInDataset.splice(this.allSectionsInDataset.indexOf(section), 1);
+            }
+            return wantedListOfSections;
+        }
+        return unwantedListOfSections;
+    }
+
     // Helper function for runAnd and runOr: Apply AND or OR logic
     private filterViaAndOr(filteredList: any[], comparison: string): any {
         for (let i = 0; i < filteredList.length - 1; i++) {
