@@ -508,13 +508,6 @@ describe("InsightFacade PerformQuery", () => {
                 insightFacade.addDataset(id, data, ds.kind),
             );
         }
-        // return Promise.all(loadDatasetPromises).catch((err) => {
-        //     /* *IMPORTANT NOTE: This catch is to let this run even without the implemented addDataset,
-        //      * for the purposes of seeing all your tests run.
-        //      * TODO For C1, remove this catch block (but keep the Promise.all)
-        //      */
-        //     return Promise.resolve("HACK TO LET QUERIES RUN");
-        // });
         return Promise.all(loadDatasetPromises);
     });
 
@@ -554,23 +547,36 @@ describe("InsightFacade PerformQuery", () => {
         });
     });
 
-//     it("simple no order:", function () {
-//         let query =  {
-//             "WHERE": {
-//                 "NOT":
-//                     {"GT": {"courses_avg": 20}}
-//             },
-//             "OPTIONS": {
-//                 "COLUMNS": [
-//                     "courses_dept",
-//                     "courses_avg"
-//                 ],
-//                 "ORDER": "courses_avg"
-//             }
-//         };
-//
-//         let result = insightFacade.performQuery(query);
-//         Log.trace(result);
-// });
+    /** General test for queries */
+
+    /** This test should use AAN.zip. WHERE: {} with ORDER should return the whole list with ORDER, not reject */
+    // it("{} WHERE should return ordered list}", function () {
+    //     let query =  { WHERE: {}, OPTIONS: {
+    //             COLUMNS: [ "courses_dept", "courses_avg" ],
+    //             ORDER: "courses_avg" } };
+    //     let result = insightFacade.performQuery(query);
+    //     Log.trace(result);
+    // });
+
+    /** This test */
+
+    it("{} WHERE should return ordered list}", function () {
+        let query =    {
+            WHERE: {
+                OR: {
+                }
+            },
+            OPTIONS: {
+                COLUMNS: [
+                    "courses_dept",
+                    "courses_id",
+                    "courses_avg"
+                ],
+                ORDER: "courses_id"
+            }
+        };
+        let result = insightFacade.performQuery(query);
+        Log.trace(result);
+    });
 
 });

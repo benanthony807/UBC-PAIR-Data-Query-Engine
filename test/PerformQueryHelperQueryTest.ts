@@ -1,17 +1,17 @@
 // import InsightFacade from "../src/controller/InsightFacade";
-// import PerformQueryHelperQuery from "../src/controller/PerformQueryHelperQuery";
+// import PQRunQuery from "../src/controller/PQRunQuery";
 // import Log from "../src/Util";
 // import * as assert from "assert";
 // import PerformQueryHelperQueryHelper from "../src/controller/PerformQueryHelperQueryHelper";
 // import {IInsightFacade, InsightDatasetKind} from "../src/controller/IInsightFacade";
 // import Dataset from "../src/controller/Dataset";
-// import PerformQueryHelperPreQuery from "../src/controller/PerformQueryHelperPreQuery";
+// import PQPreQuery from "../src/controller/PQPreQuery";
 //
 // describe("InsightFacade Perform Query Helper Methods", function () {
 //     let insightFacade: InsightFacade = new InsightFacade();
-//     let performQueryHelper: PerformQueryHelperQuery = new PerformQueryHelperQuery();
+//     let performQueryHelper: PQRunQuery = new PQRunQuery();
 //     let performQueryHelperQH: PerformQueryHelperQueryHelper = new PerformQueryHelperQueryHelper();
-//     let performQueryHelperPreQuery: PerformQueryHelperPreQuery = new PerformQueryHelperPreQuery();
+//     let performQueryHelperPreQuery: PQPreQuery = new PQPreQuery();
 //
 //     const datasetsToLoad: { [id: string]: string } = {
 //         courses: "./test/data/courses.zip",

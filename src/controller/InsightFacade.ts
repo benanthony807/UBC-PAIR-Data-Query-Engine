@@ -11,8 +11,8 @@ import {
 import Dataset from "./Dataset";
 import DatasetHelper from "./DatasetHelper";
 import Course from "./Course";
-import PerformQueryHelperPreQuery from "./PerformQueryHelperPreQuery";
-import PerformQueryHelperQuery from "./PerformQueryHelperQuery";
+import PQPreQuery from "./PQPreQuery";
+import PQRunQuery from "./PQRunQuery";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -23,15 +23,15 @@ export default class InsightFacade implements IInsightFacade {
 
     private datasets: Dataset[];
     private datasetHelper: DatasetHelper;
-    private performQueryHelperQuery: PerformQueryHelperQuery;
-    private performQueryHelperPreQuery: PerformQueryHelperPreQuery;
+    private runQuery: PQRunQuery;
+    private preQuery: PQPreQuery;
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
         this.datasets = [];
         this.datasetHelper = new DatasetHelper();
-        this.performQueryHelperQuery = new PerformQueryHelperQuery();
-        this.performQueryHelperPreQuery = new PerformQueryHelperPreQuery();
+        this.runQuery = new PQRunQuery();
+        this.preQuery = new PQPreQuery();
     }
 
     public addDataset(
@@ -96,47 +96,43 @@ export default class InsightFacade implements IInsightFacade {
         (new InsightError(this.datasetHelper.diagnoseIssue(id, InsightDatasetKind.Courses, this.datasets)));
     }
 
+    /** Note: Any errors will be passed on as strings */
     public performQuery(query: any): Promise <any[]> {
+        /** Step1: Check grammar */
+        let checkerResult = this.preQuery.isInputQueryValid(query);
+        if (typeof checkerResult === "string") {
+            return Promise.reject(new InsightError(checkerResult)); }
+
+        /** Step2: Set dataset */
         let datasetToUse: Dataset = null;
-        // return Promise.reject("Not implemented."); // for pushing
-        /** Step1: Check the query grammar */
-        if (this.performQueryHelperPreQuery.inputQueryIsValid(query)) {
-            /** Step2: Set the dataset we're going to use */
+        let establishResult = this.preQuery.queryEstablishDataset(query, this.datasets);
+        if (typeof establishResult === "string") {
+            return Promise.reject(new InsightError(establishResult)); }
+        datasetToUse = establishResult;
 
-            let establishResult = this.performQueryHelperPreQuery.queryEstablishDataset(query, this.datasets);
-            if (typeof establishResult === "string") {
-                return Promise.reject(new InsightError(establishResult));
-            } else {
-                datasetToUse = establishResult;
+        /** Step3: Check query semantics */
+        let optionsValidResult = this.preQuery.inputOptionsKeysAreValid(query, datasetToUse);
+        if (typeof optionsValidResult === "string") {
+            return Promise.reject(new InsightError((optionsValidResult))); }
 
-                /** Step3: Semantic check if input keys are valid */
-                let optionsValidResult = this.performQueryHelperPreQuery.inputOptionsKeysAreValid(query, datasetToUse);
-                if (typeof optionsValidResult === "string") {
-                    return Promise.reject(new InsightError((optionsValidResult)));
-                } else {
+        /** step4: run the query */
+        let runQueryResult = this.runQuery.runQuery(query, datasetToUse);
 
-                    /** step4: run the query */
-                    let runQueryResult = this.performQueryHelperQuery.runQuery(optionsValidResult, datasetToUse);
-                    // ERROR RECEIVED
-                    if (typeof runQueryResult === "string") {
-                        // RESULT TOO LARGE
-                        if (runQueryResult === "Too large") {
-                            let errMsg = "Result too big. Only queries with a maximum of 5000 results are supported";
-                            return Promise.reject(new ResultTooLargeError(errMsg));
-                        } else { return Promise.reject(new InsightError((runQueryResult))); }
-                    // NO ERROR
-                    } else {
-                        return Promise.resolve(runQueryResult);
+        // ================== ERROR HANDLER ================== //
+        if (typeof runQueryResult === "string") {
 
-                            // // must return a string ?
-                            // if (typeof queriedList !== "string") {
-                            //     queriedList.toString();
-                            // }
-                    }
-                }
-            }
+            // RESULT TOO LARGE
+            if (runQueryResult === "Too large") {
+                let errMsg = "Result too big. Only queries with a maximum of 5000 results are supported";
+                return Promise.reject(new ResultTooLargeError(errMsg)); }
+
+            // GENERAL ERROR
+            return Promise.reject(new InsightError((runQueryResult)));
         }
-        return Promise.reject(new InsightError("query is not valid"));
+
+        // ===================== NO ERROR ==================== //
+        return Promise.resolve(runQueryResult);
+
     }
 
     public listDatasets(): Promise<InsightDataset[]> {
@@ -152,8 +148,3 @@ export default class InsightFacade implements IInsightFacade {
         return Promise.resolve(insightDatasets);
     }
 }
-
-// TODO: Why is ORDER test failing even though it looks like it's returning the same thing as expected
-// TODO: Why is Reject: IS has two keys failing even though it looks like it's returning the same thing as expected
-// TODO: PerformQueryHelperQueryTest has lint error
-// TODO: Why is LT failing in smokescreen
