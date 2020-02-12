@@ -2,9 +2,9 @@ import Dataset from "./Dataset";
 import PQPreQuery from "./PQPreQuery";
 import PQFilter from "./PQFilter";
 import InsightFacade from "./InsightFacade";
+import Log from "../Util";
 
 export default class PQRunQuery extends PQPreQuery {
-
     // private filter: PQFilter;
     private allSectionsInDataset: any[];
 
@@ -18,28 +18,37 @@ export default class PQRunQuery extends PQPreQuery {
 
     public runQuery(query: any, datasetToUse: Dataset): any {
         this.allSectionsInDataset = this.populateAllSections(datasetToUse);
+        Log.trace("Finished populating all sections");
 
         let queryResults: any;
 
         // ================== FILTER CHECK ================== //
         // Step 1: Guard for Object.keys
         if (query["WHERE"] === undefined || query["WHERE"] === null) {
-            return "Object.keys will call on undefined or null WHERE"; }
+            return "Object.keys will call on undefined or null WHERE";
+        }
 
         // Step 2a: NO FILTER, pass all sections as query result
         if (Object.keys(query["WHERE"]).length === 0) {
+            Log.trace("No WHERE detected, returning all sections...");
             queryResults = this.allSectionsInDataset;
         } else {
-        // Step 2b: YES FILTER
-            queryResults = new PQFilter(this.allSectionsInDataset, this.dataSetID).doFilter(query["WHERE"], 0);
-            // queryResults = this.filter.startFilter(query);
+            // Step 2b: YES FILTER
+            queryResults = new PQFilter(
+                this.allSectionsInDataset,
+                this.dataSetID,
+            ).doFilter(query["WHERE"], 0);
+            Log.trace("WHERE detected, doing filter...");
             if (typeof queryResults === "string") {
                 this.errorMessage = queryResults;
-                return this.errorMessage; } }
+                return this.errorMessage;
+            }
+        }
 
         // ================== LENGTH CHECK ================== //
         if (queryResults.length > 5000) {
-            return "Too large"; } //  InsightFacade performQuery must receive this exact message
+            return "Too large"; //  InsightFacade performQuery must receive this exact message
+        }
 
         // ====================== TRIM ====================== //
         let resultTrim: any;
@@ -49,21 +58,23 @@ export default class PQRunQuery extends PQPreQuery {
             this.errorMessage = resultTrim;
             return this.errorMessage;
         } else if (typeof resultTrim === "object") {
-
-        // ====================== ORDER ====================== //
-                // DO ORDER
-                if (query["OPTIONS"] === undefined || query["OPTIONS"] === null) {
-                    return "Object.keys will call on undefined or null in doTrim";
-                }
-                if (Object.keys(query["OPTIONS"]).length === 1) {
-                    this.filteredResults = resultTrim;
-                    return this.filteredResults;
-                } else {
-                    this.filteredResults = this.doOrder(resultTrim, query);
-                    return this.filteredResults; }
-            } else { // doFilter somehow returned something that's neither a list nor a string
-                this.errorMessage = "doFilter returned neither string nor list";
-                return this.errorMessage; }
+            // ====================== ORDER ====================== //
+            // DO ORDER
+            if (query["OPTIONS"] === undefined || query["OPTIONS"] === null) {
+                return "Object.keys will call on undefined or null in doTrim";
+            }
+            if (Object.keys(query["OPTIONS"]).length === 1) {
+                this.filteredResults = resultTrim;
+                return this.filteredResults;
+            } else {
+                this.filteredResults = this.doOrder(resultTrim, query);
+                return this.filteredResults;
+            }
+        } else {
+            // doFilter somehow returned something that's neither a list nor a string
+            this.errorMessage = "doFilter returned neither string nor list";
+            return this.errorMessage;
+        }
     }
 
     // ====================== HELPER FUNCTIONS ====================== //
@@ -77,7 +88,9 @@ export default class PQRunQuery extends PQPreQuery {
             let numberOfSectionsInCourse = currentCourse.length;
             for (let j = 0; j < numberOfSectionsInCourse; j++) {
                 let currentSection = dataset["courses"][i].result[j];
-                allSectionsHolder.push(currentSection); } }
+                allSectionsHolder.push(currentSection);
+            }
+        }
         return allSectionsHolder;
     }
 
@@ -91,18 +104,18 @@ export default class PQRunQuery extends PQPreQuery {
         let trimmedList = [];
 
         for (let section of filteredList) {
-
             let trimmedSection = {};
             for (let i = 0; i < numOfColumns; i++) {
-                let keyToSelectFor = (query["OPTIONS"]["COLUMNS"][i]); // ex. keyToSelectFor = courses_avg
+                let keyToSelectFor = query["OPTIONS"]["COLUMNS"][i]; // ex. keyToSelectFor = courses_avg
 
                 let key = this.translate(keyToSelectFor); // ex. key = "Avg"
                 let value = section[key]; // ex. 97.7
-                let object = {[keyToSelectFor]: value}; // ex. {courses_avg: 97}
+                let object = { [keyToSelectFor]: value }; // ex. {courses_avg: 97}
 
                 // ex. first run: section: {{courses_avg: 97}}
                 // ex. second run: section: {{courses_avg: 97}, {courses_dept: "aanb"}}
-                Object.assign(trimmedSection, object); }
+                Object.assign(trimmedSection, object);
+            }
 
             trimmedList.push(trimmedSection); // ex. trimmedList = [{trimmedS1}, {trimmedS2}, {trimmedS3}]
         }
@@ -118,32 +131,47 @@ export default class PQRunQuery extends PQPreQuery {
     public translate(queryKey: string): string {
         switch (queryKey) {
             // STRINGS
-            case "courses_dept":        return "Subject";
-            case "courses_id":          return "Course";
-            case "courses_instructor":  return "Professor";
-            case "courses_title":       return "Title";
-            case "courses_uuid":        return "id"; // Note: uuid is returned as number
+            case "courses_dept":
+                return "Subject";
+            case "courses_id":
+                return "Course";
+            case "courses_instructor":
+                return "Professor";
+            case "courses_title":
+                return "Title";
+            case "courses_uuid":
+                return "id";
 
             // NUMBERS
-            case "courses_avg":         return "Avg";
-            case "courses_pass":        return "Pass";
-            case "courses_fail":        return "Fail";
-            case "courses_audit":       return "Audit";
-            case "courses_year":        return "Year"; } // Note: year is returned as string
+            case "courses_avg":
+                return "Avg";
+            case "courses_pass":
+                return "Pass";
+            case "courses_fail":
+                return "Fail";
+            case "courses_audit":
+                return "Audit";
+            case "courses_year":
+                return "Year";
+        }
     }
 
     /** Order the list of sections according to ORDER key */
-    private doOrder (unsortedListOfSections: any, query: any): any[] {
+    private doOrder(unsortedListOfSections: any, query: any): any[] {
         let sortedList: any[];
         let orderKey = query["OPTIONS"]["ORDER"]; // ex. courses_avg
 
         // let that = this; Might need to use this to create a tie breaker if hidden secondary ORDER actually matters
         sortedList = unsortedListOfSections.sort(function (a: any, b: any) {
-            if (a[orderKey] > b[orderKey]) { return 1;
-            } else if (a[orderKey] < b[orderKey]) { return -1;
-            } else { return 0; } });
+            if (a[orderKey] > b[orderKey]) {
+                return 1;
+            } else if (a[orderKey] < b[orderKey]) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
 
         return sortedList;
     }
-
 }

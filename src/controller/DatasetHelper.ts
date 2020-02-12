@@ -1,15 +1,14 @@
-import {InsightDatasetKind, InsightError} from "./IInsightFacade";
+import { InsightDatasetKind, InsightError } from "./IInsightFacade";
 import Dataset from "./Dataset";
 import Course from "./Course";
 import * as JSZip from "jszip";
 import * as fs from "fs";
 
 export default class DatasetHelper {
-
     public idValid(id: string): boolean {
         // whitespace check taken from https://stackoverflow.com/questions/2031085/how-can-i-check-if-string-contains-
         // characters-whitespace-not-just-whitespace/2031119
-        return id !== null && !(id.includes("_") || /^\s+$/.test(id)) ;
+        return id !== null && !(id.includes("_") || /^\s+$/.test(id));
     }
 
     public idInDatasets(id: string, datasets: Dataset[]): boolean {
@@ -27,7 +26,11 @@ export default class DatasetHelper {
         return false;
     }
 
-    public diagnoseIssue(id: string, kind: InsightDatasetKind, datasets: Dataset[]): string {
+    public diagnoseIssue(
+        id: string,
+        kind: InsightDatasetKind,
+        datasets: Dataset[],
+    ): string {
         if (id === null) {
             return "id is null";
         }
@@ -83,8 +86,10 @@ export default class DatasetHelper {
 
     public readDatasets() {
         try {
-            let utf8Dataset: string = fs.readFileSync
-            ("data/datesets.txt", "utf8");
+            let utf8Dataset: string = fs.readFileSync(
+                "data/datesets.txt",
+                "utf8",
+            );
             return JSON.parse(utf8Dataset) as Dataset[];
         } catch (err) {
             return [] as Dataset[];
@@ -125,17 +130,19 @@ export default class DatasetHelper {
         const files: Array<Promise<string>> = [];
         return new Promise<any>((resolve, reject) => {
             try {
-                zip.loadAsync(content, {base64: true})
+                zip.loadAsync(content, { base64: true })
                     .then((result: JSZip) => {
-                        result.folder("courses").forEach((relativePath, file) => {
-                            files.push(file.async("text"));
-                            return files;
-                        });
+                        result
+                            .folder("courses")
+                            .forEach((relativePath, file) => {
+                                files.push(file.async("text"));
+                                return files;
+                            });
                         return files;
                     })
                     .then((promises: Array<Promise<string>>) => {
-                        Promise.all(promises)
-                            .then((coursesAsStrings: string[]) => {
+                        Promise.all(promises).then(
+                            (coursesAsStrings: string[]) => {
                                 for (let course of coursesAsStrings) {
                                     try {
                                         courses.push(JSON.parse(course));
@@ -144,7 +151,8 @@ export default class DatasetHelper {
                                     }
                                 }
                                 resolve(courses as Course[]);
-                            });
+                            },
+                        );
                     })
                     .catch((err: any) => {
                         reject(new InsightError(err));

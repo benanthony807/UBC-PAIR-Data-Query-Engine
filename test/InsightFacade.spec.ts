@@ -1,11 +1,15 @@
-import {expect} from "chai";
-import {assert} from "chai";
+import { expect } from "chai";
+import { assert } from "chai";
 import * as fs from "fs-extra";
-import {InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "../src/controller/IInsightFacade";
+import {
+    InsightDataset,
+    InsightDatasetKind,
+    InsightError,
+    NotFoundError,
+} from "../src/controller/IInsightFacade";
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
-
 
 // This should match the schema given to TestUtil.validate(..) in TestUtil.readTestQueries(..)
 // except 'filename' which is injected when the file is read.
@@ -528,20 +532,16 @@ describe("InsightFacade PerformQuery", () => {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    // Dynamically create and run a test for each query in testQueries
-    // Creates an extra "test" called "Should run test queries" as a byproduct. Don't worry about it
+    // Dynamically create and run a test for each query in testQueries.
+    // Creates an extra "test" called "Should run test queries" as a byproduct.
     it("Should run test queries", function () {
         describe("Dynamic InsightFacade PerformQuery tests", function () {
             for (const test of testQueries) {
                 it(`[${test.filename}] ${test.title}`, function (done) {
-                    insightFacade
-                        .performQuery(test.query)
-                        .then((result) => {
-                            TestUtil.checkQueryResult(test, result, done);
-                        })
-                        .catch((err) => {
-                            TestUtil.checkQueryResult(test, err, done);
-                        });
+                    const resultChecker = TestUtil.getQueryChecker(test, done);
+                    insightFacade.performQuery(test.query)
+                        .then(resultChecker)
+                        .catch(resultChecker);
                 });
             }
         });
@@ -561,22 +561,16 @@ describe("InsightFacade PerformQuery", () => {
     /** This test */
 
     it("{} WHERE should return ordered list}", function () {
-        let query =    {
+        let query = {
             WHERE: {
-                OR: {
-                }
+                OR: {},
             },
             OPTIONS: {
-                COLUMNS: [
-                    "courses_dept",
-                    "courses_id",
-                    "courses_avg"
-                ],
-                ORDER: "courses_id"
-            }
+                COLUMNS: ["courses_dept", "courses_id", "courses_avg"],
+                ORDER: "courses_id",
+            },
         };
         let result = insightFacade.performQuery(query);
         Log.trace(result);
     });
-
 });
