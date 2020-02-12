@@ -1,11 +1,11 @@
-// import PerformQueryHelperPreQuery from "../src/controller/PerformQueryHelperPreQuery";
+// import PQPreQuery from "../src/controller/PQPreQuery";
 // import Log from "../src/Util";
 // import InsightFacade from "../src/controller/InsightFacade";
 // import * as assert from "assert";
 //
 // describe("InsightFacade Perform Query Helper Methods", function () {
 //     let insightFacade: InsightFacade = new InsightFacade();
-//     let performQueryHelper: PerformQueryHelperPreQuery = new PerformQueryHelperPreQuery();
+//     let performQueryHelper: PQPreQuery = new PQPreQuery();
 //
 //     const simpleQuery = {WHERE: {GT: {courses_avg: 97}},
 //         OPTIONS: {COLUMNS: ["courses_dept", "courses_avg"], ORDER: "courses_avg"}};

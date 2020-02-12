@@ -1,11 +1,15 @@
-import {expect} from "chai";
-import {assert} from "chai";
+import { expect } from "chai";
+import { assert } from "chai";
 import * as fs from "fs-extra";
-import {InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "../src/controller/IInsightFacade";
+import {
+    InsightDataset,
+    InsightDatasetKind,
+    InsightError,
+    NotFoundError,
+} from "../src/controller/IInsightFacade";
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
-
 
 // This should match the schema given to TestUtil.validate(..) in TestUtil.readTestQueries(..)
 // except 'filename' which is injected when the file is read.
@@ -508,13 +512,6 @@ describe("InsightFacade PerformQuery", () => {
                 insightFacade.addDataset(id, data, ds.kind),
             );
         }
-        // return Promise.all(loadDatasetPromises).catch((err) => {
-        //     /* *IMPORTANT NOTE: This catch is to let this run even without the implemented addDataset,
-        //      * for the purposes of seeing all your tests run.
-        //      * TODO For C1, remove this catch block (but keep the Promise.all)
-        //      */
-        //     return Promise.resolve("HACK TO LET QUERIES RUN");
-        // });
         return Promise.all(loadDatasetPromises);
     });
 
@@ -535,42 +532,45 @@ describe("InsightFacade PerformQuery", () => {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    // Dynamically create and run a test for each query in testQueries
-    // Creates an extra "test" called "Should run test queries" as a byproduct. Don't worry about it
+    // Dynamically create and run a test for each query in testQueries.
+    // Creates an extra "test" called "Should run test queries" as a byproduct.
     it("Should run test queries", function () {
         describe("Dynamic InsightFacade PerformQuery tests", function () {
             for (const test of testQueries) {
                 it(`[${test.filename}] ${test.title}`, function (done) {
-                    insightFacade
-                        .performQuery(test.query)
-                        .then((result) => {
-                            TestUtil.checkQueryResult(test, result, done);
-                        })
-                        .catch((err) => {
-                            TestUtil.checkQueryResult(test, err, done);
-                        });
+                    const resultChecker = TestUtil.getQueryChecker(test, done);
+                    insightFacade.performQuery(test.query)
+                        .then(resultChecker)
+                        .catch(resultChecker);
                 });
             }
         });
     });
 
-//     it("simple no order:", function () {
-//         let query =  {
-//             "WHERE": {
-//                 "NOT":
-//                     {"GT": {"courses_avg": 20}}
-//             },
-//             "OPTIONS": {
-//                 "COLUMNS": [
-//                     "courses_dept",
-//                     "courses_avg"
-//                 ],
-//                 "ORDER": "courses_avg"
-//             }
-//         };
-//
-//         let result = insightFacade.performQuery(query);
-//         Log.trace(result);
-// });
+    /** General test for queries */
 
+    /** This test should use AAN.zip. WHERE: {} with ORDER should return the whole list with ORDER, not reject */
+    // it("{} WHERE should return ordered list}", function () {
+    //     let query =  { WHERE: {}, OPTIONS: {
+    //             COLUMNS: [ "courses_dept", "courses_avg" ],
+    //             ORDER: "courses_avg" } };
+    //     let result = insightFacade.performQuery(query);
+    //     Log.trace(result);
+    // });
+
+    /** This test */
+
+    it("{} WHERE should return ordered list}", function () {
+        let query = {
+            WHERE: {
+                OR: {},
+            },
+            OPTIONS: {
+                COLUMNS: ["courses_dept", "courses_id", "courses_avg"],
+                ORDER: "courses_id",
+            },
+        };
+        let result = insightFacade.performQuery(query);
+        Log.trace(result);
+    });
 });
