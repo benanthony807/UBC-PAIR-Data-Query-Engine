@@ -39,6 +39,10 @@ export default class InsightFacade implements IInsightFacade {
             Log.trace("dataset has valid id, kind, and is not already added");
             return this.datasetHelper
                 .readContent(content)
+                .catch((err: any) => {
+                    Log.trace("something went wrong while reading the zip file");
+                    return Promise.reject(err);
+                })
                 .then((courses: Course[]) => {
                     let dataset: Dataset = new Dataset(id, kind, courses);
                     return dataset.filterInvalidSections();
@@ -53,11 +57,9 @@ export default class InsightFacade implements IInsightFacade {
                     this.datasetHelper.writeToDisk(this.datasets);
                     Log.trace("dataset pushed to cache and written to disk");
                     return this.datasetHelper.getIds(this.datasets);
-                })
-                .catch((err: any) => {
-                    return Promise.reject(err);
                 });
         } else {
+            Log.trace("dataset is invalid, either has invalid id, kind, or has already been added");
             return Promise.reject(new InsightError(this.datasetHelper.diagnoseIssue(id, kind, this.datasets)));
         }
     }
@@ -81,9 +83,11 @@ export default class InsightFacade implements IInsightFacade {
                     }
                 return Promise.resolve(id);
             }
+            Log.trace("dataset wasn't found in array of previously added datasets");
             return Promise.reject(
                 new NotFoundError("tried to remove nonexistent dataset"));
         }
+        Log.trace("dataset has an invalid id");
         return Promise.reject(
             new InsightError(this.datasetHelper.diagnoseIssue(id, InsightDatasetKind.Courses, this.datasets)));
     }
