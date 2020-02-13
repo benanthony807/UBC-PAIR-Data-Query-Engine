@@ -32,80 +32,60 @@ export default class InsightFacade implements IInsightFacade {
         this.preQuery = new PQPreQuery();
     }
 
-    public addDataset(
-        id: string,
-        content: string,
-        kind: InsightDatasetKind,
-    ): Promise<string[]> {
-        if (
-            this.datasetHelper.idValid(id) &&
+    public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
+        if (this.datasetHelper.idValid(id) &&
             kind === InsightDatasetKind.Courses &&
-            !this.datasetHelper.idInDatasets(id, this.datasets)
-        ) {
+            !this.datasetHelper.idInDatasets(id, this.datasets)) {
+            Log.trace("dataset has valid id, kind, and is not already added");
             return this.datasetHelper
                 .readContent(content)
-                .catch((err: any) => {
-                    return Promise.reject(new InsightError(err));
-                })
                 .then((courses: Course[]) => {
-                    return new Dataset(id, kind, courses);
-                })
-                .then((dataset: Dataset) => {
+                    let dataset: Dataset = new Dataset(id, kind, courses);
                     return dataset.filterInvalidSections();
                 })
                 .then((dataset: Dataset) => {
+                    Log.trace("filtered invalid sections from dataset");
                     return dataset.checkCoursesNotEmpty();
                 })
-                .catch((err: any) => {
-                    return Promise.reject(err);
-                })
                 .then((dataset: Dataset) => {
+                    Log.trace("dataset has at least one valid section");
                     this.datasets.push(dataset);
-                })
-                .then((result: void) => {
-                    return this.datasetHelper.writeToDisk(this.datasets);
+                    this.datasetHelper.writeToDisk(this.datasets);
+                    Log.trace("dataset pushed to cache and written to disk");
+                    return this.datasetHelper.getIds(this.datasets);
                 })
                 .catch((err: any) => {
                     return Promise.reject(err);
-                })
-                .then((val: any) => {
-                    return this.datasetHelper.getIds(this.datasets);
                 });
         } else {
-            return Promise.reject(new InsightError("testing"));
-            // return Promise.reject(new InsightError(this.datasetHelper.diagnoseIssue(id, kind, this.datasets)));
+            return Promise.reject(new InsightError(this.datasetHelper.diagnoseIssue(id, kind, this.datasets)));
         }
     }
 
     public removeDataset(id: string): Promise<string> {
         if (this.datasetHelper.idValid(id)) {
+            Log.trace("dataset has valid id");
             if (this.datasetHelper.idInDatasets(id, this.datasets)) {
-                this.datasetHelper.removeFromDisk(id).then((result: void) => {
-                    for (let dataset of this.datasets) {
+                Log.trace("dataset is in datasets and not already removed");
+                this.datasetHelper.removeFromDisk(id);
+                Log.trace("dataset removed from disk");
+                for (let dataset of this.datasets) {
                         if (dataset["id"] === id) {
                             this.datasets.splice(
                                 this.datasets.indexOf(dataset),
                                 1,
                             );
+                            Log.trace("dataset removed from cache");
                             break;
                         }
                     }
-                });
                 return Promise.resolve(id);
             }
             return Promise.reject(
-                new NotFoundError("tried to remove nonexistent dataset"),
-            );
+                new NotFoundError("tried to remove nonexistent dataset"));
         }
         return Promise.reject(
-            new InsightError(
-                this.datasetHelper.diagnoseIssue(
-                    id,
-                    InsightDatasetKind.Courses,
-                    this.datasets,
-                ),
-            ),
-        );
+            new InsightError(this.datasetHelper.diagnoseIssue(id, InsightDatasetKind.Courses, this.datasets)));
     }
 
     public performQuery(query: any): Promise<any[]> {
@@ -169,5 +149,3 @@ export default class InsightFacade implements IInsightFacade {
         return Promise.resolve(insightDatasets);
     }
 }
-
-// TODO: Set up Log.trace statements where comments are
