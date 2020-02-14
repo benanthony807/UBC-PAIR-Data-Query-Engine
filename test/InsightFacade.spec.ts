@@ -559,17 +559,17 @@ describe("InsightFacade PerformQuery", () => {
 
     /** This test */
 
-    it("{} WHERE should return ordered list}", function () {
-        let query = {
-            WHERE: {
-                OR: {},
-            },
-            OPTIONS: {
-                COLUMNS: ["courses_dept", "courses_id", "courses_avg"],
-                ORDER: "courses_id",
-            },
-        };
-        let result = insightFacade.performQuery(query);
-        Log.trace(result);
-    });
+    // it("{} WHERE should return ordered list}", function () {
+    //     let query = {
+    //         WHERE: {
+    //             OR: {},
+    //         },
+    //         OPTIONS: {
+    //             COLUMNS: ["courses_dept", "courses_id", "courses_avg"],
+    //             ORDER: "courses_id",
+    //         },
+    //     };
+    //     let result = insightFacade.performQuery(query);
+    //     Log.trace(result);
+    // });
 });

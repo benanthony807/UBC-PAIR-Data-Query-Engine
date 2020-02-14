@@ -161,4 +161,8 @@ export default class DatasetHelper {
             }
         });
     }
+
+    public isAddableDataset(id: string, kind: InsightDatasetKind, datasets: Dataset[]) {
+        return this.idValid(id) && kind === InsightDatasetKind.Courses && !this.idInDatasets(id, datasets);
+    }
 }
