@@ -474,23 +474,27 @@ describe("InsightFacade PerformQuery", () => {
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];
+    const cacheDir = __dirname + "/../data";
+
 
     // Load all the test queries, and call addDataset on the insightFacade instance for all the datasets
     before(function () {
         try {
+            fs.removeSync(cacheDir);
+            fs.mkdirSync(cacheDir);
             fs.unlinkSync("data/datasets.txt");
         } catch (err) {
-            //
+            // Log.error(err);
         }
         Log.test(`Before: ${this.test.parent.title}`);
 
         // Load the query JSON files under test/queries.
         // Fail if there is a problem reading ANY query.
         try {
-            const cacheDir: string = __dirname + "/" + "../data";
-            // Log.trace(cacheDir);
-            // fs.removeSync(cacheDir);
-            // fs.mkdirSync(cacheDir);
+            // const cacheDir: string = __dirname + "/" + "../data";
+            // // Log.trace(cacheDir);
+            // // fs.removeSync(cacheDir);
+            // // fs.mkdirSync(cacheDir);
             testQueries = TestUtil.readTestQueries();
         } catch (err) {
             expect.fail(
@@ -549,13 +553,13 @@ describe("InsightFacade PerformQuery", () => {
     /** General test for queries */
 
     /** This test should use AAN.zip. WHERE: {} with ORDER should return the whole list with ORDER, not reject */
-    // it("{} WHERE should return ordered list}", function () {
-    //     let query =  { WHERE: {}, OPTIONS: {
-    //             COLUMNS: [ "courses_dept", "courses_avg" ],
-    //             ORDER: "courses_avg" } };
-    //     let result = insightFacade.performQuery(query);
-    //     Log.trace(result);
-    // });
+    it("{} WHERE should return ordered list}", function () {
+        let query =  { WHERE: {}, OPTIONS: {
+                COLUMNS: [ "courses_dept", "courses_avg" ],
+                ORDER: "courses_avg" } };
+        let result = insightFacade.performQuery(query);
+        Log.trace(result);
+    });
 
     /** This test */
 
