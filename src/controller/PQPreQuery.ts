@@ -34,7 +34,7 @@ export default class PQPreQuery {
      */
     public isInputQueryValid(query: any): any {
         // Step 1: Query should not be null or undefined
-        if (typeof query === null || typeof query === "undefined") {
+        if (typeof query === null) {
             this.errorMessage = "Query was found to be null or 'undefined'";
             return this.errorMessage;
         }
@@ -67,7 +67,7 @@ export default class PQPreQuery {
      *      ex. {"WHERE": {}}
      */
     public isWhereValid(query: any): boolean {
-        if (query["WHERE"] === undefined || query["WHERE"] === null) {
+        if (query["WHERE"] === null) {
             return false;
         }
         return Object.keys(query["WHERE"]).length <= 1;

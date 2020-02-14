@@ -50,7 +50,7 @@ export default class DatasetHelper {
 
     // NOTE: if you want to run this on your own machine just change path to your local path,
     // (right click on data, copy path)
-    public writeToDisk(datasets: Dataset[]): Promise<any> {
+    public writeToDisk(datasets: Dataset[]) {
         // writing behaviour taken from https://stackoverflow.com/questions/2496710/writing-files-in-node-js
         // reading behaviour taken from https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
         let diskDatasets: Dataset[] = this.readDatasets();
@@ -67,7 +67,7 @@ export default class DatasetHelper {
             }
         }
         this.writeDatasets(datasets);
-        return Promise.resolve();
+        // return Promise.resolve();
     }
 
     public removeFromDisk(id: string) {
@@ -81,7 +81,6 @@ export default class DatasetHelper {
             }
         }
         this.writeDatasets(diskDatasets);
-        return Promise.resolve();
     }
 
     public readDatasets() {
@@ -161,5 +160,9 @@ export default class DatasetHelper {
                 return reject(err);
             }
         });
+    }
+
+    public isAddableDataset(id: string, kind: InsightDatasetKind, datasets: Dataset[]) {
+        return this.idValid(id) && kind === InsightDatasetKind.Courses && !this.idInDatasets(id, datasets);
     }
 }

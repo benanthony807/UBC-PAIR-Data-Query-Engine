@@ -1,16 +1,18 @@
 import { InsightDatasetKind, InsightError } from "./IInsightFacade";
 import Course from "./Course";
+import Room from "./Room";
 
 export default class Dataset {
     private id: string;
     private kind: InsightDatasetKind;
-    private courses: Course[];
+    private data: any[];
+    // private rooms: Room[];
 
     constructor(id: string, kind: InsightDatasetKind, courses: Course[]) {
         let that = this;
         that.id = id;
         that.kind = kind;
-        that.courses = courses;
+        that.data = courses;
     }
 
     public getId(): string {
@@ -23,7 +25,7 @@ export default class Dataset {
 
     public getNumRows(): number {
         let count: number = 0;
-        for (let course of this.courses) {
+        for (let course of this.data) {
             for (let section of course["result"]) {
                 count++;
             }
@@ -32,11 +34,11 @@ export default class Dataset {
     }
 
     public getCourses(): Course[] {
-        return this.courses;
+        return this.data;
     }
 
     public checkCoursesNotEmpty() {
-        for (let course of this.courses) {
+        for (let course of this.data) {
             if (course["result"].length > 0) {
                 return Promise.resolve(this);
             }
@@ -46,8 +48,8 @@ export default class Dataset {
         );
     }
 
-    public filterInvalidSections(): Promise<Dataset> {
-        for (let course of this.courses) {
+    public filterInvalidSections() {
+        for (let course of this.data) {
             for (let section of course["result"]) {
                 section = this.formatFields(section);
                 if (
@@ -61,7 +63,6 @@ export default class Dataset {
                 }
             }
         }
-        return Promise.resolve(this);
     }
 
     public hasAllRequiredFields(section: object): boolean {

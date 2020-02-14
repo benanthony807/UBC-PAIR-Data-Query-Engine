@@ -82,12 +82,12 @@ export default class PQRunQuery extends PQPreQuery {
     /** Populates a list with all sections in the dataset */
     private populateAllSections(dataset: Dataset) {
         let allSectionsHolder = [];
-        let numberOfCourses = dataset["courses"].length;
+        let numberOfCourses = dataset["data"].length;
         for (let i = 0; i < numberOfCourses; i++) {
-            let currentCourse = dataset["courses"][i].result;
+            let currentCourse = dataset["data"][i].result;
             let numberOfSectionsInCourse = currentCourse.length;
             for (let j = 0; j < numberOfSectionsInCourse; j++) {
-                let currentSection = dataset["courses"][i].result[j];
+                let currentSection = dataset["data"][i].result[j];
                 allSectionsHolder.push(currentSection);
             }
         }
