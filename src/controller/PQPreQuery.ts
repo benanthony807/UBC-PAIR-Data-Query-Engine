@@ -35,13 +35,16 @@ export default class PQPreQuery {
     public isInputQueryValid(query: any): any {
         // Step 1: Query should not be null or undefined
         if (typeof query === null) {
+            Log.trace("PQPreQuery->isInputQueryValid line 38");
             this.errorMessage = "Query was found to be null or 'undefined'";
             return this.errorMessage;
         }
 
         // Step 2: Query has two keys: WHERE and OPTIONS
+        Log.trace("Length of query " + Object.keys(query).length);
         if (
-            !(
+            // Make sure there are two items in query, then we can index 0 and 1.
+            !(  Object.keys(query).length === 2 &&
                 Object.keys(query)[0] === "WHERE" &&
                 Object.keys(query)[1] === "OPTIONS"
             )
