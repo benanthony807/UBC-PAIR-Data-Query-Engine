@@ -15,6 +15,7 @@ export default class Room {
 
     constructor() {
         this.href = null;
+        this.address = null;
     }
 
 
