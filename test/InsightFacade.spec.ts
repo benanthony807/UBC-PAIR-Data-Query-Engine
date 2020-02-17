@@ -75,18 +75,18 @@ describe("InsightFacade Add/Remove Dataset", function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    it("Should add a valid rooms dataset", function () {
-        const id: string = "rooms";
-        const expected: string[] = [id];
-        return insightFacade
-            .addDataset(id, datasets[id], InsightDatasetKind.Rooms)
-            .then((result: string[]) => {
-               //
-            })
-            .catch((err: any) => {
-                //
-            });
-    });
+    // it("Should add a valid rooms dataset", function () {
+    //     const id: string = "rooms";
+    //     const expected: string[] = [id];
+    //     return insightFacade
+    //         .addDataset(id, datasets[id], InsightDatasetKind.Rooms)
+    //         .then((result: string[]) => {
+    //            //
+    //         })
+    //         .catch((err: any) => {
+    //             //
+    //         });
+    // });
 
     // This is a unit test. You should create more like this!
     it("Should fail to add a valid dataset in an invalid file (not a zip, txt file)", function () {
@@ -164,20 +164,6 @@ describe("InsightFacade Add/Remove Dataset", function () {
             .catch((err: any) => {
                 // assert.equal(err, new InsightError("id invalid: contains underscore"));
                 assert.instanceOf(err, InsightError);
-            });
-    });
-
-    it("should fail to add invalid dataset: kind rooms is invalid", function () {
-        const id: string = "courses";
-        return insightFacade
-            .addDataset(id, datasets[id], InsightDatasetKind.Rooms)
-            .then((result: string[]) => {
-                expect.fail("should have rejected, kind rooms is invalid");
-            })
-            .catch((err: any) => {
-                // assert.equal(err, new InsightError("kind invalid: rooms is not allowed"));
-                assert.instanceOf(err, InsightError);
-
             });
     });
 

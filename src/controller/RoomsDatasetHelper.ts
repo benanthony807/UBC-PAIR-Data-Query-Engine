@@ -131,13 +131,6 @@ export default class RoomsDatasetHelper {
         }
     }
 
-    private emptyBuilding(room: Room) {
-        return room.type === undefined &&
-            room.furniture === undefined &&
-            room.seats === undefined &&
-            room.number === undefined;
-    }
-
     private roomLevelRecursion(parent: any, room: Room) {
         for (let node of parent["childNodes"]) {
             if (node["nodeName"] === "div" || node["nodeName"] === "section") {
@@ -146,6 +139,28 @@ export default class RoomsDatasetHelper {
                 this.roomLevelTableSearch(node, room);
             }
         }
+    }
+
+    private roomLevelTableSearch(parent: any, room: Room) {
+        let tbody: any;
+        for (let node of parent["childNodes"]) {
+            if (node["nodeName"] === "tbody") {
+                tbody = node;
+                break;
+            }
+        }
+        for (let node of tbody["childNodes"]) {
+            if (node["nodeName"] === "tr") {
+                this.trSearcher(node, room);
+            }
+        }
+    }
+
+    private emptyBuilding(room: Room) {
+        return room.type === undefined &&
+            room.furniture === undefined &&
+            room.seats === undefined &&
+            room.number === undefined;
     }
 
     private trSearcher(node: any, room: Room) {
@@ -202,20 +217,5 @@ export default class RoomsDatasetHelper {
             .then((result: any) => {
                 return this.rooms;
             });
-    }
-
-    private roomLevelTableSearch(parent: any, room: Room) {
-        let tbody: any;
-        for (let node of parent["childNodes"]) {
-            if (node["nodeName"] === "tbody") {
-                tbody = node;
-                break;
-            }
-        }
-        for (let node of tbody["childNodes"]) {
-            if (node["nodeName"] === "tr") {
-                this.trSearcher(node, room);
-            }
-        }
     }
 }

@@ -61,16 +61,20 @@ export default class InsightFacade implements IInsightFacade {
                 return dataset.checkCoursesNotEmpty();
             })
             .then((dataset: Dataset) => {
-                Log.trace("dataset has at least one valid section");
-                this.datasets.push(dataset);
-                this.coursesDatasetHelper.writeToDisk(this.datasets);
-                Log.trace("dataset pushed to cache and written to disk");
+                this.saveDatasetToMemory(dataset);
                 return this.coursesDatasetHelper.getIds(this.datasets);
             })
             .catch((err: any) => {
                 Log.trace("something went wrong, got to addDataset catch block");
                 return Promise.reject(err);
             });
+    }
+
+    private saveDatasetToMemory(dataset: Dataset) {
+        Log.trace("dataset has at least one valid section");
+        this.datasets.push(dataset);
+        this.coursesDatasetHelper.writeToDisk(this.datasets);
+        Log.trace("dataset pushed to cache and written to disk");
     }
 
     public removeDataset(id: string): Promise<string> {
@@ -170,10 +174,7 @@ export default class InsightFacade implements IInsightFacade {
         return this.roomsDatasetHelper.getAllRoomsMasterMethod(content)
             .then((rooms: any[]) => {
                 let dataset: Dataset = new Dataset(id, kind, rooms);
-                Log.trace("dataset has at least one valid section");
-                this.datasets.push(dataset);
-                this.coursesDatasetHelper.writeToDisk(this.datasets);
-                Log.trace("dataset pushed to cache and written to disk");
+                this.saveDatasetToMemory(dataset);
                 return this.coursesDatasetHelper.getIds(this.datasets);
             })
             .catch((err: any) => {
