@@ -1,10 +1,13 @@
-import { InsightDatasetKind, InsightError } from "./IInsightFacade";
+import {InsightDatasetKind, InsightError} from "./IInsightFacade";
 import Dataset from "./Dataset";
 import Course from "./Course";
 import * as JSZip from "jszip";
 import * as fs from "fs";
+import * as parse5 from "parse5";
+import Room from "./Room";
+import Log from "../Util";
 
-export default class DatasetHelper {
+export default class CoursesDatasetHelper {
     public idValid(id: string): boolean {
         // whitespace check taken from https://stackoverflow.com/questions/2031085/how-can-i-check-if-string-contains-
         // characters-whitespace-not-just-whitespace/2031119
@@ -123,13 +126,13 @@ export default class DatasetHelper {
         return idsFromCache;
     }
 
-    public readContent(content: string): Promise<any> {
+    public parseCoursesZip(content: string): Promise<any> {
         let courses: Course[] = [];
         const zip = new JSZip();
         const files: Array<Promise<string>> = [];
         return new Promise<any>((resolve, reject) => {
             try {
-                zip.loadAsync(content, { base64: true })
+                zip.loadAsync(content, {base64: true})
                     .then((result: JSZip) => {
                         result
                             .folder("courses")
@@ -163,6 +166,8 @@ export default class DatasetHelper {
     }
 
     public isAddableDataset(id: string, kind: InsightDatasetKind, datasets: Dataset[]) {
-        return this.idValid(id) && kind === InsightDatasetKind.Courses && !this.idInDatasets(id, datasets);
+        return this.idValid(id) &&
+            (kind === InsightDatasetKind.Courses || kind === InsightDatasetKind.Rooms) &&
+            !this.idInDatasets(id, datasets);
     }
 }

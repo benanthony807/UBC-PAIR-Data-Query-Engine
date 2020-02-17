@@ -8,11 +8,11 @@ export default class Dataset {
     private data: any[];
     // private rooms: Room[];
 
-    constructor(id: string, kind: InsightDatasetKind, courses: Course[]) {
+    constructor(id: string, kind: InsightDatasetKind, data: any[]) {
         let that = this;
         that.id = id;
         that.kind = kind;
-        that.data = courses;
+        that.data = data;
     }
 
     public getId(): string {

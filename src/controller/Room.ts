@@ -1,17 +1,22 @@
 export default class Room {
 
-    private fullname: string; // e.g. "Hugh Dempster Pavillion"
-    private shortname: string; // e.g. "DMP"
-    private number: string; // e.g. "201"
-    private name: string; // e.g. "DMP 201"
-    private address: string; // e.g. "6245 Agronomy Road V6T 1Z4"
-    private lat: number;
-    private lon: number;
-    private seats: number; // e.g. 40, 0 if this value is missing in the dataset
-    private type: string; // e.g. "Small Group"
-    private furniture: string; // e.g. "Classroom-Movable Tables & Chairs"
-    private href: string; // e.g. "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201"
+    public fullname: string; // e.g. "Hugh Dempster Pavillion"
+    public shortname: string; // e.g. "DMP"
+    public number: string; // e.g. "201"
+    public name: string; // e.g. "DMP 201"
+    public address: string; // e.g. "6245 Agronomy Road V6T 1Z4"
+    public lat: number;
+    public lon: number;
+    public seats: number; // e.g. 40, 0 if this value is missing in the dataset
+    public type: string; // e.g. "Small Group"
+    public furniture: string; // e.g. "Classroom-Movable Tables & Chairs"
+    public href: string; // e.g. "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201"
                          // collected from index.htm More Info Link
+
+    constructor() {
+        this.href = null;
+    }
+
 
 // any field with can have an empty input I think
 // a building with no rooms can be ignored

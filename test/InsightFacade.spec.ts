@@ -34,7 +34,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         onevalidfileothersnot: "./test/data/onevalidfileothersnot.zip",
         valid1course: "./test/data/valid1course.zip",
         AAN: "./test/data/AAN.zip",
-        notazip: "./test/data/notazip.txt"
+        notazip: "./test/data/notazip.txt",
+        rooms: "./test/data/rooms.zip"
     };
     let datasets: { [id: string]: string } = {};
     let insightFacade: InsightFacade;
@@ -72,6 +73,19 @@ describe("InsightFacade Add/Remove Dataset", function () {
 
     afterEach(function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
+    });
+
+    it("Should add a valid rooms dataset", function () {
+        const id: string = "rooms";
+        const expected: string[] = [id];
+        return insightFacade
+            .addDataset(id, datasets[id], InsightDatasetKind.Rooms)
+            .then((result: string[]) => {
+               //
+            })
+            .catch((err: any) => {
+                //
+            });
     });
 
     // This is a unit test. You should create more like this!
