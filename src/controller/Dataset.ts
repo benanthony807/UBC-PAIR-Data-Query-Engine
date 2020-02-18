@@ -1,12 +1,10 @@
-import { InsightDatasetKind, InsightError } from "./IInsightFacade";
+import {InsightDatasetKind, InsightError} from "./IInsightFacade";
 import Course from "./Course";
-import Room from "./Room";
 
 export default class Dataset {
     private id: string;
     private kind: InsightDatasetKind;
     private data: any[];
-    // private rooms: Room[];
 
     constructor(id: string, kind: InsightDatasetKind, data: any[]) {
         let that = this;
@@ -15,15 +13,25 @@ export default class Dataset {
         that.data = data;
     }
 
-    public getId(): string {
-        return this.id;
+    public getNumRows(kind: InsightDatasetKind): number {
+        let count: number;
+        if (kind === InsightDatasetKind.Courses) {
+            count = this.countCourseSections();
+        } else {
+            count = this.countRooms();
+        }
+        return count;
     }
 
-    public getKind(): InsightDatasetKind {
-        return this.kind;
+    private countRooms() {
+        let count: number = 0;
+        for (let room of this.data) {
+            count++;
+        }
+        return count;
     }
 
-    public getNumRows(): number {
+    private countCourseSections() {
         let count: number = 0;
         for (let course of this.data) {
             for (let section of course["result"]) {
@@ -31,10 +39,6 @@ export default class Dataset {
             }
         }
         return count;
-    }
-
-    public getCourses(): Course[] {
-        return this.data;
     }
 
     public checkCoursesNotEmpty() {

@@ -163,7 +163,7 @@ export default class InsightFacade implements IInsightFacade {
             const insightDataset: InsightDataset = {
                 id: dataset["id"],
                 kind: dataset["kind"],
-                numRows: dataset.getNumRows(),
+                numRows: dataset.getNumRows(dataset["kind"]),
             };
             insightDatasets.push(insightDataset);
         }
