@@ -14,13 +14,11 @@ export default class Dataset {
     }
 
     public getNumRows(kind: InsightDatasetKind): number {
-        let count: number;
         if (kind === InsightDatasetKind.Courses) {
-            count = this.countCourseSections();
+            return this.countCourseSections();
         } else {
-            count = this.countRooms();
+            return this.countRooms();
         }
-        return count;
     }
 
     private countRooms() {
