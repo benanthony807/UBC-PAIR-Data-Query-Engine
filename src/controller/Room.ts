@@ -1,3 +1,5 @@
+import Building from "./Building";
+
 export default class Room {
 
     public fullname: string; // e.g. "Hugh Dempster Pavillion"
@@ -13,10 +15,19 @@ export default class Room {
     public href: string; // e.g. "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/DMP-201"
                          // collected from index.htm More Info Link
 
-    constructor() {
-        this.href = null;
-        this.address = null;
+    constructor(building: Building) {
+        if (building !== null) {
+            this.fullname = building.room.fullname;
+            this.shortname = building.room.shortname;
+            this.address = building.room.address;
+            this.lat = building.room.lat;
+            this.lon = building.room.lon;
+        } else {
+            this.href = null;
+            this.address = null;
+        }
     }
+}
 
 
 // any field with can have an empty input I think
@@ -30,4 +41,3 @@ export default class Room {
 // get lat/lon using http, and URL encoded address, have to match how the address is
     // in the data file exactly
 // to get the address pretty sure we just use the http GET method
-}

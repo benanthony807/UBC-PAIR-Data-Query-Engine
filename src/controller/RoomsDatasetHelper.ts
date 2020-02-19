@@ -6,14 +6,19 @@ import * as http from "http";
 import {IncomingMessage} from "http";
 import {rejects} from "assert";
 import {InsightError} from "./IInsightFacade";
+import Building from "./Building";
 
 export default class RoomsDatasetHelper {
 
+    private buildings: any[];
     private rooms: any[];
+    private rawRooms: any[];
     private content: string;
 
     constructor() {
         this.rooms = [];
+        this.buildings = [];
+        this.rawRooms = [];
     }
 
     public parseRoomsZip(fileName: string): Promise<any> {
@@ -54,20 +59,20 @@ export default class RoomsDatasetHelper {
     }
 
     private buildingLevelRecursion(parent: any) {
-        for (let node of parent["childNodes"]) {
-            if (node["nodeName"] === "div" || node["nodeName"] === "section") {
-                this.buildingLevelRecursion(node);
-            } else if (node["nodeName"] === "table") {
-                this.buildingLevelTableSearch(node);
+        for (let child of parent["childNodes"]) {
+            if (child["nodeName"] === "div" || child["nodeName"] === "section") {
+                this.buildingLevelRecursion(child);
+            } else if (child["nodeName"] === "table") {
+                this.buildingLevelTableSearch(child);
             }
         }
     }
 
     private buildingLevelTableSearch(parent: any) {
         let tbody: any;
-        for (let node of parent["childNodes"]) {
-            if (node["nodeName"] === "tbody") {
-                tbody = node;
+        for (let child of parent["childNodes"]) {
+            if (child["nodeName"] === "tbody") {
+                tbody = child;
                 break;
             }
         }
@@ -79,23 +84,109 @@ export default class RoomsDatasetHelper {
     }
 
     private buildingBuilder(node: any) {
-        let room: Room = new Room();
-        this.trSearcher(node, room);
+        let building: Building = new Building();
+        this.buildingLevelTrSearcher(node, building.room);
+        // todo: not sure if building.room will actually be altered here
         Log.trace("found a building in index.htm, got its shortname, fullname, and address");
-        if (room.address !== null) {
-            this.getLatLon(room)
-                .then(() => {
-                    return this.parseRoomsZip(room.href.substring(1));
-                })
-                .then((roomHTML: any) => {
-                    this.roomBuilder(roomHTML, room);
-                })
-                .catch((err: any) => {
-                    // if lat/lon invalid we don't add this room to this.rooms, continue execution for remaining rooms
-                    Log.trace("got to buildingBuilder catch block, that means a room wasn't added for some reason");
-                });
+        this.buildings.push(building);
+    }
+
+    private buildingLevelTrSearcher(node: any, room: Room) {
+        for (let child of node["childNodes"]) {
+            this.tdSearcher(child, room);
         }
     }
+
+    private roomBuilder(building: Building) {
+        let tbody: any = this.findHTMLBody(building.htmlObj);
+        // room level recursion should return an array of all the rooms it created
+        // then the if block can iterate through the list
+        this.roomLevelRecursion(tbody, building);
+        Log.trace("room has been filled at this point, is ready to be pushed to rooms provided it's not empty");
+        for (let room of this.rawRooms) {
+            if (!this.isEmptyBuilding(room)) {
+                room.name = room.shortname + " " + room.number;
+                this.rooms.push(room);
+            }
+        }
+    }
+
+    private isEmptyBuilding(room: Room) {
+        return room.type === undefined &&
+            room.furniture === undefined &&
+            room.seats === undefined &&
+            room.number === undefined;
+    }
+
+    private roomLevelRecursion(parent: any, building: Building) {
+        for (let node of parent["childNodes"]) {
+            if (node["nodeName"] === "div" || node["nodeName"] === "section") {
+                this.roomLevelRecursion(node, building);
+            } else if (node["nodeName"] === "table") {
+                this.roomLevelTableSearch(node, building);
+            }
+        }
+    }
+
+    private roomLevelTableSearch(parent: any, building: Building) {
+        let tbody: any;
+        for (let node of parent["childNodes"]) {
+            if (node["nodeName"] === "tbody") {
+                tbody = node;
+                break;
+            }
+        }
+        for (let node of tbody["childNodes"]) {
+            if (node["nodeName"] === "tr") {
+                this.roomLevelTrSearcher(node, building);
+            }
+        }
+    }
+
+    private roomLevelTrSearcher(node: any, building: Building) {
+        let room = new Room(building);
+        for (let child of node["childNodes"]) {
+            this.tdSearcher(child, room);
+        }
+        this.rawRooms.push(room);
+    }
+
+    private tdSearcher(node: any, room: Room) {
+        if (node["nodeName"] === "td") {
+            for (let child of node["attrs"]) {
+                if (child["value"] === "views-field views-field-nothing") {
+                    room.href = this.aSearcher(node["childNodes"]);
+                } else if (child["value"] === "views-field views-field-field-building-code") {
+                    room.shortname = node["childNodes"][0]["value"].trim();
+                } else if (child["value"] === "views-field views-field-field-building-address") {
+                    room.address = node["childNodes"][0]["value"].trim();
+                } else if (child["value"] === "views-field views-field-field-room-number") {
+                    room.number = node["childNodes"][1]["childNodes"][0]["value"].trim();
+                } else if (child["value"] === "views-field views-field-field-room-capacity") {
+                    room.seats = parseInt(node["childNodes"][0]["value"].trim(), 10);
+                } else if (child["value"] === "views-field views-field-field-room-furniture") {
+                    room.furniture = node["childNodes"][0]["value"].trim();
+                } else if (child["value"] === "views-field views-field-field-room-type") {
+                    room.type = node["childNodes"][0]["value"].trim();
+                } else if (child["value"] === "views-field views-field-title") {
+                    room.fullname = node["childNodes"][1]["childNodes"][0]["value"].trim();
+                }
+            }
+        }
+    }
+
+    private aSearcher(node: any) {
+        for (let child of node) {
+            if (child["nodeName"] === "a") {
+                for (let grandchild of child["attrs"]) {
+                    if (grandchild["name"] === "href") {
+                        return grandchild["value"];
+                    }
+                }
+            }
+        }
+    }
+
 
     private getLatLon(room: Room): Promise<any> {
         let encoded: string = encodeURI(room.address);
@@ -127,91 +218,6 @@ export default class RoomsDatasetHelper {
         });
     }
 
-    private roomBuilder(node: any, room: Room) {
-        let tbody: any = this.findHTMLBody(node);
-        this.roomLevelRecursion(tbody, room);
-        Log.trace("room has been filled at this point, is ready to be pushed to rooms provided it's not empty");
-        if (!this.isEmptyBuilding(room)) {
-            room.name = room.shortname + " " + room.number;
-            this.rooms.push(room);
-        }
-    }
-
-    private roomLevelRecursion(parent: any, room: Room) {
-        for (let node of parent["childNodes"]) {
-            if (node["nodeName"] === "div" || node["nodeName"] === "section") {
-                this.roomLevelRecursion(node, room);
-            } else if (node["nodeName"] === "table") {
-                this.roomLevelTableSearch(node, room);
-            }
-        }
-    }
-
-    private roomLevelTableSearch(parent: any, room: Room) {
-        let tbody: any;
-        for (let node of parent["childNodes"]) {
-            if (node["nodeName"] === "tbody") {
-                tbody = node;
-                break;
-            }
-        }
-        for (let node of tbody["childNodes"]) {
-            if (node["nodeName"] === "tr") {
-                this.trSearcher(node, room);
-            }
-        }
-    }
-
-    private isEmptyBuilding(room: Room) {
-        return room.type === undefined &&
-            room.furniture === undefined &&
-            room.seats === undefined &&
-            room.number === undefined;
-    }
-
-    private trSearcher(node: any, room: Room) {
-        for (let child of node["childNodes"]) {
-            this.tdSearcher(child, room);
-        }
-    }
-
-    private tdSearcher(node: any, room: Room) {
-        if (node["nodeName"] === "td") {
-            for (let child of node["attrs"]) {
-                if (child["value"] === "views-field views-field-nothing") {
-                    room.href = this.aSearcher(node["childNodes"]);
-                } else if (child["value"] === "views-field views-field-field-building-code") {
-                    room.shortname = node["childNodes"][0]["value"].trim();
-                    // assuming the shortname will always be the first (and only) index in childNodes, might be faulty
-                } else if (child["value"] === "views-field views-field-field-building-address") {
-                    room.address = node["childNodes"][0]["value"].trim();
-                } else if (child["value"] === "views-field views-field-field-room-number") {
-                    room.number = node["childNodes"][1]["childNodes"][0]["value"].trim();
-                } else if (child["value"] === "views-field views-field-field-room-capacity") {
-                    room.seats = parseInt(node["childNodes"][0]["value"].trim(), 10);
-                } else if (child["value"] === "views-field views-field-field-room-furniture") {
-                    room.furniture = node["childNodes"][0]["value"].trim();
-                } else if (child["value"] === "views-field views-field-field-room-type") {
-                    room.type = node["childNodes"][0]["value"].trim();
-                } else if (child["value"] === "views-field views-field-title") {
-                    room.fullname = node["childNodes"][1]["childNodes"][0]["value"].trim();
-                }
-            }
-        }
-    }
-
-    private aSearcher(node: any) {
-        for (let child of node) {
-            if (child["nodeName"] === "a") {
-                for (let grandchild of child["attrs"]) {
-                    if (grandchild["name"] === "href") {
-                        return grandchild["value"];
-                    }
-                }
-            }
-        }
-    }
-
     public getAllRoomsMasterMethod(content: string) {
         this.content = content;
         return this.parseRoomsZip("/index.htm")
@@ -220,7 +226,31 @@ export default class RoomsDatasetHelper {
                 let body: any = this.findHTMLBody(indexhtm);
                 this.buildingLevelRecursion(body);
             })
-            .then((result: any) => {
+            .then(() => {
+                let promises: Array<Promise<void>> = [];
+                for (let building of this.buildings) {
+                    try {
+                        promises.push(this.getLatLon(building));
+                    } catch (err) {
+                        this.buildings.splice(this.buildings.indexOf(building), 1);
+                    }
+                }
+                return Promise.all(promises);
+                // doesn't work
+            })
+            .then(() => {
+                let promises: Array<Promise<void>> = [];
+                for (let building of this.buildings) {
+                    this.parseRoomsZip(building.room.href.substring(1))
+                        .then((result: object) => {
+                            building.htmlObj = result;
+                        });
+                }
+            })
+            .then(() => {
+                for (let building of this.buildings) {
+                    this.roomBuilder(building);
+                }
                 return this.rooms;
             })
             .catch((err: any) => {
@@ -229,12 +259,6 @@ export default class RoomsDatasetHelper {
             });
     }
 }
-
-// todo: lat/lon is executing after it's supposed to
-// todo: the 2nd then block in getAllRoomsMasterMethod returns this.rooms before it's filled with anything
-    // i.e. before room builder finishes running
-// todo: is hardcoding tdSearcher ok?
-
 
 /* places of potential rejection:
 - invalid zip (parseRoomsZip)
