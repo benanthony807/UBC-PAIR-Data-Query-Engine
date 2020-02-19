@@ -14,6 +14,7 @@ export default class RoomsDatasetHelper {
     private rooms: any[];
     private rawRooms: any[];
     private content: string;
+    private jsZip: JSZip;
 
     constructor() {
         this.rooms = [];
@@ -28,6 +29,7 @@ export default class RoomsDatasetHelper {
             try {
                 jsZip.loadAsync(this.content, {base64: true})
                     .then((zip: JSZip) => {
+                        this.jsZip = zip;
                         zip.file("rooms" + fileName)
                             .async("text")
                             .then((htmlAsString: string) => {
@@ -36,13 +38,29 @@ export default class RoomsDatasetHelper {
                     });
             } catch (err) {
                 Log.trace("parseRoomsZip rejected with err " + err);
-                reject(new InsightError("content wasn't a valid zip or wasn't in HTML format"));
+                reject(new InsightError("content wasn't a valid zip"));
             }
         });
     }
 
+    public parseHTML(building: Building): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+            try {
+               this.jsZip.file("rooms" + building.room.href.substring(1))
+                   .async("text")
+                   .then((htmlAsString: string) => {
+                       building.htmlObj = parse5.parse(htmlAsString);
+                       resolve();
+                   });
+           } catch (err) {
+               Log.trace("parseHTML rejected with err " + err);
+               Log.trace("building " + building.room.fullname + " wasn't in HTML format");
+               resolve();
+           }
+    });
+    }
+
     public findHTMLBody(indexhtm: any) {
-        let body: any;
         let html: any;
         for (let child of indexhtm["childNodes"]) {
             if (child["nodeName"] === "html") {
@@ -86,7 +104,6 @@ export default class RoomsDatasetHelper {
     private buildingBuilder(node: any) {
         let building: Building = new Building();
         this.buildingLevelTrSearcher(node, building.room);
-        // todo: not sure if building.room will actually be altered here
         Log.trace("found a building in index.htm, got its shortname, fullname, and address");
         this.buildings.push(building);
     }
@@ -227,6 +244,7 @@ export default class RoomsDatasetHelper {
                 this.buildingLevelRecursion(body);
             })
             .then(() => {
+                Log.trace("Found all of the buildings in index.htm");
                 let promises: Array<Promise<void>> = [];
                 for (let building of this.buildings) {
                     try {
@@ -239,18 +257,21 @@ export default class RoomsDatasetHelper {
                 // doesn't work
             })
             .then(() => {
+                Log.trace("got the lat/lon of each building, discarded those without lat/lon");
                 let promises: Array<Promise<void>> = [];
                 for (let building of this.buildings) {
-                    this.parseRoomsZip(building.room.href.substring(1))
-                        .then((result: object) => {
-                            building.htmlObj = result;
-                        });
+                    promises.push(this.parseHTML(building));
                 }
+                return Promise.all(promises);
             })
             .then(() => {
+                Log.trace("parsed the html for each building into a JSON object");
                 for (let building of this.buildings) {
-                    this.roomBuilder(building);
+                    if (building.htmlObj !== undefined) {
+                        this.roomBuilder(building);
+                    }
                 }
+                Log.trace("filled the remaining fields for each room, discarded those with incomplete fields");
                 return this.rooms;
             })
             .catch((err: any) => {
