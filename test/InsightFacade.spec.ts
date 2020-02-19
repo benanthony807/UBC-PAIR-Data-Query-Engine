@@ -75,18 +75,18 @@ describe("InsightFacade Add/Remove Dataset", function () {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    // it("Should add a valid rooms dataset", function () {
-    //     const id: string = "rooms";
-    //     const expected: string[] = [id];
-    //     return insightFacade
-    //         .addDataset(id, datasets[id], InsightDatasetKind.Rooms)
-    //         .then((result: string[]) => {
-    //            //
-    //         })
-    //         .catch((err: any) => {
-    //             //
-    //         });
-    // });
+    it("Should add a valid rooms dataset", function () {
+        const id: string = "rooms";
+        const expected: string[] = [id];
+        return insightFacade
+            .addDataset(id, datasets[id], InsightDatasetKind.Rooms)
+            .then((result: string[]) => {
+               //
+            })
+            .catch((err: any) => {
+                //
+            });
+    });
 
     // This is a unit test. You should create more like this!
     it("Should fail to add a valid dataset in an invalid file (not a zip, txt file)", function () {

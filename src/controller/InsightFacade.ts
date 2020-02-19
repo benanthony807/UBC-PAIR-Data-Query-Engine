@@ -70,6 +70,23 @@ export default class InsightFacade implements IInsightFacade {
             });
     }
 
+    private addRoomsDataset(content: string, id: string, kind: InsightDatasetKind.Rooms) {
+        return this.roomsDatasetHelper.getAllRoomsMasterMethod(content)
+            .then((rooms: any[]) => {
+                if (rooms.length > 0) {
+                let dataset: Dataset = new Dataset(id, kind, rooms);
+                this.saveDatasetToMemory(dataset);
+                return this.coursesDatasetHelper.getIds(this.datasets);
+                } else {
+                    return Promise.reject(new InsightError("invalid dataset: contains no valid rooms"));
+                }
+            })
+            .catch((err: any) => {
+                Log.trace("something went wrong in addRoomsDataset");
+                return Promise.reject(err);
+            });
+    }
+
     private saveDatasetToMemory(dataset: Dataset) {
         Log.trace("dataset has at least one valid section");
         this.datasets.push(dataset);
@@ -168,18 +185,5 @@ export default class InsightFacade implements IInsightFacade {
             insightDatasets.push(insightDataset);
         }
         return Promise.resolve(insightDatasets);
-    }
-
-    private addRoomsDataset(content: string, id: string, kind: InsightDatasetKind.Rooms) {
-        return this.roomsDatasetHelper.getAllRoomsMasterMethod(content)
-            .then((rooms: any[]) => {
-                let dataset: Dataset = new Dataset(id, kind, rooms);
-                this.saveDatasetToMemory(dataset);
-                return this.coursesDatasetHelper.getIds(this.datasets);
-            })
-            .catch((err: any) => {
-                Log.trace("something went wrong in addRoomsDataset");
-                return Promise.reject(err);
-            });
     }
 }

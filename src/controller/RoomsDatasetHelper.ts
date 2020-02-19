@@ -4,6 +4,8 @@ import * as parse5 from "parse5";
 import Room from "./Room";
 import * as http from "http";
 import {IncomingMessage} from "http";
+import {rejects} from "assert";
+import {InsightError} from "./IInsightFacade";
 
 export default class RoomsDatasetHelper {
 
@@ -29,7 +31,7 @@ export default class RoomsDatasetHelper {
                     });
             } catch (err) {
                 Log.trace("parseRoomsZip rejected with err " + err);
-                reject(err);
+                reject(new InsightError("content wasn't a valid zip or wasn't in HTML format"));
             }
         });
     }
@@ -81,43 +83,47 @@ export default class RoomsDatasetHelper {
         this.trSearcher(node, room);
         Log.trace("found a building in index.htm, got its shortname, fullname, and address");
         if (room.address !== null) {
-            this.getLatLon(room);
-            // if this thing is invalid it's gonna throw an error, should just let that ride all the way back up to top
-            // and return insight error from there
-            // todo: this thing should be wrapped in a promise, it's async
-        }
-        if (room.href !== null) {
-            this.parseRoomsZip(room.href.substring(1))
+            this.getLatLon(room)
+                .then(() => {
+                    return this.parseRoomsZip(room.href.substring(1));
+                })
                 .then((roomHTML: any) => {
                     this.roomBuilder(roomHTML, room);
+                })
+                .catch((err: any) => {
+                    // if lat/lon invalid we don't add this room to this.rooms, continue execution for remaining rooms
+                    Log.trace("got to buildingBuilder catch block, that means a room wasn't added for some reason");
                 });
         }
     }
 
-    private getLatLon(room: Room) {
+    private getLatLon(room: Room): Promise<any> {
         let encoded: string = encodeURI(room.address);
         let url: string = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team097/" + encoded;
-        http.get(url, (res: IncomingMessage) => {
-            // callback function taken from https://nodejs.org/api/http.html#http_http_get_options_callback
-            res.setEncoding("utf8");
-            let rawData: any = "";
-            res.on("data", (chunk) => {
-                rawData += chunk;
-            });
-            res.on("end", () => {
-                try {
-                    const parsedData = JSON.parse(rawData);
-                    if (parsedData["error"] !== undefined) {
-                        throw new Error("the lat/lon request resulted in an error");
+        return new Promise<any>((resolve, reject) => {
+            http.get(url, (res: IncomingMessage) => {
+                // callback function taken from https://nodejs.org/api/http.html#http_http_get_options_callback
+                res.setEncoding("utf8");
+                let rawData: any = "";
+                res.on("data", (chunk) => {
+                    rawData += chunk;
+                });
+                res.on("end", () => {
+                    try {
+                        const parsedData = JSON.parse(rawData);
+                        if (parsedData["error"] !== undefined) {
+                            reject("the lat/lon request resulted in an error");
+                        }
+                        room.lat = parsedData["lat"];
+                        room.lon = parsedData["lon"];
+                        resolve();
+                    } catch (e) {
+                        reject(e.message);
                     }
-                    room.lat = parsedData["lat"];
-                    room.lon = parsedData["lon"];
-                } catch (e) {
-                    Log.error(e.message);
-                }
+                });
+            }).on("error", (e) => {
+                reject(`Got error: ${e.message}`);
             });
-        }).on("error", (e) => {
-            Log.error(`Got error: ${e.message}`);
         });
     }
 
@@ -125,7 +131,7 @@ export default class RoomsDatasetHelper {
         let tbody: any = this.findHTMLBody(node);
         this.roomLevelRecursion(tbody, room);
         Log.trace("room has been filled at this point, is ready to be pushed to rooms provided it's not empty");
-        if (!this.emptyBuilding(room)) {
+        if (!this.isEmptyBuilding(room)) {
             room.name = room.shortname + " " + room.number;
             this.rooms.push(room);
         }
@@ -156,7 +162,7 @@ export default class RoomsDatasetHelper {
         }
     }
 
-    private emptyBuilding(room: Room) {
+    private isEmptyBuilding(room: Room) {
         return room.type === undefined &&
             room.furniture === undefined &&
             room.seats === undefined &&
@@ -216,6 +222,22 @@ export default class RoomsDatasetHelper {
             })
             .then((result: any) => {
                 return this.rooms;
+            })
+            .catch((err: any) => {
+                Log.trace("something went wrong, ended up in getAllRoomsMasterMethod catch block");
+                return Promise.reject(err);
             });
     }
 }
+
+// todo: lat/lon is executing after it's supposed to
+// todo: the 2nd then block in getAllRoomsMasterMethod returns this.rooms before it's filled with anything
+    // i.e. before room builder finishes running
+// todo: is hardcoding tdSearcher ok?
+
+
+/* places of potential rejection:
+- invalid zip (parseRoomsZip)
+- file isn't HTML (wherever parse5 gets called)
+- rooms is at least size 1 (check at top level)
+ */
