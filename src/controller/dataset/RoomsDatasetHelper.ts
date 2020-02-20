@@ -46,18 +46,18 @@ export default class RoomsDatasetHelper {
     public parseHTML(building: Building): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             try {
-               this.jsZip.file("rooms" + building.buildingLevelRoomData.href.substring(1))
-                   .async("text")
-                   .then((htmlAsString: string) => {
-                       building.htmlObj = parse5.parse(htmlAsString);
-                       resolve();
-                   });
-           } catch (err) {
-               Log.trace("parseHTML rejected with err " + err);
-               Log.trace("building " + building.buildingLevelRoomData.fullname + " wasn't in HTML format");
-               resolve();
-           }
-    });
+                this.jsZip.file("rooms" + building.buildingLevelRoomData.href.substring(1))
+                    .async("text")
+                    .then((htmlAsString: string) => {
+                        building.htmlObj = parse5.parse(htmlAsString);
+                        resolve();
+                    });
+            } catch (err) {
+                Log.trace("parseHTML rejected with err " + err);
+                Log.trace("building " + building.buildingLevelRoomData.fullname + " wasn't in HTML format");
+                resolve();
+            }
+        });
     }
 
     public findHTMLBody(indexhtm: any) {
@@ -207,8 +207,8 @@ export default class RoomsDatasetHelper {
     }
 
 
-    private getLatLon(room: Room): Promise<any> {
-        let encoded: string = encodeURI(room.address);
+    private getLatLon(building: Building): Promise<any> {
+        let encoded: string = encodeURI(building.buildingLevelRoomData.address);
         let url: string = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team097/" + encoded;
         return new Promise<any>((resolve, reject) => {
             http.get(url, (res: IncomingMessage) => {
@@ -222,17 +222,19 @@ export default class RoomsDatasetHelper {
                     try {
                         const parsedData = JSON.parse(rawData);
                         if (parsedData["error"] !== undefined) {
-                            reject("the lat/lon request resulted in an error");
+                            resolve("the lat/lon request resulted in an error");
                         }
-                        room.lat = parsedData["lat"];
-                        room.lon = parsedData["lon"];
+                        building.buildingLevelRoomData.lat = parsedData["lat"];
+                        building.buildingLevelRoomData.lon = parsedData["lon"];
                         resolve();
                     } catch (e) {
-                        reject(e.message);
+                        this.buildings.splice(this.buildings.indexOf(building), 1);
+                        resolve();
                     }
                 });
             }).on("error", (e) => {
-                reject(`Got error: ${e.message}`);
+                this.buildings.splice(this.buildings.indexOf(building), 1);
+                resolve(`Got error: ${e.message}`);
             });
         });
     }
@@ -249,11 +251,7 @@ export default class RoomsDatasetHelper {
                 Log.trace("Found all of the buildings in index.htm");
                 let promises: Array<Promise<void>> = [];
                 for (let building of this.buildings) {
-                    try {
-                        promises.push(this.getLatLon(building));
-                    } catch (err) {
-                        this.buildings.splice(this.buildings.indexOf(building), 1);
-                    }
+                    promises.push(this.getLatLon(building));
                 }
                 return Promise.all(promises);
                 // doesn't work
