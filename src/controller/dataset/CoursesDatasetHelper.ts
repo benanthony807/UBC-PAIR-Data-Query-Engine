@@ -1,11 +1,8 @@
-import {InsightDatasetKind, InsightError} from "./IInsightFacade";
+import {InsightDatasetKind, InsightError} from "../IInsightFacade";
 import Dataset from "./Dataset";
 import Course from "./Course";
 import * as JSZip from "jszip";
 import * as fs from "fs";
-import * as parse5 from "parse5";
-import Room from "./Room";
-import Log from "../Util";
 
 export default class CoursesDatasetHelper {
     public idValid(id: string): boolean {
@@ -41,7 +38,7 @@ export default class CoursesDatasetHelper {
             return "id invalid: contains underscore";
         } else if (/^\s+$/.test(id)) {
             return "id invalid: contains only whitespace characters";
-        } else if (kind !== InsightDatasetKind.Courses) {
+        } else if (!(kind === InsightDatasetKind.Courses || kind === InsightDatasetKind.Rooms)) {
             return `kind invalid: ${kind} is not allowed`;
         }
         for (let ds of datasets) {

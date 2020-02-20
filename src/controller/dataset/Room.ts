@@ -17,11 +17,11 @@ export default class Room {
 
     constructor(building: Building) {
         if (building !== null) {
-            this.fullname = building.room.fullname;
-            this.shortname = building.room.shortname;
-            this.address = building.room.address;
-            this.lat = building.room.lat;
-            this.lon = building.room.lon;
+            this.fullname = building.buildingLevelRoomData.fullname;
+            this.shortname = building.buildingLevelRoomData.shortname;
+            this.address = building.buildingLevelRoomData.address;
+            this.lat = building.buildingLevelRoomData.lat;
+            this.lon = building.buildingLevelRoomData.lon;
         } else {
             this.href = null;
             this.address = null;
@@ -36,7 +36,7 @@ export default class Room {
 // valid dataset has to have at least one valid room
 // can assume HTML elements will always be in the same form as in the zip file
 // can't assume there's only one <table> in a file, but
-    // can assume that whatever table has the building data is the only oen with room data in that file
+    // can assume that whatever table has the building data is the only one with room data in that file
 // elements might be in different locations between diff HTML trees
 // get lat/lon using http, and URL encoded address, have to match how the address is
     // in the data file exactly

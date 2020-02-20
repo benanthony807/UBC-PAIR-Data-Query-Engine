@@ -7,13 +7,12 @@ import {
     NotFoundError,
     ResultTooLargeError,
 } from "./IInsightFacade";
-import Dataset from "./Dataset";
-import CoursesDatasetHelper from "./CoursesDatasetHelper";
-import Course from "./Course";
+import Dataset from "./dataset/Dataset";
+import CoursesDatasetHelper from "./dataset/CoursesDatasetHelper";
+import Course from "./dataset/Course";
 import PQPreQuery from "./PQPreQuery";
 import PQRunQuery from "./PQRunQuery";
-import RoomsDatasetHelper from "./RoomsDatasetHelper";
-import Room from "./Room";
+import RoomsDatasetHelper from "./dataset/RoomsDatasetHelper";
 
 /**
  * This is the main programmatic entry point for the project.

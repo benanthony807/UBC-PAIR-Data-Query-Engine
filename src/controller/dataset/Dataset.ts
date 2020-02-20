@@ -1,4 +1,4 @@
-import {InsightDatasetKind, InsightError} from "./IInsightFacade";
+import {InsightDatasetKind, InsightError} from "../IInsightFacade";
 import Course from "./Course";
 
 export default class Dataset {

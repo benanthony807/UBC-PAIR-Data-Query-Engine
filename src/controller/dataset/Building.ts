@@ -2,10 +2,10 @@ import Room from "./Room";
 
 export default class Building {
 
-    public room: Room;
+    public buildingLevelRoomData: Room;
     public htmlObj: any;
 
     constructor() {
-        this.room = new Room(null);
+        this.buildingLevelRoomData = new Room(null);
     }
 }

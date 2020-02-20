@@ -1,11 +1,11 @@
-import Log from "../Util";
+import Log from "../../Util";
 import * as JSZip from "jszip";
 import * as parse5 from "parse5";
 import Room from "./Room";
 import * as http from "http";
 import {IncomingMessage} from "http";
 import {rejects} from "assert";
-import {InsightError} from "./IInsightFacade";
+import {InsightError} from "../IInsightFacade";
 import Building from "./Building";
 
 export default class RoomsDatasetHelper {
@@ -46,7 +46,7 @@ export default class RoomsDatasetHelper {
     public parseHTML(building: Building): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             try {
-               this.jsZip.file("rooms" + building.room.href.substring(1))
+               this.jsZip.file("rooms" + building.buildingLevelRoomData.href.substring(1))
                    .async("text")
                    .then((htmlAsString: string) => {
                        building.htmlObj = parse5.parse(htmlAsString);
@@ -54,7 +54,7 @@ export default class RoomsDatasetHelper {
                    });
            } catch (err) {
                Log.trace("parseHTML rejected with err " + err);
-               Log.trace("building " + building.room.fullname + " wasn't in HTML format");
+               Log.trace("building " + building.buildingLevelRoomData.fullname + " wasn't in HTML format");
                resolve();
            }
     });
@@ -103,7 +103,7 @@ export default class RoomsDatasetHelper {
 
     private buildingBuilder(node: any) {
         let building: Building = new Building();
-        this.buildingLevelTrSearcher(node, building.room);
+        this.buildingLevelTrSearcher(node, building.buildingLevelRoomData);
         Log.trace("found a building in index.htm, got its shortname, fullname, and address");
         this.buildings.push(building);
     }
@@ -123,6 +123,9 @@ export default class RoomsDatasetHelper {
         for (let room of this.rawRooms) {
             if (!this.isEmptyBuilding(room)) {
                 room.name = room.shortname + " " + room.number;
+                if (room.seats === undefined) {
+                    room.seats = 0;
+                }
                 this.rooms.push(room);
             }
         }
@@ -131,7 +134,6 @@ export default class RoomsDatasetHelper {
     private isEmptyBuilding(room: Room) {
         return room.type === undefined &&
             room.furniture === undefined &&
-            room.seats === undefined &&
             room.number === undefined;
     }
 
@@ -280,9 +282,3 @@ export default class RoomsDatasetHelper {
             });
     }
 }
-
-/* places of potential rejection:
-- invalid zip (parseRoomsZip)
-- file isn't HTML (wherever parse5 gets called)
-- rooms is at least size 1 (check at top level)
- */
