@@ -1,0 +1,11 @@
+{
+    "title": "Invalid: If query has a third key, it must be TRANSFORMATIONS",
+    "query": {
+        "WHERE": { "GT": { "courses_avg": 97 } },
+        "OPTIONS": { "COLUMNS": [ "courses_dept", "courses_avg" ],
+            "ORDER": "courses_avg" },
+        "THIRDKEY":  "hi"
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}
