@@ -1,5 +1,5 @@
 {
-    "title": "Unexpected response status 400: query should have 2 keys",
+    "title": "Invalid: Where should not be an array",
     "query": {
         "WHERE": [],
         "OPTIONS": { "COLUMNS": [ "courses_dept", "courses_avg" ],

@@ -1,5 +1,5 @@
 {
-    "title": "Unexpected response status 400: Invalid key courses_blah in SUM",
+    "title": "Unexpected response status 400: Cannot have underscore in applyKey",
     "query": {
         "WHERE": {
             "GT": {
@@ -18,8 +18,8 @@
             ],
             "APPLY": [
                 {
-                    "overallAvg": {
-                        "SUM": "courses_blah"
+                    "overall_Avg": {
+                        "SUM": "courses_avg"
                     }
                 }
             ]

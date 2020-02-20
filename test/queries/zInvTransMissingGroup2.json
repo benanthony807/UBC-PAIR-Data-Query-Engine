@@ -1,10 +1,10 @@
 {
-    "title": "Unexpected response status 400: TRANSFORMATIONS missing GROUP",
+    "title": "Unexpected response status 400: TRANSFORMATIONS missing GROUP - {}",
     "query": {
         "WHERE": { "GT": { "courses_avg": 97 } },
         "OPTIONS": { "COLUMNS": [ "courses_dept", "courses_avg" ],
             "ORDER": "courses_avg" },
-        "TRANSFORMATIONS":  "hi"
+        "TRANSFORMATIONS":  {}
     },
     "isQueryValid": false,
     "result": "InsightError"

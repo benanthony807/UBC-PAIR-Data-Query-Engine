@@ -1,5 +1,5 @@
 {
-    "title": "Unexpected response status 400: Invalid key type in MAX",
+    "title": "Unexpected response status 400: Invalid key type in MIN",
     "query": {
         "WHERE": {
             "GT": {
@@ -19,7 +19,7 @@
             "APPLY": [
                 {
                     "overallAvg": {
-                        "MAX": "courses_dept"
+                        "MIN": "courses_dept"
                     }
                 }
             ]

@@ -18,8 +18,8 @@
             ],
             "APPLY": [
                 {
-                    "ovevg": {
-                        "AVG": "courses_avg"
+                    "overallAvg": {
+                        "AVG": "corses_avg"
                     }
                 }
             ]

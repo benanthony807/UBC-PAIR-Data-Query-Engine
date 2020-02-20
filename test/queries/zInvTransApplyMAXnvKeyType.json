@@ -1,5 +1,5 @@
 {
-    "title": "Unexpected response status 400: Invalid key courses_blah in MAX",
+    "title": "Unexpected response status 400: Invalid key type in MAX",
     "query": {
         "WHERE": {
             "GT": {
@@ -19,7 +19,7 @@
             "APPLY": [
                 {
                     "overallAvg": {
-                        "MAX": "courses_blah"
+                        "MAX": "courses_dept"
                     }
                 }
             ]

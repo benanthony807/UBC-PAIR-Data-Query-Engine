@@ -531,6 +531,45 @@ describe("InsightFacade PerformQuery", () => {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
+    /** This is a flexible test where we replace queries */
+    it("{} WHERE should return ordered list}", function () {
+        let query = {
+            WHERE: {
+                OR: [
+                    {
+                        AND: [
+                            {
+                                GT: {
+                                    courses_avg: 96
+                                }
+                            },
+                            {
+                                IS: {
+                                    courses_dept: "adhe"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        EQ: {
+                            courses_avg: 95
+                        }
+                    }
+                ]
+            },
+            OPTIONS: {
+                "COLUMNS": [
+                    "courses_dept",
+                    "courses_id",
+                    "courses_avg"
+                ],
+                "ORDER!": "courses_avg"
+            }
+        };
+        let result = insightFacade.performQuery(query);
+        Log.trace(result);
+    });
+
     /** Should reject: query is empty. */
     it("Should reject, query is just {} ", function () {
         let query =  {};
@@ -555,14 +594,14 @@ describe("InsightFacade PerformQuery", () => {
 //             .catch((err: any) => {
 //                 expect.fail("should not have failed with " + err);
 //             });
-    /** This test should use cpsc.zip. WHERE: {} with ORDER should return the whole list with ORDER, not reject */
-    it("{} WHERE should return ordered list}", function () {
-        let query =  { WHERE: {}, OPTIONS: {
-                COLUMNS: [ "courses_dept", "courses_avg" ],
-                ORDER: "courses_avg" } };
-        let result = insightFacade.performQuery(query);
-        Log.trace(result);
-    });
+//     /** This test should use cpsc.zip. WHERE: {} with ORDER should return the whole list with ORDER, not reject */
+//     it("{} WHERE should return ordered list}", function () {
+//         let query =  { WHERE: {}, OPTIONS: {
+//                 COLUMNS: [ "courses_dept", "courses_avg" ],
+//                 ORDER: "courses_avg" } };
+//         let result = insightFacade.performQuery(query);
+//         Log.trace(result);
+//     });
 
     // Dynamically create and run a test for each query in testQueries.
     // Creates an extra "test" called "Should run test queries" as a byproduct.
@@ -581,19 +620,4 @@ describe("InsightFacade PerformQuery", () => {
 
     /** General test for queries */
 
-    /** This is a flexible test where we replace queries */
-
-    // it("{} WHERE should return ordered list}", function () {
-    //     let query = {
-    //         WHERE: {
-    //             OR: {},
-    //         },
-    //         OPTIONS: {
-    //             COLUMNS: ["courses_dept", "courses_id", "courses_avg"],
-    //             ORDER: "courses_id",
-    //         },
-    //     };
-    //     let result = insightFacade.performQuery(query);
-    //     Log.trace(result);
-    // });
 });

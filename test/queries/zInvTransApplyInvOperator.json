@@ -19,7 +19,7 @@
             "APPLY": [
                 {
                     "overallAvg": {
-                        "AVG": "courses_blah"
+                        "GAV": "courses_avg"
                     }
                 }
             ]

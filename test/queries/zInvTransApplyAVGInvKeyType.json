@@ -1,5 +1,5 @@
 {
-    "title": "Unexpected response status 400: Invalid key overallAvg in COLUMNS",
+    "title": "Unexpected response status 400: Invalid key type in AVG",
     "query": {
         "WHERE": {
             "GT": {
@@ -19,12 +19,7 @@
             "APPLY": [
                 {
                     "overallAvg": {
-                        "AVG": "courses_avg"
-                    }
-                },
-                {
-                    "overallAvg": {
-                        "AVG": "courses_avg"
+                        "AVG": "courses_dept"
                     }
                 }
             ]

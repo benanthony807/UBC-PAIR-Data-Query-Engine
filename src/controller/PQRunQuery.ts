@@ -1,17 +1,19 @@
 import Dataset from "./Dataset";
-import PQPreQuery from "./PQPreQuery";
+import PQPreQSyntax from "./PQPreQSyntax";
 import PQFilter from "./PQFilter";
 import InsightFacade from "./InsightFacade";
 import Log from "../Util";
+import PQTransformer from "./PQTransformer";
 
-export default class PQRunQuery extends PQPreQuery {
+export default class PQRunQuery extends PQPreQSyntax {
     // private filter: PQFilter;
     private allSectionsInDataset: any[];
+    private transformer: any;
 
     constructor() {
         super();
-        // this.filter = new PQFilter(this.allSectionsInDataset, this.dataSetID);
         this.allSectionsInDataset = [];
+        this.transformer = new PQTransformer();
     }
 
     // ================== RUN QUERY ================== //
@@ -35,8 +37,7 @@ export default class PQRunQuery extends PQPreQuery {
         } else {
             // Step 2b: YES FILTER
             queryResults = new PQFilter(
-                this.allSectionsInDataset,
-                this.dataSetID,
+                this.allSectionsInDataset
             ).doFilter(query["WHERE"], 0);
             Log.trace("WHERE detected, doing filter...");
             if (typeof queryResults === "string") {
@@ -57,24 +58,25 @@ export default class PQRunQuery extends PQPreQuery {
         if (typeof resultTrim === "string") {
             this.errorMessage = resultTrim;
             return this.errorMessage;
-        } else if (typeof resultTrim === "object") {
-            // ====================== ORDER ====================== //
-            // DO ORDER
-            if (query["OPTIONS"] === undefined || query["OPTIONS"] === null) {
-                return "Object.keys will call on undefined or null in doTrim";
-            }
-            if (Object.keys(query["OPTIONS"]).length === 1) {
-                this.filteredResults = resultTrim;
-                return this.filteredResults;
-            } else {
-                this.filteredResults = this.doOrder(resultTrim, query);
-                return this.filteredResults;
-            }
-        } else {
-            // doFilter somehow returned something that's neither a list nor a string
-            this.errorMessage = "doFilter returned neither string nor list";
+        }
+        // ====================== ORDER ====================== //
+        if (query["OPTIONS"] === undefined || query["OPTIONS"] === null) {
+            return "Object.keys will call on undefined or null in doTrim";
+        }
+        // no ORDER
+        if (Object.keys(query["OPTIONS"]).length === 1) {
+            this.filteredResults = resultTrim;
+        } else if (Object.keys(query["OPTIONS"]).length === 2) {
+            // yes ORDER
+            this.filteredResults = this.doOrder(resultTrim, query);
+        }
+        // ====================== TRANSFORMATIONS ====================== //
+        let transformResult = this.processTransformation(this.filteredResults, query);
+        if (typeof transformResult === "string") {
+            this.errorMessage = transformResult;
             return this.errorMessage;
         }
+        return transformResult;
     }
 
     // ====================== HELPER FUNCTIONS ====================== //
@@ -157,21 +159,122 @@ export default class PQRunQuery extends PQPreQuery {
     }
 
     /** Order the list of sections according to ORDER key */
-    private doOrder(unsortedListOfSections: any, query: any): any[] {
-        let sortedList: any[];
-        let orderKey = query["OPTIONS"]["ORDER"]; // ex. courses_avg
+    public doOrder(unsortedListOfSections: any, query: any): any[] {
 
-        // let that = this; Might need to use this to create a tie breaker if hidden secondary ORDER actually matters
-        sortedList = unsortedListOfSections.sort(function (a: any, b: any) {
-            if (a[orderKey] > b[orderKey]) {
+        let order = query["OPTIONS"]["ORDER"];
+
+        // If there's only one key in ORDER ex. "ORDER": "courses_avg"
+        if (typeof order === "string") {
+            return this.doAscending(unsortedListOfSections, order);
+        }
+
+        // If there are two order keys, then first look at UP/DOWN, then sort by keys
+        if (Object.keys(order).length === 2) {
+            if (order["dir"] === "UP") {
+                return this.doAscending(unsortedListOfSections, order);
+            } else if (order["dir"] === "DOWN") {
+                return this.doDescending(unsortedListOfSections, order);
+            }
+        }
+    }
+
+    /**
+     * orderKeys is ex. [courses_avg, courses_dept]
+     * order is query["OPTIONS"]["ORDER"];
+     */
+    public doAscending(unsortedList: any, order: any): any {
+        let sortedList: any[];
+        let self = this;
+
+        if (typeof order === "string") {
+            // -1 = a goes first || 1 = b goes first || 0 = tie, don't change order
+            sortedList = unsortedList.sort(function (a: any, b: any) {
+                // Remember that the unsorted list has sections with courses_avg, not Avg
+                // let translatedKey = self.translate(order); // translates courses_avg to AVG
+                if (a[order] > b[order]) {
+                    return 1;
+                } else if (a[order] < b[order]) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            });
+            return sortedList;
+        }
+        Log.trace("Order is..." + order);
+        let orderKeys = order["keys"];
+        Log.trace("Order keys is order['keys'] is... " + orderKeys);
+        sortedList = unsortedList.sort(function (a: any, b: any) {
+            // let translatedKey = self.translate(orderKeys[0]);
+            if (a[orderKeys[0]] > b[orderKeys[0]]) { // if a greater than b , put behind b
                 return 1;
-            } else if (a[orderKey] < b[orderKey]) {
+            } else if (a[orderKeys[0]] < b[orderKeys[0]]) {
                 return -1;
             } else {
-                return 0;
+                return self.ascendingTieBreaker(a, b, orderKeys);
             }
         });
-
         return sortedList;
     }
+
+    public ascendingTieBreaker(a: any, b: any, orderKeys: any[]): number {
+        for (let i = 1; i < orderKeys.length; i++) {
+            // let translatedKey = this.translate(orderKeys[i]);
+            if (a[orderKeys[i]] > b[orderKeys[i]]) {
+                return 1;
+            } else if (a[orderKeys[i]] < b[orderKeys[i]]) {
+                return -1;
+            }
+        }
+        // nothing else to order by
+        return 0;
+    }
+
+    public doDescending(unsortedList: any, order: any): any {
+        let sortedList: any[];
+        let orderKeys = order; // ex. courses_avg
+        let self = this;
+
+        sortedList = unsortedList.sort(function (a: any, b: any) {
+            // -1 = a goes first || 1 = b goes first || 0 = tie, don't change order
+            // let translatedKey = self.translate(orderKeys[0]);
+            if (a[orderKeys[0]] < b[orderKeys[0]]) {
+                return 1;
+            } else if (a[orderKeys[0]] > b[orderKeys[0]]) {
+                return -1;
+            } else {
+                return self.descendingTieBreaker(a, b, orderKeys);
+            }
+        });
+        return sortedList;
+    }
+
+    public descendingTieBreaker(a: any, b: any, orderKeys: any[]): number {
+        for (let i = 1; i < orderKeys.length; i++) {
+            if (a[orderKeys[i]] < b[orderKeys[i]]) {
+                return 1;
+            } else if (a[orderKeys[i]] > b[orderKeys[i]]) {
+                return -1;
+            }
+        }
+        // nothing else to order by
+        return 0;
+    }
+
+    public processTransformation(filteredResults: any, query: any) {
+        // if no transformations, return filtered results
+        if (Object.keys(query).length === 2) {
+            return this.filteredResults;
+        }
+        if (Object.keys(query).length === 3) {
+            let resultTransformation: any;
+            resultTransformation = this.transformer.doTransformation(this.filteredResults, query);
+            if (typeof resultTransformation !== "object") {
+                this.errorMessage = "An error occurred in doTransformation";
+                return this.errorMessage;
+            }
+            return resultTransformation;
+        }
+    }
+
 }

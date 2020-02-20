@@ -1,12 +1,14 @@
-import PQPreQuery from "../src/controller/PQPreQuery";
+import PQPreQSyntax from "../src/controller/PQPreQSyntax";
 import Log from "../src/Util";
 import InsightFacade from "../src/controller/InsightFacade";
 import * as assert from "assert";
 import PQRunQuery from "../src/controller/PQRunQuery";
+import PQPreQSemantics from "../src/controller/PQPreQSemantics";
 
 describe("Order Tests", function () {
     let insightFacade: InsightFacade = new InsightFacade();
-    let preQuery: PQPreQuery = new PQPreQuery();
+    let syntaxChecker: PQPreQSyntax = new PQPreQSyntax();
+    let semanticsChecker: PQPreQSemantics = new PQPreQSemantics();
     let runQuery: PQRunQuery = new PQRunQuery();
 
     beforeEach(function () {
@@ -26,13 +28,14 @@ describe("Order Tests", function () {
         let query = {
             WHERE: {GT: {courses_avg: 97}},
             OPTIONS: {COLUMNS: ["courses_dept", "courses_avg"], ORDE: "courses_avg"}};
-        assert.equal(preQuery.isOrderValid(query), false);
+        assert.equal(syntaxChecker.isOrderValid(query), "ERROR: Second key in OPTIONS must be ORDER");
     });
     it("Reject: ORDER key has no fields", function () {
         let query = {
             WHERE: {GT: {courses_avg: 97}},
             OPTIONS: {COLUMNS: ["courses_dept", "courses_avg"], ORDER: {}}};
-        assert.equal(preQuery.isOrderValid(query), false);
+        let expected = "Order key is not just a string, so it must have two keys";
+        assert.equal(syntaxChecker.isOrderValid(query), expected);
 
     });
 
@@ -41,14 +44,14 @@ describe("Order Tests", function () {
             WHERE: {GT: {courses_avg: 97}},
             OPTIONS: {COLUMNS: ["courses_dept", "courses_avg"], ORDER: 1}
         };
-        assert.equal(preQuery.isOrderValid(query), false);
+        assert.equal(syntaxChecker.isOrderValid(query), "ORDER must be a non-array object");
     });
     it("Reject: ORDER value not in COLUMNS", function () {
         let query = {
             WHERE: {GT: {courses_avg: 97}},
             OPTIONS: {COLUMNS: ["courses_dept", "courses_avg"], ORDER: "courses_id"}
         };
-        assert.equal(preQuery.isOrderValid(query), false);
+        assert.equal(syntaxChecker.isOrderValid(query), "ORDER key: courses_id must be in COLUMNS");
     });
 
 // TESTS FOR TWO ORDER ================================================================
@@ -59,21 +62,22 @@ describe("Order Tests", function () {
                         OPTIONS: {  COLUMNS:    [ "courses_dept", "courses_avg" ],
                                     ORDER:      {   dir: "DOWN",
                                                     keys: ["courses_avg"] } } };
-        assert.equal(preQuery.isOrderValid(query), true);
+        assert.equal(syntaxChecker.isOrderValid(query), true);
     });
     it("Accept: multiple keys in ORDER->Keys", function () {
         let query = {   WHERE: {    GT: { courses_avg: 98.7 } },
             OPTIONS: {  COLUMNS:    [ "courses_dept", "courses_avg" ],
                 ORDER:      {   dir: "DOWN",
                     keys: ["courses_dept", "courses_avg"] } } };
-        assert.equal(preQuery.isOrderValid(query), true);
+        assert.equal(syntaxChecker.isOrderValid(query), true);
     });
     it("Reject: keys value is not in COLUMNS", function () {
         let query = {   WHERE: {    GT: { courses_avg: 98.7 } },
                         OPTIONS: {  COLUMNS:    [ "courses_dept", "courses_avg" ],
                                     ORDER:      {   dir: "DOWN",
                                                     keys: ["courses_dept", "courses_av"] } } };
-        assert.equal(preQuery.isOrderValid(query), false);
+        let expected = "'keys' values in ORDER must be in COLUMNS, but courses_avis not in COLUMNS";
+        assert.equal(syntaxChecker.isOrderValid(query), expected);
     });
 
     // SEMANTICS ================================================================
@@ -82,14 +86,14 @@ describe("Order Tests", function () {
                         OPTIONS: {  COLUMNS:    [ "courses_dept", "courses_avg" ],
                                     ORDER:      {   dir: "DOWN",
                                                     keys: ["courses_dept", "courses_avg"] } } };
-        assert.equal(preQuery.areColumnAndOrderKeysValid(query), true);
+        assert.equal(semanticsChecker.areColumnAndOrderKeysValid(query), true);
     });
     it("Reject: Multiple datasets referenced", function () {
         let query = {   WHERE: {    GT: { courses_avg: 98.7 } },
                         OPTIONS: {  COLUMNS:    [ "courses_dept", "courses_avg" ],
                                     ORDER:      {   dir: "DOWN",
                                                     keys: ["courses_dept", "cours_avg"] } } };
-        assert.equal(preQuery.areColumnAndOrderKeysValid(query), false);
+        assert.equal(semanticsChecker.areColumnAndOrderKeysValid(query), false);
     });
 
     // SORTING AND TIE BREAKING ==================================================
@@ -121,7 +125,9 @@ describe("Order Tests", function () {
                         ORDER:      {   dir: "DOWN",
                                         keys: ["courses_avg"] } } };
         let expected = [S1, S2, S3, S4];
-        assert.equal(runQuery.doOrder(mockSections, query), expected);
+        let actual = runQuery.doOrder(mockSections, query);
+        assert.equal(actual, expected);
+        Log.trace(actual);
     });
     it("Accept: Sort Two Children Two Keys Ascending", function () {
         let query = {   WHERE: {    GT: { courses_avg: 98.7 } },

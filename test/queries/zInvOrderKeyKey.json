@@ -1,5 +1,5 @@
 {
-    "title": "Unexpected response status 400: ORDER missing 'dir' key",
+    "title": "Unexpected response status 400: ORDER missing 'keys' key",
     "query": {
         "WHERE": {
             "GT": {
@@ -12,8 +12,8 @@
                 "courses_avg"
             ],
             "ORDER": {
-                "di": "DOWN",
-                "keys": ["courses_avg"]
+                "dir": "DOWN",
+                "ke": ["courses_avg"]
             }
         }
     },

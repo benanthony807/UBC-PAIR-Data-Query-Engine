@@ -1,5 +1,5 @@
 {
-    "title": "Unexpected response status 400: Invalid key courses_blah in AVG",
+    "title": "Unexpected response status 400: Invalid key courses_blah in SUM",
     "query": {
         "WHERE": {
             "GT": {
@@ -19,7 +19,7 @@
             "APPLY": [
                 {
                     "overallAvg": {
-                        "AVG": "courses_blah"
+                        "SUM": "courses_blah"
                     }
                 }
             ]

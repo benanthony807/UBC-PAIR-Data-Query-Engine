@@ -19,7 +19,7 @@
             "APPLY": [
                 {
                     "overallAvg": {
-                        "SUM": "courses_avg"
+                        "SUM": "courses_dept"
                     }
                 }
             ]
