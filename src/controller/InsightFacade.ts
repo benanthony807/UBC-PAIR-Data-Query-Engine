@@ -129,6 +129,7 @@ export default class InsightFacade implements IInsightFacade {
     public performQuery(query: any): Promise<any[]> {
         Log.trace("Step1: Check grammar");
         let checkerResult = this.preQuery.isInputQueryValid(query);
+        Log.trace("Made it past this.preQuery.isInputQueryValid");
         if (typeof checkerResult === "string") {
             return Promise.reject(new InsightError(checkerResult));
         }
