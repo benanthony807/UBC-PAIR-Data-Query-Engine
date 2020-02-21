@@ -17,12 +17,6 @@ export default class CoursesDatasetHelper {
                 return true;
             }
         }
-        // let diskDatasets: Dataset[] = this.readDatasets();
-        // for (let ds of diskDatasets) {
-        //     if (id === ds["id"]) {
-        //         return true;
-        //     }
-        // }
         return false;
     }
 
@@ -49,22 +43,6 @@ export default class CoursesDatasetHelper {
     }
 
     public writeToDisk(datasets: Dataset[]) {
-        // writing behaviour taken from https://stackoverflow.com/questions/2496710/writing-files-in-node-js
-        // reading behaviour taken from https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
-        // let diskDatasets: Dataset[] = this.readDatasets();
-        // for (let diskDataset of diskDatasets) {
-        //     let diskDatasetSeenOnCache: boolean = false;
-        //     for (let cacheDataset of datasets) {
-        //         if (diskDataset["id"] === cacheDataset["id"]) {
-        //             diskDatasetSeenOnCache = true;
-        //             break;
-        //         }
-        //     }
-        //     if (!diskDatasetSeenOnCache) {
-        //         datasets.push(diskDataset);
-        //     }
-        // }
-
         // use of renameSync + appendFileSync taken from https://stackoverflow.com/questions/5315138/node-js-remove-file
         try {
             fs.renameSync("data/datesets.txt", "data/datesetsbackup.txt");
@@ -72,23 +50,10 @@ export default class CoursesDatasetHelper {
             //
         }
         fs.appendFileSync("data/datesets.txt", JSON.stringify(datasets));
-        // this.writeDatasets(datasets);
     }
 
-    // public removeFromDisk(id: string) {
-    //     let diskDatasets: Dataset[];
-    //     diskDatasets = this.readDatasets();
-    //
-    //     for (let ds of diskDatasets) {
-    //         if (id === ds["id"]) {
-    //             diskDatasets.splice(diskDatasets.indexOf(ds), 1);
-    //             break;
-    //         }
-    //     }
-    //     this.writeDatasets(diskDatasets);
-    // }
-
     public readDatasets() {
+        // reading behaviour taken from https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
         try {
             let utf8Dataset: string = fs.readFileSync(
                 "data/datesets.txt",
@@ -98,16 +63,6 @@ export default class CoursesDatasetHelper {
         } catch (err) {
             return [] as Dataset[];
         }
-    }
-
-    public writeDatasets(diskDatasets: Dataset[]) {
-        // use of renameSync + appendFileSync taken from https://stackoverflow.com/questions/5315138/node-js-remove-file
-        // try {
-        //     fs.renameSync("data/datesets.txt", "data/datesetsbackup.txt");
-        // } catch (err) {
-        //     //
-        // }
-        // fs.appendFileSync("data/datesets.txt", JSON.stringify(diskDatasets));
     }
 
     public getIds(datasets: Dataset[]): string[] {

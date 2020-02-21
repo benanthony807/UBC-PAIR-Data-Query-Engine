@@ -116,25 +116,15 @@ export default class RoomsDatasetHelper {
 
     private roomBuilder(building: Building) {
         let tbody: any = this.findHTMLBody(building.htmlObj);
-        // room level recursion should return an array of all the rooms it created
-        // then the if block can iterate through the list
         this.roomLevelRecursion(tbody, building);
         Log.trace("room has been filled at this point, is ready to be pushed to rooms provided it's not empty");
-        for (let room of this.rawRooms) {
-            if (!this.isEmptyBuilding(room)) {
-                room.name = room.shortname + " " + room.number;
-                if (room.seats === undefined) {
-                    room.seats = 0;
-                }
-                this.rooms.push(room);
-            }
-        }
     }
 
     private isEmptyBuilding(room: Room) {
-        return room.type === undefined &&
-            room.furniture === undefined &&
-            room.number === undefined;
+        return room.type === undefined ||
+            room.furniture === undefined ||
+            room.number === undefined ||
+            room.seats === undefined;
     }
 
     private roomLevelRecursion(parent: any, building: Building) {
@@ -271,12 +261,32 @@ export default class RoomsDatasetHelper {
                         this.roomBuilder(building);
                     }
                 }
+                this.filterIncompleteRooms();
                 Log.trace("filled the remaining fields for each room, discarded those with incomplete fields");
+                let count: number = 0;
+                for (let r of this.rooms) {
+                    Log.trace(`room # ${++count}: name: ${r.name}`);
+                    // shortname: ${r.shortname} fullname: ${r.fullname} seats: ${r.seats}
+                    // type: ${r.type} furniture: ${r.furniture} address: ${r.address}
+                    // number: ${r.number} href: ${r.href} lat: ${r.lat} lon: ${r.lon}
+                }
                 return this.rooms;
             })
             .catch((err: any) => {
                 Log.trace("something went wrong, ended up in getAllRoomsMasterMethod catch block");
                 return Promise.reject(err);
             });
+    }
+
+    private filterIncompleteRooms() {
+        for (let room of this.rawRooms) {
+            if (!this.isEmptyBuilding(room)) {
+                room.name = room.shortname + " " + room.number;
+                if (room.seats === undefined) {
+                    room.seats = 0;
+                }
+                this.rooms.push(room);
+            }
+        }
     }
 }
