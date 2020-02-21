@@ -1,10 +1,10 @@
-import { InsightDatasetKind, InsightError } from "./IInsightFacade";
+import {InsightDatasetKind, InsightError} from "../IInsightFacade";
 import Dataset from "./Dataset";
 import Course from "./Course";
 import * as JSZip from "jszip";
 import * as fs from "fs";
 
-export default class DatasetHelper {
+export default class CoursesDatasetHelper {
     public idValid(id: string): boolean {
         // whitespace check taken from https://stackoverflow.com/questions/2031085/how-can-i-check-if-string-contains-
         // characters-whitespace-not-just-whitespace/2031119
@@ -13,12 +13,6 @@ export default class DatasetHelper {
 
     public idInDatasets(id: string, datasets: Dataset[]): boolean {
         for (let ds of datasets) {
-            if (id === ds["id"]) {
-                return true;
-            }
-        }
-        let diskDatasets: Dataset[] = this.readDatasets();
-        for (let ds of diskDatasets) {
             if (id === ds["id"]) {
                 return true;
             }
@@ -38,7 +32,7 @@ export default class DatasetHelper {
             return "id invalid: contains underscore";
         } else if (/^\s+$/.test(id)) {
             return "id invalid: contains only whitespace characters";
-        } else if (kind !== InsightDatasetKind.Courses) {
+        } else if (!(kind === InsightDatasetKind.Courses || kind === InsightDatasetKind.Rooms)) {
             return `kind invalid: ${kind} is not allowed`;
         }
         for (let ds of datasets) {
@@ -48,42 +42,18 @@ export default class DatasetHelper {
         }
     }
 
-    // NOTE: if you want to run this on your own machine just change path to your local path,
-    // (right click on data, copy path)
     public writeToDisk(datasets: Dataset[]) {
-        // writing behaviour taken from https://stackoverflow.com/questions/2496710/writing-files-in-node-js
-        // reading behaviour taken from https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
-        let diskDatasets: Dataset[] = this.readDatasets();
-        for (let diskDataset of diskDatasets) {
-            let diskDatasetSeenOnCache: boolean = false;
-            for (let cacheDataset of datasets) {
-                if (diskDataset["id"] === cacheDataset["id"]) {
-                    diskDatasetSeenOnCache = true;
-                    break;
-                }
-            }
-            if (!diskDatasetSeenOnCache) {
-                datasets.push(diskDataset);
-            }
+        // use of renameSync + appendFileSync taken from https://stackoverflow.com/questions/5315138/node-js-remove-file
+        try {
+            fs.renameSync("data/datesets.txt", "data/datesetsbackup.txt");
+        } catch (err) {
+            //
         }
-        this.writeDatasets(datasets);
-        // return Promise.resolve();
-    }
-
-    public removeFromDisk(id: string) {
-        let diskDatasets: Dataset[];
-        diskDatasets = this.readDatasets();
-
-        for (let ds of diskDatasets) {
-            if (id === ds["id"]) {
-                diskDatasets.splice(diskDatasets.indexOf(ds), 1);
-                break;
-            }
-        }
-        this.writeDatasets(diskDatasets);
+        fs.appendFileSync("data/datesets.txt", JSON.stringify(datasets));
     }
 
     public readDatasets() {
+        // reading behaviour taken from https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
         try {
             let utf8Dataset: string = fs.readFileSync(
                 "data/datesets.txt",
@@ -93,16 +63,6 @@ export default class DatasetHelper {
         } catch (err) {
             return [] as Dataset[];
         }
-    }
-
-    public writeDatasets(diskDatasets: Dataset[]) {
-        // use of renameSync + appendFileSync taken from https://stackoverflow.com/questions/5315138/node-js-remove-file
-        try {
-            fs.renameSync("data/datesets.txt", "data/datesetsbackup.txt");
-        } catch (err) {
-            //
-        }
-        fs.appendFileSync("data/datesets.txt", JSON.stringify(diskDatasets));
     }
 
     public getIds(datasets: Dataset[]): string[] {
@@ -123,13 +83,13 @@ export default class DatasetHelper {
         return idsFromCache;
     }
 
-    public readContent(content: string): Promise<any> {
+    public parseCoursesZip(content: string): Promise<any> {
         let courses: Course[] = [];
         const zip = new JSZip();
         const files: Array<Promise<string>> = [];
         return new Promise<any>((resolve, reject) => {
             try {
-                zip.loadAsync(content, { base64: true })
+                zip.loadAsync(content, {base64: true})
                     .then((result: JSZip) => {
                         result
                             .folder("courses")
@@ -163,6 +123,8 @@ export default class DatasetHelper {
     }
 
     public isAddableDataset(id: string, kind: InsightDatasetKind, datasets: Dataset[]) {
-        return this.idValid(id) && kind === InsightDatasetKind.Courses && !this.idInDatasets(id, datasets);
+        return this.idValid(id) &&
+            (kind === InsightDatasetKind.Courses || kind === InsightDatasetKind.Rooms) &&
+            !this.idInDatasets(id, datasets);
     }
 }

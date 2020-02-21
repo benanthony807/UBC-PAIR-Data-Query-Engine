@@ -1,4 +1,4 @@
-import Dataset from "./Dataset";
+import Dataset from "./dataset/Dataset";
 import Log from "../Util";
 
 export default class PQPreQuery {

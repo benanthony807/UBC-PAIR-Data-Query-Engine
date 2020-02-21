@@ -1,4 +1,4 @@
-import Dataset from "./Dataset";
+import Dataset from "./dataset/Dataset";
 import PQPreQuery from "./PQPreQuery";
 import PQFilter from "./PQFilter";
 import InsightFacade from "./InsightFacade";

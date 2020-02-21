@@ -7,11 +7,12 @@ import {
     NotFoundError,
     ResultTooLargeError,
 } from "./IInsightFacade";
-import Dataset from "./Dataset";
-import DatasetHelper from "./DatasetHelper";
-import Course from "./Course";
+import Dataset from "./dataset/Dataset";
+import CoursesDatasetHelper from "./dataset/CoursesDatasetHelper";
+import Course from "./dataset/Course";
 import PQPreQuery from "./PQPreQuery";
 import PQRunQuery from "./PQRunQuery";
+import RoomsDatasetHelper from "./dataset/RoomsDatasetHelper";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -20,55 +21,88 @@ import PQRunQuery from "./PQRunQuery";
  */
 export default class InsightFacade implements IInsightFacade {
     private datasets: Dataset[];
-    private datasetHelper: DatasetHelper;
+    private coursesDatasetHelper: CoursesDatasetHelper;
+    private roomsDatasetHelper: RoomsDatasetHelper;
     private runQuery: PQRunQuery;
     private preQuery: PQPreQuery;
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
-        this.datasets = [];
-        this.datasetHelper = new DatasetHelper();
+        this.coursesDatasetHelper = new CoursesDatasetHelper();
+        this.roomsDatasetHelper = new RoomsDatasetHelper();
         this.runQuery = new PQRunQuery();
         this.preQuery = new PQPreQuery();
+        this.datasets = this.coursesDatasetHelper.readDatasets();
     }
 
+
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-        if (this.datasetHelper.isAddableDataset(id, kind, this.datasets)) {
+        if (this.coursesDatasetHelper.isAddableDataset(id, kind, this.datasets)) {
             Log.trace("dataset has valid id, kind, and is not already added");
-            return this.datasetHelper
-                .readContent(content)
-                .then((courses: Course[]) => {
-                    let dataset: Dataset = new Dataset(id, kind, courses);
-                    dataset.filterInvalidSections();
-                    Log.trace("filtered invalid sections from dataset");
-                    return dataset.checkCoursesNotEmpty();
-                })
-                .then((dataset: Dataset) => {
-                    Log.trace("dataset has at least one valid section");
-                    this.datasets.push(dataset);
-                    this.datasetHelper.writeToDisk(this.datasets);
-                    Log.trace("dataset pushed to cache and written to disk");
-                    return this.datasetHelper.getIds(this.datasets);
-                })
-                .catch((err: any) => {
-                    Log.trace("something went wrong, got to addDataset catch block");
-                    return Promise.reject(err);
-                });
+            if (kind === InsightDatasetKind.Courses) {
+            return this.addCoursesDataset(content, id, kind);
+            } else {
+                return this.addRoomsDataset(content, id, kind);
+            }
         } else {
             Log.trace("dataset is invalid, either has invalid id, kind, or has already been added");
-            return Promise.reject(new InsightError(this.datasetHelper.diagnoseIssue(id, kind, this.datasets)));
+            return Promise.reject(new InsightError(this.coursesDatasetHelper.diagnoseIssue(id, kind, this.datasets)));
         }
     }
 
+    private addCoursesDataset(content: string, id: string, kind: InsightDatasetKind.Courses) {
+        return this.coursesDatasetHelper
+            .parseCoursesZip(content)
+            .then((courses: Course[]) => {
+                let dataset: Dataset = new Dataset(id, kind, courses);
+                dataset.filterInvalidSections();
+                Log.trace("filtered invalid sections from dataset");
+                return dataset.checkCoursesNotEmpty();
+            })
+            .then((dataset: Dataset) => {
+                this.saveDatasetToMemory(dataset);
+                return this.coursesDatasetHelper.getIds(this.datasets);
+            })
+            .catch((err: any) => {
+                Log.trace("something went wrong, got to addDataset catch block");
+                return Promise.reject(err);
+            });
+    }
+
+    private addRoomsDataset(content: string, id: string, kind: InsightDatasetKind.Rooms) {
+        return this.roomsDatasetHelper.getAllRoomsMasterMethod(content)
+            .then((rooms: any[]) => {
+                if (rooms.length > 0) {
+                let dataset: Dataset = new Dataset(id, kind, rooms);
+                this.saveDatasetToMemory(dataset);
+                return this.coursesDatasetHelper.getIds(this.datasets);
+                } else {
+                    return Promise.reject(new InsightError("invalid dataset: contains no valid rooms"));
+                }
+            })
+            .catch((err: any) => {
+                Log.trace("something went wrong in addRoomsDataset");
+                return Promise.reject(err);
+            });
+    }
+
+    private saveDatasetToMemory(dataset: Dataset) {
+        Log.trace("dataset has at least one valid section");
+        this.datasets.push(dataset);
+        this.coursesDatasetHelper.writeToDisk(this.datasets);
+        Log.trace("dataset pushed to cache and written to disk");
+    }
+
     public removeDataset(id: string): Promise<string> {
-        if (this.datasetHelper.idValid(id)) {
+        if (this.coursesDatasetHelper.idValid(id)) {
             Log.trace("dataset has valid id");
-            if (this.datasetHelper.idInDatasets(id, this.datasets)) {
+            if (this.coursesDatasetHelper.idInDatasets(id, this.datasets)) {
                 Log.trace("dataset is in datasets and not already removed");
-                this.datasetHelper.removeFromDisk(id);
-                Log.trace("dataset removed from disk");
                 this.removeFromCache(id);
                 Log.trace("dataset removed from cache");
+                this.coursesDatasetHelper.writeToDisk(this.datasets);
+                // this.coursesDatasetHelper.removeFromDisk(id);
+                Log.trace("dataset removed from disk");
                 return Promise.resolve(id);
             }
             Log.trace("dataset wasn't found in array of previously added datasets");
@@ -77,7 +111,7 @@ export default class InsightFacade implements IInsightFacade {
         }
         Log.trace("dataset has an invalid id");
         return Promise.reject(
-            new InsightError(this.datasetHelper.diagnoseIssue(id, InsightDatasetKind.Courses, this.datasets)));
+            new InsightError(this.coursesDatasetHelper.diagnoseIssue(id, InsightDatasetKind.Courses, this.datasets)));
     }
 
     private removeFromCache(id: string) {
@@ -147,7 +181,7 @@ export default class InsightFacade implements IInsightFacade {
             const insightDataset: InsightDataset = {
                 id: dataset["id"],
                 kind: dataset["kind"],
-                numRows: dataset.getNumRows(),
+                numRows: dataset.getNumRows(dataset["kind"]),
             };
             insightDatasets.push(insightDataset);
         }
