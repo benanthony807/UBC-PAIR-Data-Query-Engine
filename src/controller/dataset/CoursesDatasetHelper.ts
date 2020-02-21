@@ -17,12 +17,12 @@ export default class CoursesDatasetHelper {
                 return true;
             }
         }
-        let diskDatasets: Dataset[] = this.readDatasets();
-        for (let ds of diskDatasets) {
-            if (id === ds["id"]) {
-                return true;
-            }
-        }
+        // let diskDatasets: Dataset[] = this.readDatasets();
+        // for (let ds of diskDatasets) {
+        //     if (id === ds["id"]) {
+        //         return true;
+        //     }
+        // }
         return false;
     }
 
@@ -48,40 +48,45 @@ export default class CoursesDatasetHelper {
         }
     }
 
-    // NOTE: if you want to run this on your own machine just change path to your local path,
-    // (right click on data, copy path)
     public writeToDisk(datasets: Dataset[]) {
         // writing behaviour taken from https://stackoverflow.com/questions/2496710/writing-files-in-node-js
         // reading behaviour taken from https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
-        let diskDatasets: Dataset[] = this.readDatasets();
-        for (let diskDataset of diskDatasets) {
-            let diskDatasetSeenOnCache: boolean = false;
-            for (let cacheDataset of datasets) {
-                if (diskDataset["id"] === cacheDataset["id"]) {
-                    diskDatasetSeenOnCache = true;
-                    break;
-                }
-            }
-            if (!diskDatasetSeenOnCache) {
-                datasets.push(diskDataset);
-            }
+        // let diskDatasets: Dataset[] = this.readDatasets();
+        // for (let diskDataset of diskDatasets) {
+        //     let diskDatasetSeenOnCache: boolean = false;
+        //     for (let cacheDataset of datasets) {
+        //         if (diskDataset["id"] === cacheDataset["id"]) {
+        //             diskDatasetSeenOnCache = true;
+        //             break;
+        //         }
+        //     }
+        //     if (!diskDatasetSeenOnCache) {
+        //         datasets.push(diskDataset);
+        //     }
+        // }
+
+        // use of renameSync + appendFileSync taken from https://stackoverflow.com/questions/5315138/node-js-remove-file
+        try {
+            fs.renameSync("data/datesets.txt", "data/datesetsbackup.txt");
+        } catch (err) {
+            //
         }
-        this.writeDatasets(datasets);
-        // return Promise.resolve();
+        fs.appendFileSync("data/datesets.txt", JSON.stringify(datasets));
+        // this.writeDatasets(datasets);
     }
 
-    public removeFromDisk(id: string) {
-        let diskDatasets: Dataset[];
-        diskDatasets = this.readDatasets();
-
-        for (let ds of diskDatasets) {
-            if (id === ds["id"]) {
-                diskDatasets.splice(diskDatasets.indexOf(ds), 1);
-                break;
-            }
-        }
-        this.writeDatasets(diskDatasets);
-    }
+    // public removeFromDisk(id: string) {
+    //     let diskDatasets: Dataset[];
+    //     diskDatasets = this.readDatasets();
+    //
+    //     for (let ds of diskDatasets) {
+    //         if (id === ds["id"]) {
+    //             diskDatasets.splice(diskDatasets.indexOf(ds), 1);
+    //             break;
+    //         }
+    //     }
+    //     this.writeDatasets(diskDatasets);
+    // }
 
     public readDatasets() {
         try {
@@ -97,12 +102,12 @@ export default class CoursesDatasetHelper {
 
     public writeDatasets(diskDatasets: Dataset[]) {
         // use of renameSync + appendFileSync taken from https://stackoverflow.com/questions/5315138/node-js-remove-file
-        try {
-            fs.renameSync("data/datesets.txt", "data/datesetsbackup.txt");
-        } catch (err) {
-            //
-        }
-        fs.appendFileSync("data/datesets.txt", JSON.stringify(diskDatasets));
+        // try {
+        //     fs.renameSync("data/datesets.txt", "data/datesetsbackup.txt");
+        // } catch (err) {
+        //     //
+        // }
+        // fs.appendFileSync("data/datesets.txt", JSON.stringify(diskDatasets));
     }
 
     public getIds(datasets: Dataset[]): string[] {

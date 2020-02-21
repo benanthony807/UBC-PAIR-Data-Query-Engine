@@ -28,11 +28,11 @@ export default class InsightFacade implements IInsightFacade {
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
-        this.datasets = [];
         this.coursesDatasetHelper = new CoursesDatasetHelper();
         this.roomsDatasetHelper = new RoomsDatasetHelper();
         this.runQuery = new PQRunQuery();
         this.preQuery = new PQPreQuery();
+        this.datasets = this.coursesDatasetHelper.readDatasets();
     }
 
 
@@ -98,10 +98,11 @@ export default class InsightFacade implements IInsightFacade {
             Log.trace("dataset has valid id");
             if (this.coursesDatasetHelper.idInDatasets(id, this.datasets)) {
                 Log.trace("dataset is in datasets and not already removed");
-                this.coursesDatasetHelper.removeFromDisk(id);
-                Log.trace("dataset removed from disk");
                 this.removeFromCache(id);
                 Log.trace("dataset removed from cache");
+                this.coursesDatasetHelper.writeToDisk(this.datasets);
+                // this.coursesDatasetHelper.removeFromDisk(id);
+                Log.trace("dataset removed from disk");
                 return Promise.resolve(id);
             }
             Log.trace("dataset wasn't found in array of previously added datasets");
