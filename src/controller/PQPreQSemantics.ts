@@ -23,7 +23,7 @@ export default class PQPreQSemantics {
             return this.errorMessage;
         }
 
-        Log.trace("Pre-Query semantic checks passed");
+        // Log.trace("Pre-Query semantic checks passed");
         return true;
     }
 

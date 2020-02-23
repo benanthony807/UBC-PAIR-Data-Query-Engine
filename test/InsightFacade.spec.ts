@@ -532,40 +532,12 @@ describe("InsightFacade PerformQuery", () => {
     });
 
     /** This is a flexible test where we replace queries */
-    it("{} WHERE should return ordered list}", function () {
+    it("blablabla", function () {
         let query = {
-            WHERE: {
-                OR: [
-                    {
-                        AND: [
-                            {
-                                GT: {
-                                    courses_avg: 96
-                                }
-                            },
-                            {
-                                IS: {
-                                    courses_dept: "adhe"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        EQ: {
-                            courses_avg: 95
-                        }
-                    }
-                ]
-            },
-            OPTIONS: {
-                "COLUMNS": [
-                    "courses_dept",
-                    "courses_id",
-                    "courses_avg"
-                ],
-                "ORDER!": "courses_avg"
-            }
-        };
+            WHERE: { GT: { courses_avg: 97 } },
+            OPTIONS: { COLUMNS: [ "courses_title", "overallAvg" ] },
+            TRANSFORMATIONS: {  GROUP: [ "courses_title" ],
+                                APPLY: [ { overallAvg: { AVG: "courses_avg" } } ] } };
         let result = insightFacade.performQuery(query);
         Log.trace(result);
     });

@@ -116,7 +116,6 @@ describe("Group Tests", function () {
         let actualLength = Object.keys(actual).length;
         // assert.equal(actual, expected);
         assert.equal(actualLength, expectedLength);
-        // assert.equal(transformer.doGroup(mockSections, query), expected);
     });
 
 });

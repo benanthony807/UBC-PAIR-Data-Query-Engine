@@ -20,7 +20,7 @@ export default class PQRunQuery extends PQPreQSyntax {
 
     public runQuery(query: any, datasetToUse: Dataset): any {
         this.allSectionsInDataset = this.populateAllSections(datasetToUse);
-        Log.trace("Finished populating all sections");
+        // Log.trace("Finished populating all sections");
 
         let queryResults: any;
 
@@ -102,23 +102,42 @@ export default class PQRunQuery extends PQPreQSyntax {
      * @param query: so we can access the keys in COLUMNS
      */
     private doTrim(filteredList: any[], query: any): any {
-        let numOfColumns = query["OPTIONS"]["COLUMNS"].length;
         let trimmedList = [];
 
         for (let section of filteredList) {
+            let listOfKeysAlreadyAdded = [];
             let trimmedSection = {};
+            let numOfColumns = query["OPTIONS"]["COLUMNS"].length;
             for (let i = 0; i < numOfColumns; i++) {
                 let keyToSelectFor = query["OPTIONS"]["COLUMNS"][i]; // ex. keyToSelectFor = courses_avg
+                if (keyToSelectFor.indexOf("_") !== -1) {
+                    // Object construction
+                    let key = this.translate(keyToSelectFor); // ex. key = "Avg"
+                    let value = section[key]; // ex. 97.7
+                    let object = {[keyToSelectFor]: value}; // ex. {courses_avg: 97}
 
-                let key = this.translate(keyToSelectFor); // ex. key = "Avg"
-                let value = section[key]; // ex. 97.7
-                let object = { [keyToSelectFor]: value }; // ex. {courses_avg: 97}
-
-                // ex. first run: section: {{courses_avg: 97}}
-                // ex. second run: section: {{courses_avg: 97}, {courses_dept: "aanb"}}
-                Object.assign(trimmedSection, object);
+                    // ex. first run: section: {{courses_avg: 97}}
+                    // ex. second run: section: {{courses_avg: 97}, {courses_dept: "aanb"}}
+                    Object.assign(trimmedSection, object);
+                    listOfKeysAlreadyAdded.push(keyToSelectFor);
+                }
             }
+            // If there's TRANSFORMATIONS, add the key in APPLY if it's not already added
+            if (Object.keys(query).length === 3) {
+                let apply = query["TRANSFORMATIONS"]["APPLY"];
+                let numOfApplyGrandchildren = query["TRANSFORMATIONS"]["APPLY"].length;
+                for (let j = 0; j < numOfApplyGrandchildren; j++) {
+                    let grandchild = Object.values(apply[j])[0];
+                    let grandchildValue: any = Object.values(grandchild)[0]; // "courses_avg"
+                    if (!listOfKeysAlreadyAdded.includes(grandchildValue)) {
+                        let key = this.translate(grandchildValue); // "courses_avg" -> "Avg"
+                        let value = section[key];
+                        let object = {[grandchildValue]: value};
 
+                        Object.assign(trimmedSection, object);
+                    }
+                }
+            }
             trimmedList.push(trimmedSection); // ex. trimmedList = [{trimmedS1}, {trimmedS2}, {trimmedS3}]
         }
 
@@ -160,7 +179,6 @@ export default class PQRunQuery extends PQPreQSyntax {
 
     /** Order the list of sections according to ORDER key */
     public doOrder(unsortedListOfSections: any, query: any): any[] {
-
         let order = query["OPTIONS"]["ORDER"];
 
         // If there's only one key in ORDER ex. "ORDER": "courses_avg"
@@ -201,9 +219,9 @@ export default class PQRunQuery extends PQPreQSyntax {
             });
             return sortedList;
         }
-        Log.trace("Order is..." + order);
+        // Log.trace("Order is..." + order);
         let orderKeys = order["keys"];
-        Log.trace("Order keys is order['keys'] is... " + orderKeys);
+        // Log.trace("Order keys is order['keys'] is... " + orderKeys);
         sortedList = unsortedList.sort(function (a: any, b: any) {
             // let translatedKey = self.translate(orderKeys[0]);
             if (a[orderKeys[0]] > b[orderKeys[0]]) { // if a greater than b , put behind b

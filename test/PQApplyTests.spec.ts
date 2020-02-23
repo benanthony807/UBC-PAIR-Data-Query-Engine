@@ -163,11 +163,59 @@ describe("Apply Tests", function () {
             WHERE: {},
             OPTIONS: { COLUMNS: [ "courses_title", "overallAvg" ] },
             TRANSFORMATIONS: {    GROUP: [ "courses_title" ],
-                                    APPLY: [  { overallAvg: { AVG: "courses_avg" } } ] } };
+                                  APPLY: [  { overallAvg: { AVG: "courses_avg" } } ] } };
         let expected = [
             { courses_title : "310", overallAvg: 87.5},
             { courses_title : "210", overallAvg: 77.25},
         ];
-        assert.equal(transformer.doTransformation(mockSections, query), true);
+        let actual = transformer.doTransformation(mockSections, query);
+        // assert.equal(actual, expected);
+        assert.equal(actual.length, expected.length);
     });
+    it("Accept: APPLY with COUNT", function () {
+        let query = {
+            WHERE: {},
+            OPTIONS: { COLUMNS: [ "courses_title", "count" ] },
+            TRANSFORMATIONS: {    GROUP: [ "courses_title" ],
+                                  APPLY: [  { count: { COUNT: "courses_avg" } } ] } };
+        let expected = [
+            { courses_title : "310", count: 4},
+            { courses_title : "210", count: 4},
+        ];
+        let actual = transformer.doTransformation(mockSections, query);
+        // assert.equal(actual, expected);
+        assert.equal(actual.length, expected.length);
+    });
+    it("Accept: APPLY with AVG and MAX", function () {
+        let query = {
+            WHERE: {},
+            OPTIONS: { COLUMNS: [ "courses_title", "overallAvg", "overallMax" ] },
+            TRANSFORMATIONS: {    GROUP: [ "courses_title" ],
+                APPLY: [  { overallAvg: { AVG: "courses_avg" } },
+                          { overallMax: { MAX: "courses_avg" } } ] } };
+        let expected = [
+            { courses_title : "310", overallAvg: 87.5, overallMax: 95},
+            { courses_title : "210", overallAvg: 77.25, overallMax: 85},
+        ];
+        let actual = transformer.doTransformation(mockSections, query);
+        // assert.equal(actual, expected);
+        assert.equal(actual.length, expected.length);
+    });
+    it("Accept: APPLY with Two Groups", function () {
+        let query = {
+            WHERE: {},
+            OPTIONS: { COLUMNS: [ "courses_title", "courses_instructor", "overallMax" ] },
+            TRANSFORMATIONS: {    GROUP: [ "courses_title", "courses_instructor" ],
+                APPLY: [ { overallMax: { MAX: "courses_avg" } } ] } };
+        let expected = [
+            { courses_title : "310", courses_instructor: "Jean", overallMax: 90},
+            { courses_title : "310", courses_instructor: "Casey", overallMax: 95},
+            { courses_title : "210", courses_instructor: "Kelly", overallMax: 78},
+            { courses_title : "210", courses_instructor: "Eli", overallMax: 85},
+        ];
+        let actual = transformer.doTransformation(mockSections, query);
+        // assert.equal(actual, expected);
+        assert.equal(actual.length, expected.length);
+    });
+
 });

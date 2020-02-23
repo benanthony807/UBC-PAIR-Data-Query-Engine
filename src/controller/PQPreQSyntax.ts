@@ -121,7 +121,6 @@ export default class PQPreQSyntax {
 
         // Step 4: COLUMNS must not be null / undefined / empty
         let columns = query["OPTIONS"]["COLUMNS"];
-        Log.trace(Object.keys(columns));
         if (
             columns === null ||
             columns === undefined ||

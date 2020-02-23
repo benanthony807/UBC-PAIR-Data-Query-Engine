@@ -96,13 +96,13 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public performQuery(query: any): Promise<any[]> {
-        Log.trace("Step1: Check grammar");
+        Log.trace("Step 1: Check grammar");
         let checkerResult = this.syntaxChecker.isInputQueryValid(query);
         if (typeof checkerResult === "string") {
             return Promise.reject(new InsightError(checkerResult));
         }
 
-        Log.trace("Step2: Set dataset");
+        Log.trace("Step 2: Set dataset");
         let datasetToUse: Dataset = null;
         let establishResult = this.syntaxChecker.queryEstablishDataset(
             query,
@@ -113,7 +113,7 @@ export default class InsightFacade implements IInsightFacade {
         }
         datasetToUse = establishResult;
 
-        Log.trace("Step3: Check query semantics");
+        Log.trace("Step 3: Check query semantics");
         let optionsValidResult = this.semanticsChecker.inputOptionsKeysAreValid(
             query,
             datasetToUse,

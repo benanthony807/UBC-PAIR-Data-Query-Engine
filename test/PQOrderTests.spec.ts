@@ -103,40 +103,40 @@ describe("Order Tests", function () {
     let S4 = { courses_title: "S4", courses_avg: 70, courses_dept: "bbcc" };
     let mockSections = [S1, S2, S3, S4];
 
-    it("Accept: Sort One Child Default (Ascending)", function () {
-        let query = {   WHERE: {    GT: { courses_avg: 98.7 } },
-                        OPTIONS: {  COLUMNS: [ "courses_dept", "courses_avg" ],
-                                    ORDER: "courses_avg" } };
-        let expected = [S4, S2, S3, S1];
-        assert.equal(runQuery.doOrder(mockSections, query), expected);
-    });
-
-    it("Accept: Sort Two Children Ascending", function () {
-        let query = {   WHERE: {    GT: { courses_avg: 98.7 } },
-                        OPTIONS: {  COLUMNS:    [ "courses_dept", "courses_avg" ],
-                                    ORDER:      {   dir: "UP",
-                                                    keys: ["courses_avg"] } } };
-        let expected = [S4, S2, S3, S1];
-        assert.equal(runQuery.doOrder(mockSections, query), expected);
-    });
-    it("Accept: Sort Two Children Descending", function () {
-        let query = {   WHERE: {    GT: { courses_avg: 98.7 } },
-            OPTIONS: {  COLUMNS:    [ "courses_dept", "courses_avg" ],
-                        ORDER:      {   dir: "DOWN",
-                                        keys: ["courses_avg"] } } };
-        let expected = [S1, S2, S3, S4];
-        let actual = runQuery.doOrder(mockSections, query);
-        assert.equal(actual, expected);
-        Log.trace(actual);
-    });
-    it("Accept: Sort Two Children Two Keys Ascending", function () {
-        let query = {   WHERE: {    GT: { courses_avg: 98.7 } },
-            OPTIONS: {  COLUMNS:    [ "courses_dept", "courses_avg" ],
-                ORDER:      {   dir: "UP",
-                    keys: ["courses_dept", "courses_avg"] } } };
-        let expected = [S2, S1, S3, S4];
-        assert.equal(runQuery.doOrder(mockSections, query), expected);
-    });
+    // it("Accept: Sort One Child Default (Ascending)", function () {
+    //     let query = {   WHERE: {    GT: { courses_avg: 98.7 } },
+    //                     OPTIONS: {  COLUMNS: [ "courses_dept", "courses_avg" ],
+    //                                 ORDER: "courses_avg" } };
+    //     let expected = [S4, S2, S3, S1];
+    //     assert.equal(runQuery.doOrder(mockSections, query), expected);
+    // });
+    //
+    // it("Accept: Sort Two Children Ascending", function () {
+    //     let query = {   WHERE: {    GT: { courses_avg: 98.7 } },
+    //                     OPTIONS: {  COLUMNS:    [ "courses_dept", "courses_avg" ],
+    //                                 ORDER:      {   dir: "UP",
+    //                                                 keys: ["courses_avg"] } } };
+    //     let expected = [S4, S2, S3, S1];
+    //     assert.equal(runQuery.doOrder(mockSections, query), expected);
+    // });
+    // it("Accept: Sort Two Children Descending", function () {
+    //     let query = {   WHERE: {    GT: { courses_avg: 98.7 } },
+    //         OPTIONS: {  COLUMNS:    [ "courses_dept", "courses_avg" ],
+    //                     ORDER:      {   dir: "DOWN",
+    //                                     keys: ["courses_avg"] } } };
+    //     let expected = [S1, S2, S3, S4];
+    //     let actual = runQuery.doOrder(mockSections, query);
+    //     assert.equal(actual, expected);
+    //     Log.trace(actual);
+    // });
+    // it("Accept: Sort Two Children Two Keys Ascending", function () {
+    //     let query = {   WHERE: {    GT: { courses_avg: 98.7 } },
+    //         OPTIONS: {  COLUMNS:    [ "courses_dept", "courses_avg" ],
+    //             ORDER:      {   dir: "UP",
+    //                 keys: ["courses_dept", "courses_avg"] } } };
+    //     let expected = [S2, S1, S3, S4];
+    //     assert.equal(runQuery.doOrder(mockSections, query), expected);
+    // });
 
 
 });
