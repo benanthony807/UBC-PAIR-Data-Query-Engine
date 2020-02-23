@@ -5,13 +5,13 @@
 // import PerformQueryHelperQueryHelper from "../src/controller/PerformQueryHelperQueryHelper";
 // import {IInsightFacade, InsightDatasetKind} from "../src/controller/IInsightFacade";
 // import Dataset from "../src/controller/Dataset";
-// import PQPreQuery from "../src/controller/PQPreQuery";
+// import PQPreQSyntax from "../src/controller/PQPreQSyntax";
 //
 // describe("InsightFacade Perform Query Helper Methods", function () {
 //     let insightFacade: InsightFacade = new InsightFacade();
 //     let performQueryHelper: PQRunQuery = new PQRunQuery();
 //     let performQueryHelperQH: PerformQueryHelperQueryHelper = new PerformQueryHelperQueryHelper();
-//     let performQueryHelperPreQuery: PQPreQuery = new PQPreQuery();
+//     let performQueryHelperPreQuery: PQPreQSyntax = new PQPreQSyntax();
 //
 //     const datasetsToLoad: { [id: string]: string } = {
 //         courses: "./test/data/courses.zip",
