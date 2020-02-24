@@ -44,11 +44,6 @@ export default class PQRunQuery extends PQPreQSyntax {
             }
         }
 
-        // ================== LENGTH CHECK ================== //
-        if (queryResults.length > 5000) {
-            return "Too large"; //  InsightFacade performQuery must receive this exact message
-        }
-
         // ====================== TRIM ====================== //
         let resultTrim: any;
         // returns list of sections w/o junk keys (courses_tier)
@@ -73,6 +68,11 @@ export default class PQRunQuery extends PQPreQSyntax {
         if (typeof transformResult === "string") {
             this.errorMessage = transformResult;
             return this.errorMessage;
+        }
+
+        // ================== LENGTH CHECK ================== //
+        if (transformResult.length > 5000) {
+            return "Too large"; //  InsightFacade performQuery must receive this exact message
         }
         return transformResult;
     }

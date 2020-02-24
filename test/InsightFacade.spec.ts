@@ -536,12 +536,29 @@ describe("InsightFacade PerformQuery", () => {
     });
 
     /** This is a flexible test where we replace queries */
+    // TODO: Debug this. sort isn't working. group/apply has one test failing.
     it("blablabla", function () {
         let query = {
-            WHERE: { GT: { courses_avg: 97 } },
-            OPTIONS: { COLUMNS: [ "courses_title", "overallAvg" ] },
-            TRANSFORMATIONS: {  GROUP: [ "courses_title" ],
-                                APPLY: [ { overallAvg: { AVG: "courses_avg" } } ] } };
+            WHERE: {},
+            OPTIONS: {
+                COLUMNS: [
+                    "courses_title",
+                    "overallAvg"
+                ]
+            },
+            TRANSFORMATIONS: {
+                GROUP: [
+                    "courses_title"
+                ],
+                APPLY: [
+                    {
+                        overallAvg: {
+                            AVG: "courses_avg"
+                        }
+                    }
+                ]
+            }
+        };
         let result = insightFacade.performQuery(query);
         Log.trace(result);
     });
