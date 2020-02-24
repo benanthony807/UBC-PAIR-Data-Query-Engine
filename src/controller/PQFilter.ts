@@ -1,20 +1,14 @@
 import PQFilterCheckers from "./PQFilterCheckers";
 
 export default class PQFilter {
-    // public acceptableStringFields: string[];
-    // public acceptableNumberFields: string[];
     private errorMessage: string;
     private readonly allSections: any[];
-    // private readonly datasetID: string;
     private checker: PQFilterCheckers;
 
-    constructor(allSections: any[], datasetID: string) {
-        this.checker = new PQFilterCheckers(datasetID);
+    constructor(allSections: any[]) {
+        this.checker = new PQFilterCheckers();
         this.allSections = allSections;
         this.errorMessage = "";
-        // this.datasetID = datasetID;
-        // this.acceptableStringFields = ["dept", "id", "instructor", "title", "uuid"];
-        // this.acceptableNumberFields = ["avg", "pass", "fail", "audit", "year"];
     }
 
     /**
