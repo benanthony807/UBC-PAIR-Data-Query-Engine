@@ -536,7 +536,6 @@ describe("InsightFacade PerformQuery", () => {
     });
 
     /** This is a flexible test where we replace queries */
-    // TODO: Debug this. sort isn't working. group/apply has one test failing.
     it("blablabla", function () {
         let query = {
             WHERE: {},
