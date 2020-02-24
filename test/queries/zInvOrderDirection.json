@@ -1,0 +1,21 @@
+{
+    "title": "Unexpected response status 400: Invalid ORDER direction",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 98.7
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": {
+                "dir": "DOW",
+                "keys": ["courses_avg"]
+            }
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError" }

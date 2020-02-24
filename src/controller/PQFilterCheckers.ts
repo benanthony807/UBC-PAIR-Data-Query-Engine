@@ -1,11 +1,10 @@
+import PQGeneralHelpers from "./PQGeneralHelpers";
+
 export default class PQFilterCheckers {
-    private readonly datasetID: string;
-    public acceptableStringFields: string[];
-    public acceptableNumberFields: string[];
-    constructor(datasetID: string) {
-        this.acceptableStringFields = ["dept", "id", "instructor", "title", "uuid"];
-        this.acceptableNumberFields = ["avg", "pass", "fail", "audit", "year"];
-        this.datasetID = datasetID;
+    private helpers: PQGeneralHelpers;
+
+    constructor() {
+        this.helpers = new PQGeneralHelpers();
     }
 
     /** Runs multiple checks on leaves | @param currFilterType: One of GT LT EQ IS AND OR NOT */
@@ -25,7 +24,7 @@ export default class PQFilterCheckers {
         // Step 3: Leaf does not refer to multiple datasets
         let currKey = Object.keys(query[currFilterType])[0]; // ex. courses_avg
         let currID = currKey.split("_")[0]; // isolates the id, ex. "courses"
-        if (currID !== this.datasetID) {
+        if (currID !== this.helpers.getDataSetID()) {
             return "Cannot query more than one dataset";
         }
         // Step 4: Leaf is an object, not an array
@@ -88,7 +87,7 @@ export default class PQFilterCheckers {
 
         // Step 3: Compare fields depending on filter type
         if (currFilterType === "IS") {
-            if (!this.acceptableStringFields.includes(leafField)) {
+            if (!PQGeneralHelpers.acceptableStringFields.includes(leafField)) {
                 return (
                     "Invalid/Inappropriate key " + key + " in " + currFilterType
                 );
@@ -97,7 +96,7 @@ export default class PQFilterCheckers {
             }
         }
         // GT LT EQ
-        if (!this.acceptableNumberFields.includes(leafField)) {
+        if (!PQGeneralHelpers.acceptableNumberFields.includes(leafField)) {
             return "Invalid/Inappropriate key " + key + " in " + currFilterType;
         }
         return true;

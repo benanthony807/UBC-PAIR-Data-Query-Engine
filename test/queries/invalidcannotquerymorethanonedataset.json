@@ -1,20 +1,8 @@
 {
     "title": "Error: cannot query more than one dataset",
     "query": {
-        "WHERE": {
-            "LT": {
-                "course_avg": 20
-            }
-        },
-        "OPTIONS": {
-            "COLUMNS": [
-                "courses_dept",
-                "courses_id",
-                "courses_avg",
-                "courses_audit"
-            ]
-        }
-    },
+        "WHERE": { "LT": { "course_avg": 20 } },
+        "OPTIONS": { "COLUMNS": [ "courses_dept", "courses_id", "courses_avg", "courses_audit" ] } },
     "isQueryValid": false,
     "result": "InsightError"
 }

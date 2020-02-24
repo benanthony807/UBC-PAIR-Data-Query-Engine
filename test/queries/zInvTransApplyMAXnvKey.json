@@ -1,0 +1,30 @@
+{
+    "title": "Unexpected response status 400: Invalid key courses_blah in MAX",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 97
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_title",
+                "overallAvg"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_title"
+            ],
+            "APPLY": [
+                {
+                    "overallAvg": {
+                        "MAX": "courses_blah"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": false,
+    "result":  "InsightError"
+}

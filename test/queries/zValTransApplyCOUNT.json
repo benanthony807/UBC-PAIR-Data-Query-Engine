@@ -1,0 +1,29 @@
+{
+    "title": "Valid Transformation APPLY COUNT",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 97
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_title",
+                "overallAvg"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_title"
+            ],
+            "APPLY": [
+                {
+                    "overallAvg": {
+                        "COUNT": "courses_avg"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_title":"career planning","overa1lAvg":2},{"courses_title":"thesis","overa1lAvg":1},{"courses_title":"res mthd in educ","overa1lAvg":1},{"courses_title":"multimedia sys","overa1lAvg":1},{"courses_title":"assess lrn diffi","overa1lAvg":4},{"courses_title":"educ stds autism","overa1lAvg":4},{"courses_title":"dev el sk df&hrd","overa1lAvg":1},{"courses_title":"acad assess schl","overa1lAvg":2},{"courses_title":"sem in autism","overa1lAvg":1},{"courses_title":"cor des ed res","overa1lAvg":1},{"courses_title":"coll&uni teachng","overa1lAvg":1},{"courses_title":"diff geometry i","overa1lAvg":1},{"courses_title":"algb topology i","overa1lAvg":1},{"courses_title":"algb geometry i","overa1lAvg":1},{"courses_title":"harmonic anal i","overa1lAvg":1},{"courses_title":"cl pro prim care","overa1lAvg":2},{"courses_title":"fam nrs pract","overa1lAvg":3},{"courses_title":"eth&profl issues","overa1lAvg":1},{"courses_title":"work int health","overa1lAvg":1}]}

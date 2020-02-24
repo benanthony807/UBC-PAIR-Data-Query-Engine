@@ -33,7 +33,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         nocoursesfolder: "./test/data/nocoursesfolder.zip",
         onevalidfileothersnot: "./test/data/onevalidfileothersnot.zip",
         valid1course: "./test/data/valid1course.zip",
-        AAN: "./test/data/AAN.zip",
+        // AAN: "./test/data/AAN.zip",
         notazip: "./test/data/notazip.txt",
         rooms: "./test/data/rooms.zip"
     };
@@ -539,6 +539,66 @@ describe("InsightFacade PerformQuery", () => {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
+    /** This is a flexible test where we replace queries */
+    it("blablabla", function () {
+        let query = {
+            WHERE: {},
+            OPTIONS: {
+                COLUMNS: [
+                    "courses_title",
+                    "overallAvg"
+                ]
+            },
+            TRANSFORMATIONS: {
+                GROUP: [
+                    "courses_title"
+                ],
+                APPLY: [
+                    {
+                        overallAvg: {
+                            AVG: "courses_avg"
+                        }
+                    }
+                ]
+            }
+        };
+        let result = insightFacade.performQuery(query);
+        Log.trace(result);
+    });
+
+    /** Should reject: query is empty. */
+    it("Should reject, query is just {} ", function () {
+        let query =  {};
+        // let result = insightFacade.performQuery(query);
+        return insightFacade.performQuery(query)
+            .then((result: any) => {
+                expect.fail("Should not have passed");
+            })
+            .catch((err: any) => {
+                expect(err).instanceOf(InsightError);
+            });
+        // Log.trace(result);
+    });
+
+
+    //         const expected: InsightDataset[] = [];
+//         return insightFacade
+//             .listDatasets()
+//             .then((result: InsightDataset[]) => {
+//                 expect(result).to.deep.equal(expected);
+//             })
+//             .catch((err: any) => {
+//                 expect.fail("should not have failed with " + err);
+//             });
+//     /** This test should use cpsc.zip. WHERE: {} with ORDER should return the whole list with ORDER, not reject */
+//     it("{} WHERE should return ordered list}", function () {
+//         let query =  { WHERE: {}, OPTIONS: {
+//                 COLUMNS: [ "courses_dept", "courses_avg" ],
+//                 ORDER: "courses_avg" } };
+//         let result = insightFacade.performQuery(query);
+//         Log.trace(result);
+//     });
+
     // Dynamically create and run a test for each query in testQueries.
     // Creates an extra "test" called "Should run test queries" as a byproduct.
     it("Should run test queries", function () {
@@ -555,7 +615,6 @@ describe("InsightFacade PerformQuery", () => {
     });
 
     /** General test for queries */
-
     /** This test should use AAN.zip. WHERE: {} with ORDER should return the whole list with ORDER, not reject */
     it("{} WHERE should return ordered list}", function () {
         let query =  { WHERE: {}, OPTIONS: {
@@ -564,20 +623,4 @@ describe("InsightFacade PerformQuery", () => {
         let result = insightFacade.performQuery(query);
         Log.trace(result);
     });
-
-    /** This test */
-
-    // it("{} WHERE should return ordered list}", function () {
-    //     let query = {
-    //         WHERE: {
-    //             OR: {},
-    //         },
-    //         OPTIONS: {
-    //             COLUMNS: ["courses_dept", "courses_id", "courses_avg"],
-    //             ORDER: "courses_id",
-    //         },
-    //     };
-    //     let result = insightFacade.performQuery(query);
-    //     Log.trace(result);
-    // });
 });

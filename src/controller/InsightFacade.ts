@@ -7,12 +7,15 @@ import {
     NotFoundError,
     ResultTooLargeError,
 } from "./IInsightFacade";
+
 import Dataset from "./dataset/Dataset";
 import CoursesDatasetHelper from "./dataset/CoursesDatasetHelper";
 import Course from "./dataset/Course";
-import PQPreQuery from "./PQPreQuery";
-import PQRunQuery from "./PQRunQuery";
 import RoomsDatasetHelper from "./dataset/RoomsDatasetHelper";
+import PQRunQuery from "./PQRunQuery";
+import PQPreQSyntax from "./PQPreQSyntax";
+import PQPreQSemantics from "./PQPreQSemantics";
+
 
 /**
  * This is the main programmatic entry point for the project.
@@ -24,15 +27,17 @@ export default class InsightFacade implements IInsightFacade {
     private coursesDatasetHelper: CoursesDatasetHelper;
     private roomsDatasetHelper: RoomsDatasetHelper;
     private runQuery: PQRunQuery;
-    private preQuery: PQPreQuery;
+    private syntaxChecker: PQPreQSyntax;
+    private semanticsChecker: PQPreQSemantics;
 
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
         this.coursesDatasetHelper = new CoursesDatasetHelper();
         this.roomsDatasetHelper = new RoomsDatasetHelper();
         this.runQuery = new PQRunQuery();
-        this.preQuery = new PQPreQuery();
         this.datasets = this.coursesDatasetHelper.readDatasets();
+        this.syntaxChecker = new PQPreQSyntax();
+        this.semanticsChecker = new PQPreQSemantics();
     }
 
 
@@ -127,15 +132,15 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public performQuery(query: any): Promise<any[]> {
-        Log.trace("Step1: Check grammar");
-        let checkerResult = this.preQuery.isInputQueryValid(query);
+        Log.trace("Step 1: Check grammar");
+        let checkerResult = this.syntaxChecker.isInputQueryValid(query);
         if (typeof checkerResult === "string") {
             return Promise.reject(new InsightError(checkerResult));
         }
 
-        Log.trace("Step2: Set dataset");
+        Log.trace("Step 2: Set dataset");
         let datasetToUse: Dataset = null;
-        let establishResult = this.preQuery.queryEstablishDataset(
+        let establishResult = this.syntaxChecker.queryEstablishDataset(
             query,
             this.datasets,
         );
@@ -144,8 +149,8 @@ export default class InsightFacade implements IInsightFacade {
         }
         datasetToUse = establishResult;
 
-        Log.trace("Step3: Check query semantics");
-        let optionsValidResult = this.preQuery.inputOptionsKeysAreValid(
+        Log.trace("Step 3: Check query semantics");
+        let optionsValidResult = this.semanticsChecker.inputOptionsKeysAreValid(
             query,
             datasetToUse,
         );
