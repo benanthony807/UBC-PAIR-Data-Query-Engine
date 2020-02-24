@@ -81,10 +81,10 @@ describe("InsightFacade Add/Remove Dataset", function () {
         return insightFacade
             .addDataset(id, datasets[id], InsightDatasetKind.Rooms)
             .then((result: string[]) => {
-               //
+                expect(result).to.deep.equal(expected);
             })
             .catch((err: any) => {
-                //
+                expect.fail(err, expected, "Should not have rejected");
             });
     });
 
@@ -470,6 +470,10 @@ describe("InsightFacade PerformQuery", () => {
         courses: {
             path: "./test/data/courses.zip",
             kind: InsightDatasetKind.Courses,
+        },
+        rooms: {
+            path: "./test/data/rooms.zip",
+            kind: InsightDatasetKind.Rooms,
         },
     };
     let insightFacade: InsightFacade;

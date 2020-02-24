@@ -244,7 +244,6 @@ export default class RoomsDatasetHelper {
                     promises.push(this.getLatLon(building));
                 }
                 return Promise.all(promises);
-                // doesn't work
             })
             .then(() => {
                 Log.trace("got the lat/lon of each building, discarded those without lat/lon");
@@ -265,7 +264,7 @@ export default class RoomsDatasetHelper {
                 Log.trace("filled the remaining fields for each room, discarded those with incomplete fields");
                 let count: number = 0;
                 for (let r of this.rooms) {
-                    Log.trace(`room # ${++count}: name: ${r.name}`);
+                    Log.trace(`room # ${++count}: lat: ${r.lat} lon: ${r.lon}`);
                     // shortname: ${r.shortname} fullname: ${r.fullname} seats: ${r.seats}
                     // type: ${r.type} furniture: ${r.furniture} address: ${r.address}
                     // number: ${r.number} href: ${r.href} lat: ${r.lat} lon: ${r.lon}
