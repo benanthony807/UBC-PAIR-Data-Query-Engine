@@ -27,7 +27,7 @@ export default class PQRunQuery extends PQPreQSyntax {
         if (query["WHERE"] === undefined || query["WHERE"] === null) {
             return "Object.keys will call on undefined or null WHERE";
         }
-
+        Log.trace(query["WHERE"]);
         // Step 2a: NO FILTER, pass all sections as query result
         if (Object.keys(query["WHERE"]).length === 0) {
             Log.trace("No WHERE detected, returning all sections...");
