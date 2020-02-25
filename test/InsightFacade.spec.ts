@@ -33,7 +33,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
         nocoursesfolder: "./test/data/nocoursesfolder.zip",
         onevalidfileothersnot: "./test/data/onevalidfileothersnot.zip",
         valid1course: "./test/data/valid1course.zip",
-        // AAN: "./test/data/AAN.zip",
+        AAN: "./test/data/AAN.zip",
         notazip: "./test/data/notazip.txt",
         rooms: "./test/data/rooms.zip"
     };
@@ -467,14 +467,18 @@ describe("InsightFacade PerformQuery", () => {
     const datasetsToQuery: {
         [id: string]: { path: string; kind: InsightDatasetKind };
     } = {
-        courses: {
-            path: "./test/data/courses.zip",
+        AAN: {
+            path: "./test/data/AAN.zip",
             kind: InsightDatasetKind.Courses,
         },
         rooms: {
             path: "./test/data/rooms.zip",
             kind: InsightDatasetKind.Rooms,
         },
+        courses: {
+            path: "./test/data/courses.zip",
+            kind: InsightDatasetKind.Courses,
+        }
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];
@@ -618,8 +622,8 @@ describe("InsightFacade PerformQuery", () => {
     /** This test should use AAN.zip. WHERE: {} with ORDER should return the whole list with ORDER, not reject */
     it("{} WHERE should return ordered list}", function () {
         let query =  { WHERE: {}, OPTIONS: {
-                COLUMNS: [ "courses_dept", "courses_avg" ],
-                ORDER: "courses_avg" } };
+                COLUMNS: [ "AAN_dept", "AAN_avg" ],
+                ORDER: "AAN_avg" } };
         let result = insightFacade.performQuery(query);
         Log.trace(result);
     });

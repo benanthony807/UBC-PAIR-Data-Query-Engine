@@ -2,7 +2,7 @@ export default class PQGeneralHelpers {
     public listOfAcceptableFields: string[];
     public acceptableStringFields: string[];
     public acceptableNumberFields: string[];
-    public dataSetID: string = "courses"; // "courses" by default, will be changed in establishDataset
+    public static dataSetID: string = "courses"; // "courses" by default, will be changed in establishDataset
     public static listOfAcceptableFields = [
         "dept",
         "id",
@@ -20,11 +20,11 @@ export default class PQGeneralHelpers {
     public static acceptableNumberFields = ["avg", "pass", "fail", "audit", "year"];
 
     public setDataSetID(value: string) {
-        this.dataSetID = value;
+        PQGeneralHelpers.dataSetID = value;
     }
 
     public getDataSetID() {
-        return this.dataSetID;
+        return PQGeneralHelpers.dataSetID;
     }
 
     public keyIsValidColumnUnderscoreItem(key: any): any {
@@ -35,8 +35,9 @@ export default class PQGeneralHelpers {
 
         // Step 2: Check ID of id_field
         let keyID = key.substring(0, key.indexOf("_")); // ex. courses_avg -> courses
-        if (keyID !== this.dataSetID) {
+        if (keyID !== PQGeneralHelpers.dataSetID) {
             return "COLUMNS cannot reference multiple datasets or dataset not loaded yet";
+            // todo: this is being printed out in the where error
         }
 
         // Step 3: Check field of id_field
