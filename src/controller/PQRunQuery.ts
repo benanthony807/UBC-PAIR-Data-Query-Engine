@@ -3,6 +3,7 @@ import PQPreQSyntax from "./PQPreQSyntax";
 import PQFilter from "./PQFilter";
 import Log from "../Util";
 import PQTransformer from "./PQTransformer";
+import PQGeneralHelpers from "./PQGeneralHelpers";
 
 export default class PQRunQuery extends PQPreQSyntax {
     private allSectionsInDataset: any[];
@@ -15,7 +16,6 @@ export default class PQRunQuery extends PQPreQSyntax {
     }
 
     // ================== RUN QUERY ================== //
-
     public runQuery(query: any, datasetToUse: Dataset): any {
         this.allSectionsInDataset = this.populateAllSections(datasetToUse);
         // Log.trace("Finished populating all sections");
@@ -27,71 +27,75 @@ export default class PQRunQuery extends PQPreQSyntax {
         if (query["WHERE"] === undefined || query["WHERE"] === null) {
             return "Object.keys will call on undefined or null WHERE";
         }
-        Log.trace(query["WHERE"]);
         // Step 2a: NO FILTER, pass all sections as query result
         if (Object.keys(query["WHERE"]).length === 0) {
             Log.trace("No WHERE detected, returning all sections...");
             queryResults = this.allSectionsInDataset;
         } else {
             // Step 2b: YES FILTER
+            Log.trace("WHERE detected, doing filter...");
             queryResults = new PQFilter(
                 this.allSectionsInDataset
             ).doFilter(query["WHERE"], 0);
-            Log.trace("WHERE detected, doing filter...");
             if (typeof queryResults === "string") {
                 this.errorMessage = queryResults;
                 return this.errorMessage;
             }
         }
-
         // ====================== TRIM ====================== //
-        let resultTrim: any;
+        let trimResult: any;
         // returns list of sections w/o junk keys (courses_tier)
-        resultTrim = this.doTrim(queryResults, query);
-        if (typeof resultTrim === "string") {
-            this.errorMessage = resultTrim;
+        trimResult = this.doTrim(queryResults, query);
+        if (typeof trimResult === "string") {
+            this.errorMessage = trimResult;
             return this.errorMessage;
+        }
+        this.filteredResults = trimResult;
+        // ====================== TRANSFORMATIONS ====================== //
+        // If transformation exists...
+        if (Object.keys(query).length === 3) {
+            let transformResult = this.processTransformation(trimResult, query);
+            if (typeof transformResult === "string") {
+                this.errorMessage = transformResult;
+                return this.errorMessage;
+            }
+            this.filteredResults = transformResult;
+        }
+        // ================== LENGTH CHECK ================== //
+        if (this.filteredResults.length > 5000) {
+            return "Too large"; //  InsightFacade performQuery must receive this exact message
         }
         // ====================== ORDER ====================== //
         if (query["OPTIONS"] === undefined || query["OPTIONS"] === null) {
             return "Object.keys will call on undefined or null in doTrim";
         }
-        // no ORDER
-        if (Object.keys(query["OPTIONS"]).length === 1) {
-            this.filteredResults = resultTrim;
-        } else if (Object.keys(query["OPTIONS"]).length === 2) {
-            // yes ORDER
-            this.filteredResults = this.doOrder(resultTrim, query);
-        }
-        // ====================== TRANSFORMATIONS ====================== //
-        let transformResult = this.processTransformation(this.filteredResults, query);
-        if (typeof transformResult === "string") {
-            this.errorMessage = transformResult;
-            return this.errorMessage;
+        if (Object.keys(query["OPTIONS"]).length === 2) {
+            this.filteredResults = this.doOrder(this.filteredResults, query);
         }
 
-        // ================== LENGTH CHECK ================== //
-        if (transformResult.length > 5000) {
-            return "Too large"; //  InsightFacade performQuery must receive this exact message
-        }
-        return transformResult;
+        return this.filteredResults;
     }
 
     // ====================== HELPER FUNCTIONS ====================== //
 
     /** Populates a list with all sections in the dataset */
     private populateAllSections(dataset: Dataset) {
-        let allSectionsHolder = [];
-        let numberOfCourses = dataset["data"].length;
-        for (let i = 0; i < numberOfCourses; i++) {
-            let currentCourse = dataset["data"][i].result;
-            let numberOfSectionsInCourse = currentCourse.length;
-            for (let j = 0; j < numberOfSectionsInCourse; j++) {
-                let currentSection = dataset["data"][i].result[j];
-                allSectionsHolder.push(currentSection);
+        let allItemsHolder = [];
+        let numOfData = dataset["data"].length; // so number of courses or number of rooms
+        for (let i = 0; i < numOfData; i++) {
+            let currData = dataset["data"][i];
+
+            if (dataset["kind"] === "courses") {
+                let numSections = currData["result"].length; // number of sections in courses
+                for (let j = 0; j < numSections; j++) {
+                    let currItem = dataset["data"][i].result[j];
+                    allItemsHolder.push(currItem);
+                }
+            } else if (dataset["kind"] === "rooms") {
+                allItemsHolder.push(currData);
             }
         }
-        return allSectionsHolder;
+        return allItemsHolder;
     }
 
     /**
@@ -110,7 +114,7 @@ export default class PQRunQuery extends PQPreQSyntax {
                 let keyToSelectFor = query["OPTIONS"]["COLUMNS"][i]; // ex. keyToSelectFor = courses_avg
                 if (keyToSelectFor.indexOf("_") !== -1) {
                     // Object construction
-                    let key = this.translate(keyToSelectFor); // ex. key = "Avg"
+                    let key = PQGeneralHelpers.translate(keyToSelectFor); // ex. key = "Avg"
                     let value = section[key]; // ex. 97.7
                     let object = {[keyToSelectFor]: value}; // ex. {courses_avg: 97}
 
@@ -128,7 +132,7 @@ export default class PQRunQuery extends PQPreQSyntax {
                     let grandchild = Object.values(apply[j])[0];
                     let grandchildValue: any = Object.values(grandchild)[0]; // "courses_avg"
                     if (!listOfKeysAlreadyAdded.includes(grandchildValue)) {
-                        let key = this.translate(grandchildValue); // "courses_avg" -> "Avg"
+                        let key = PQGeneralHelpers.translate(grandchildValue); // "courses_avg" -> "Avg"
                         let value = section[key];
                         let object = {[grandchildValue]: value};
 
@@ -140,39 +144,6 @@ export default class PQRunQuery extends PQPreQSyntax {
         }
 
         return trimmedList;
-    }
-
-    /**
-     * Translates query key_value format to JSON value format
-     * ex. Query has wants to know "courses_avg", so we have to search
-     * each section's "Avg" key.
-     */
-    public translate(queryKey: string): string {
-        switch (queryKey) {
-            // STRINGS
-            case "courses_dept":
-                return "Subject";
-            case "courses_id":
-                return "Course";
-            case "courses_instructor":
-                return "Professor";
-            case "courses_title":
-                return "Title";
-            case "courses_uuid":
-                return "id";
-
-            // NUMBERS
-            case "courses_avg":
-                return "Avg";
-            case "courses_pass":
-                return "Pass";
-            case "courses_fail":
-                return "Fail";
-            case "courses_audit":
-                return "Audit";
-            case "courses_year":
-                return "Year";
-        }
     }
 
     /** Order the list of sections according to ORDER key */
@@ -248,12 +219,13 @@ export default class PQRunQuery extends PQPreQSyntax {
 
     public doDescending(unsortedList: any, order: any): any {
         let sortedList: any[];
-        let orderKeys = order; // ex. courses_avg
+        let orderKeys = order["keys"]; // ex. courses_avg
         let self = this;
 
         sortedList = unsortedList.sort(function (a: any, b: any) {
             // -1 = a goes first || 1 = b goes first || 0 = tie, don't change order
             // let translatedKey = self.translate(orderKeys[0]);
+            // Log.trace(orderKeys);
             if (a[orderKeys[0]] < b[orderKeys[0]]) {
                 return 1;
             } else if (a[orderKeys[0]] > b[orderKeys[0]]) {
