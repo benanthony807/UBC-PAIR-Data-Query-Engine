@@ -2,7 +2,8 @@ import PQPreQSyntax from "./PQPreQSyntax";
 import PQGeneralHelpers from "./PQGeneralHelpers";
 
 export default class PQPreQTransfChecker {
-    private errorMessage: string;
+    public errorMessage: string;
+    public static listOfApplyKeys: string[] = [];
     private helpers: PQGeneralHelpers;
 
     constructor() {
@@ -22,7 +23,7 @@ export default class PQPreQTransfChecker {
 
         // Step 3: Check Group and Apply
         // Error message is set in below methods
-        if (!(this.isGroupValid(query) && this.isApplyValid(query))) {
+        if (!(this.isGroupSyntaxValid(query) && this.isApplySyntaxValid(query))) {
             return this.errorMessage;
         }
 
@@ -31,7 +32,7 @@ export default class PQPreQTransfChecker {
     }
 
     /** Note: order of steps is important  */
-    public isGroupValid(query: any): boolean {
+    public isGroupSyntaxValid(query: any): boolean {
         let group = query["TRANSFORMATIONS"]["GROUP"];
         // Step 1: GROUP is an array
         if (!Array.isArray(group)) {
@@ -63,25 +64,32 @@ export default class PQPreQTransfChecker {
         //     return false;
         // }
 
+        return true;
+    }
+
+    public isGroupSemanticsValid(query: any): boolean {
+        let group = query["TRANSFORMATIONS"]["GROUP"];
+
         for (let item of group) { // "courses_title"
-            // Step 4: GROUP has valid keys
+            // Step 1: GROUP has valid keys
             let field = item.substring(item.indexOf("_") + 1); // "title"
             if (!(PQGeneralHelpers.listOfAcceptableFields.includes(field))) {
                 this.errorMessage = "Error in GROUP: Must be a valid field";
                 return false;
             }
 
-            // Step 5: GROUP does not reference multiple datasets
+            // Step 2: GROUP does not reference multiple datasets
             let id = item.substring(0, item.indexOf("_")); // "courses"
             if (id !== this.helpers.getDataSetID()) {
                 this.errorMessage = "Error in GROUP: Cannot query more than one dataset";
                 return false;
             }
         }
+
         return true;
     }
 
-    public isApplyValid(query: any): boolean {
+    public isApplySyntaxValid(query: any): boolean {
         let apply = query["TRANSFORMATIONS"]["APPLY"];
         // Step 1: APPLY is a list
         if (!Array.isArray(apply)) {
@@ -93,14 +101,13 @@ export default class PQPreQTransfChecker {
             this.errorMessage = "APPLY must have at least 1 item in it";
             return false;
         }
+        return true;
+    }
 
-        // Set up list of ApplyKeys ex. ["overallAvg", "hello"]
-        let listOfApplyKeysPreFlat: any = [];
-        let listOfApplyKeys: any = [];
+    public isApplySemanticsValid(query: any): boolean {
+        let apply = query["TRANSFORMATIONS"]["APPLY"];
         let numOfApplyKeys = Object.values(apply).length;
-        // For each ApplyKey ex. "overallAvg"
         for (let i = 0; i < numOfApplyKeys; i++) {
-            listOfApplyKeysPreFlat.push(Object.keys(Object.values(apply)[i]));
             let applyChild: any = Object.values(apply)[i]; // {"overallAvg" { "AVG": "courses_avg" } }
             let applyGrandchild: any = Object.values(applyChild)[0]; // { "AVG": "courses_avg" }
 
@@ -108,16 +115,15 @@ export default class PQPreQTransfChecker {
                 return false; // error message already set in above method
             }
         }
-        listOfApplyKeys = listOfApplyKeysPreFlat.flat();
         // Step 10: APPLY keys do not have an _
-        for (let key of listOfApplyKeys) {
+        for (let key of PQPreQTransfChecker.listOfApplyKeys) {
             if (!(key.indexOf("_") === -1)) {
                 this.errorMessage = "Cannot have underscore in applyKey";
                 return false;
             }
         }
         // Step 11: NO duplicate APPLY keys
-        if (this.hasDuplicates(listOfApplyKeys)) {
+        if (this.hasDuplicates(PQPreQTransfChecker.listOfApplyKeys)) {
             this.errorMessage = "Cannot have duplicate keys in APPLY";
             return false;
         }
@@ -177,6 +183,9 @@ export default class PQPreQTransfChecker {
 
     private hasDuplicates(list: any): boolean {
         let dupListCounts: any = [];
+        if (list.length === 1) {
+            return false;
+        }
         for (let i = 0; i <= list.length; i++) {
             if (dupListCounts[list[i]] === undefined) {
                 dupListCounts[list[i]] = 1;
@@ -185,5 +194,16 @@ export default class PQPreQTransfChecker {
             }
         }
         return false;
+    }
+
+    public populateListOfApplyKeys(query: any) {
+        let apply = query["TRANSFORMATIONS"]["APPLY"];
+        // Set up list of ApplyKeys ex. ["overallAvg", "hello"]
+        let listOfApplyKeysPreFlat: any = [];
+        let numOfApplyKeys = Object.values(apply).length;
+        for (let i = 0; i < numOfApplyKeys; i++) {
+            listOfApplyKeysPreFlat.push(Object.keys(Object.values(apply)[i]));
+        }
+        PQPreQTransfChecker.listOfApplyKeys = listOfApplyKeysPreFlat.flat();
     }
 }

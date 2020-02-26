@@ -140,20 +140,14 @@ export default class InsightFacade implements IInsightFacade {
 
         Log.trace("Step 2: Set dataset");
         let datasetToUse: Dataset = null;
-        let establishResult = this.syntaxChecker.queryEstablishDataset(
-            query,
-            this.datasets,
-        );
+        let establishResult = this.syntaxChecker.queryEstablishDataset( query, this.datasets);
         if (typeof establishResult === "string") {
             return Promise.reject(new InsightError(establishResult));
         }
         datasetToUse = establishResult;
 
         Log.trace("Step 3: Check query semantics");
-        let optionsValidResult = this.semanticsChecker.inputOptionsKeysAreValid(
-            query,
-            datasetToUse,
-        );
+        let optionsValidResult = this.semanticsChecker.semanticsAreValid( query, datasetToUse);
         if (typeof optionsValidResult === "string") {
             return Promise.reject(new InsightError(optionsValidResult));
         }
@@ -162,8 +156,8 @@ export default class InsightFacade implements IInsightFacade {
         let runQueryResult = this.runQuery.runQuery(query, datasetToUse);
 
         // ================== ERROR HANDLER ================== //
-        Log.trace( "Reached Error Handler");
         if (typeof runQueryResult === "string") {
+            Log.trace( "Reached Error Handler");
             // RESULT TOO LARGE
             if (runQueryResult === "Too large") {
                 let errMsg =

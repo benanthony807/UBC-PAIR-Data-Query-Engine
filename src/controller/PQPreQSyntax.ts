@@ -6,14 +6,12 @@ import PQPreQTransfChecker from "./PQPreQTransfChecker";
 
 export default class PQPreQSyntax {
     public errorMessage: string;
-    public dataSetID: string;
     public filteredResults: any[];
     public helpers: PQGeneralHelpers;
     private transformation: PQPreQTransfChecker;
 
     constructor() {
         this.errorMessage = "";
-        this.dataSetID = "courses"; // "courses" by default
         this.filteredResults = [];
         this.helpers = new PQGeneralHelpers();
         this.transformation = new PQPreQTransfChecker();
@@ -223,15 +221,11 @@ export default class PQPreQSyntax {
      */
     public queryEstablishDataset(query: any, datasets: Dataset[]): any {
         let firstKeyInColumns = query["OPTIONS"]["COLUMNS"][0]; // courses_avg
-        let datasetID = firstKeyInColumns.substring(
-            0,
-            firstKeyInColumns.indexOf("_"),
-        ); // courses
+        let datasetID = firstKeyInColumns.substring( 0, firstKeyInColumns.indexOf("_")); // courses, rooms
         for (let dataset of datasets) {
             if (dataset["id"] === datasetID) {
-                this.dataSetID = datasetID;
-                // PQGeneralHelpers.dataSetID = this.dataSetID; // Now helpers class has a datasetID (default "courses")
-                this.helpers.setDataSetID(this.dataSetID);
+                PQGeneralHelpers.dataSetID = datasetID;
+                PQGeneralHelpers.dataSetKind = dataset["kind"];
                 return dataset;
             }
         }

@@ -1,4 +1,5 @@
 import PQFilterCheckers from "./PQFilterCheckers";
+import PQGeneralHelpers from "./PQGeneralHelpers";
 
 export default class PQFilter {
     private errorMessage: string;
@@ -101,12 +102,12 @@ export default class PQFilter {
 
         // Step 1: Set up variables
         let queryKey = Object.keys(query[currFilterType])[0]; // ex. "courses_avg"
-        let sectionKey = this.translate(queryKey); // ex. "Avg"
+        let sectionKey = PQGeneralHelpers.translate(queryKey); // ex. "Avg"
 
         // Step 2: Iterate through each section in dataset
         for (let section of this.allSections) {
             let queryValue = Object.values(query[currFilterType])[0]; // ex. {"GT": {"courses_avg": 97}} = 97
-            let sectionValue = section[sectionKey]; // ex. section["Avg"] = 97
+            let sectionValue = section[sectionKey]; // ex. section["Avg"] = 97 or "aanb"
 
             // Step 3: Compare and Push
 
@@ -155,34 +156,6 @@ export default class PQFilter {
         }
 
         return filteredList;
-    }
-
-    public translate(queryKey: string): string {
-        switch (queryKey) {
-            // STRINGS
-            case "courses_dept":
-                return "Subject";
-            case "courses_id":
-                return "Course";
-            case "courses_instructor":
-                return "Professor";
-            case "courses_title":
-                return "Title";
-            case "courses_uuid":
-                return "id"; // Note: uuid is returned as number
-
-            // NUMBERS
-            case "courses_avg":
-                return "Avg";
-            case "courses_pass":
-                return "Pass";
-            case "courses_fail":
-                return "Fail";
-            case "courses_audit":
-                return "Audit";
-            case "courses_year":
-                return "Year";
-        } // Note: year is returned as string
     }
 
     /**
@@ -280,4 +253,5 @@ export default class PQFilter {
         } // this sets up for the next run
         return filteredList[filteredList.length - 1];
     }
+
 }
