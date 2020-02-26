@@ -789,7 +789,7 @@ describe("InsightFacade Add/Remove Dataset", function () {
 //                 expect.fail(err, expected4, "should not have failed, err: " + err);
 //             });
 //     });
-// });
+});
 
 /*
  * This test suite dynamically generates tests from the JSON files in test/queries.
