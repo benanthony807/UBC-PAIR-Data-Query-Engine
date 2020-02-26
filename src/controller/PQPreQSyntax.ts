@@ -26,7 +26,7 @@ export default class PQPreQSyntax {
      */
     public isInputQueryValid(query: any): any {
         // Step 1: Query should not be null or undefined
-        if (typeof query === null) {
+        if (query === null || query === undefined) {
             this.errorMessage = "Query was found to be null or 'undefined'";
             return this.errorMessage;
         }
