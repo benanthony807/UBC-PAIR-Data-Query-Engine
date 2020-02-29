@@ -147,7 +147,7 @@ export default class PQPreQSemantics {
                     }
                     let group = query["TRANSFORMATIONS"]["GROUP"];
                     if (!group.includes(key)) {
-                        this.errorMessage = "key has no underscore so must be in GROUP";
+                        this.errorMessage = "key has an underscore so must be in GROUP";
                         return false;
                     }
                 }

@@ -97,10 +97,10 @@ export default class PQPreQTransfChecker {
             return false;
         }
         // Step 2: APPLY has at least 1 item in it
-        if (!(apply.length >= 1)) {
-            this.errorMessage = "APPLY must have at least 1 item in it";
-            return false;
-        }
+        // if (!(apply.length >= 1)) {
+        //     this.errorMessage = "APPLY must have at least 1 item in it";
+        //     return false;
+        // }
         return true;
     }
 
@@ -157,6 +157,10 @@ export default class PQPreQTransfChecker {
         // Step 6: APPLY'S grandchild field exists
         // ex. { "overallAvg": { "AVG": "courses_avg" } } -> avg must exist
         let applyGrandchildValue: any = Object.values(applyGrandchild)[0]; // "courses_avg"
+        if (typeof applyGrandchildValue !== "string") {
+            this.errorMessage = "Invalid apply rule target key";
+            return false;
+        }
         let field = applyGrandchildValue.substring(applyGrandchildValue.indexOf("_") + 1); // "avg"
         if (!(PQGeneralHelpers.listOfAcceptableFields.includes(field))) {
             this.errorMessage = "Must be a valid id_field";

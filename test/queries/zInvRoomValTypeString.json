@@ -1,0 +1,13 @@
+{
+    "title": "Invalid value type in IS, should be string",
+    "query": {
+        "WHERE": { "AND": [ { "IS": { "rooms_furniture": 300 } },
+                 { "GT": { "rooms_seats": "300" } } ] },
+        "OPTIONS": {  "COLUMNS": [ "rooms_shortname", "maxSeats" ],
+            "ORDER": { "dir": "DOWN",
+                        "keys": [ "maxSeats" ] } },
+        "TRANSFORMATIONS": { "GROUP": [ "rooms_shortname" ],
+            "APPLY": [ { "maxSeats": { "MAX": "rooms_seats" } } ] }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"}

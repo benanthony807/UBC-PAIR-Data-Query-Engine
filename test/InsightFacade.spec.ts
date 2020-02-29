@@ -876,19 +876,59 @@ describe("InsightFacade PerformQuery", () => {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    it("roomtest", function () {
-        let query = {
-            WHERE: { AND: [ { IS: { rooms_furniture: "*Tables*" } },
-                            { GT: { rooms_seats: 300 } } ] },
-            OPTIONS: {  COLUMNS: [ "rooms_shortname", "maxSeats" ],
-                        ORDER: { dir: "DOWN",
-                                 keys: [ "maxSeats" ] } },
-            TRANSFORMATIONS: { GROUP: [ "rooms_shortname" ],
-                               APPLY: [ { maxSeats: { MAX: "rooms_seats" } } ] }
-        };
-        let result = insightFacade.performQuery(query);
-        Log.trace(result);
-    });
+    // it("roomtest w courses in group", function () {
+    //     let query =  {
+    //         WHERE: {
+    //             OR: [
+    //                 {
+    //                     IS: {
+    //                         rooms_furniture: "*Tables*"
+    //                     }
+    //                 },
+    //                 {
+    //                     GT: {
+    //                         rooms_seats: 300
+    //                     }
+    //                 }
+    //             ]
+    //         },
+    //         OPTIONS: {
+    //             COLUMNS: [
+    //                 "rooms_lat",
+    //                 "rooms_lon",
+    //                 "rooms_shortname"
+    //             ],
+    //             ORDER: {
+    //                 dir: "DOWN",
+    //                 keys: [
+    //                     "rooms_lat"
+    //                 ]
+    //             }
+    //         },
+    //         TRANSFORMATIONS: {
+    //             GROUP: [
+    //                 "rooms_shortname",
+    //                 "rooms_lat",
+    //                 "rooms_lon"
+    //             ],
+    //             APPLY: [
+    //                 {
+    //                     maxSeats: {
+    //                         MAX: "rooms_seats"
+    //                     }
+    //                 },
+    //                 {
+    //                     maxSeats: {
+    //                         MAX: 1
+    //                     }
+    //                 }
+    //             ]
+    //         }
+    //     };
+    //     let result = insightFacade.performQuery(query);
+    //     Log.trace(result);
+    // });
+
     /** This is a flexible test where we replace queries */
     it("bobloblaw", function () {
         let query = {
@@ -909,7 +949,6 @@ describe("InsightFacade PerformQuery", () => {
         Log.trace(result);
     });
 
-    /** Should reject: query is empty. */
     it("Should reject, query is just {} ", function () {
         let query =  {};
         // let result = insightFacade.performQuery(query);
