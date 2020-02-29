@@ -29,13 +29,12 @@ export default class PQGeneralHelpers {
         let keyID = key.substring(0, key.indexOf("_")); // ex. courses_avg -> courses
         if (keyID !== PQGeneralHelpers.dataSetID) {
             return "COLUMNS cannot reference multiple datasets or dataset not loaded yet";
-            // todo: this is being printed out in the where error
         }
 
         // Step 3: Check field of id_field
         let field = key.substring(key.indexOf("_") + 1, key.length); // ex. courses_avg -> avg
         if (!PQGeneralHelpers.listOfAcceptableFields.includes(field)) {
-            return "COLUMNS has an invalid key ";
+            return "COLUMNS has an invalid field ";
         }
 
         return true;

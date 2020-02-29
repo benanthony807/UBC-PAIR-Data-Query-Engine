@@ -1,5 +1,5 @@
 {
-    "title": "Invalid Empty Child: Apply rule should only have 1 key, has 0",
+    "title": "APPLY must be an array",
     "query": {
         "WHERE": {
             "GT": {
@@ -16,10 +16,7 @@
             "GROUP": [
                 "courses_title"
             ],
-            "APPLY": [
-                {
-                }
-            ]
+            "APPLY": { }
         }
     },
     "isQueryValid": false,
