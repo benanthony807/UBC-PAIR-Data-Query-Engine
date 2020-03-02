@@ -75,6 +75,7 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     private addRoomsDataset(content: string, id: string, kind: InsightDatasetKind.Rooms) {
+        this.roomsDatasetHelper = new RoomsDatasetHelper();
         return this.roomsDatasetHelper.getAllRoomsMasterMethod(content)
             .then((rooms: any[]) => {
                 if (rooms.length > 0) {

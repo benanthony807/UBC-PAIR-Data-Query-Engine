@@ -280,7 +280,7 @@ export default class RoomsDatasetHelper {
     private filterIncompleteRooms() {
         for (let room of this.rawRooms) {
             if (!this.isEmptyBuilding(room)) {
-                room.name = room.shortname + " " + room.number;
+                room.name = room.shortname + "_" + room.number;
                 if (room.seats === undefined) {
                     room.seats = 0;
                 }
