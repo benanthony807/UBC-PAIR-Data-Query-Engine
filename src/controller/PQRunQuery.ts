@@ -124,10 +124,11 @@ export default class PQRunQuery extends PQPreQSyntax {
                     listOfKeysAlreadyAdded.push(keyToSelectFor);
                 }
             }
-            // If there's TRANSFORMATIONS, add the key in APPLY if it's not already added
+            // If there's TRANSFORMATIONS, add the key in APPLY and GROUP if it's not already added
             if (Object.keys(query).length === 3) {
+                // Add the key in APPLY
                 let apply = query["TRANSFORMATIONS"]["APPLY"];
-                let numOfApplyGrandchildren = query["TRANSFORMATIONS"]["APPLY"].length;
+                let numOfApplyGrandchildren = apply.length;
                 for (let j = 0; j < numOfApplyGrandchildren; j++) {
                     let grandchild = Object.values(apply[j])[0];
                     let grandchildValue: any = Object.values(grandchild)[0]; // "courses_avg"
@@ -137,6 +138,23 @@ export default class PQRunQuery extends PQPreQSyntax {
                         let object = {[grandchildValue]: value};
 
                         Object.assign(trimmedSection, object);
+                        listOfKeysAlreadyAdded.push(grandchildValue);
+                    }
+                }
+
+                // Add the key in GROUP
+                let group = query["TRANSFORMATIONS"]["GROUP"];
+                let numOfGroupChildren = group.length;
+                for (let k = 0; k < numOfGroupChildren; k++) {
+                    let groupChild: any = group[k]; // "courses_avg"
+                    Log.trace("groupChild: " + groupChild);
+                    if (!listOfKeysAlreadyAdded.includes(groupChild)) {
+                        let key = PQGeneralHelpers.translate(groupChild);
+                        let value = section[key];
+                        let object = {[groupChild]: value};
+
+                        Object.assign(trimmedSection, object);
+                        listOfKeysAlreadyAdded.push(groupChild);
                     }
                 }
             }

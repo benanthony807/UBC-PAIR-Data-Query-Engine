@@ -949,25 +949,24 @@ describe("InsightFacade PerformQuery", () => {
         let query = {
             WHERE: {
                 GT: {
-                    courses_avg: 0
+                    courses_avg: 97
                 }
             },
             OPTIONS: {
                 COLUMNS: [
-                    "courses_title",
-                    "overallAvg",
-                    "courses_avg"
+                    "courses_pass",
+                    "overallAvg"
                 ]
             },
             TRANSFORMATIONS: {
                 GROUP: [
-                    "courses_title",
-                    "courses_avg"
+                    "courses_pass",
+                    "courses_id"
                 ],
                 APPLY: [
                     {
                         overallAvg: {
-                            MIN: "courses_avg"
+                            MAX: "courses_avg"
                         }
                     }
                 ]

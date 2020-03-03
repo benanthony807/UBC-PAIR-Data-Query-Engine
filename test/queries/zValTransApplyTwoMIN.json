@@ -1,0 +1,145 @@
+{
+    "title": "Valid: Two MIN in apply",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 97
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_pass",
+                "overallAvg"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_pass",
+                "courses_id"
+            ],
+            "APPLY": [
+                {
+                    "overallAvg": {
+                        "MIN": "courses_avg",
+                        "MIN": "courses_pass"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "courses_pass": 16,
+            "overallAvg": 16
+        },
+        {
+            "courses_pass": 15,
+            "overallAvg": 15
+        },
+        {
+            "courses_pass": 1,
+            "overallAvg": 1
+        },
+        {
+            "courses_pass": 14,
+            "overallAvg": 14
+        },
+        {
+            "courses_pass": 12,
+            "overallAvg": 12
+        },
+        {
+            "courses_pass": 12,
+            "overallAvg": 12
+        },
+        {
+            "courses_pass": 10,
+            "overallAvg": 10
+        },
+        {
+            "courses_pass": 22,
+            "overallAvg": 22
+        },
+        {
+            "courses_pass": 14,
+            "overallAvg": 14
+        },
+        {
+            "courses_pass": 25,
+            "overallAvg": 25
+        },
+        {
+            "courses_pass": 17,
+            "overallAvg": 17
+        },
+        {
+            "courses_pass": 24,
+            "overallAvg": 24
+        },
+        {
+            "courses_pass": 11,
+            "overallAvg": 11
+        },
+        {
+            "courses_pass": 9,
+            "overallAvg": 9
+        },
+        {
+            "courses_pass": 17,
+            "overallAvg": 17
+        },
+        {
+            "courses_pass": 16,
+            "overallAvg": 16
+        },
+        {
+            "courses_pass": 11,
+            "overallAvg": 11
+        },
+        {
+            "courses_pass": 9,
+            "overallAvg": 9
+        },
+        {
+            "courses_pass": 4,
+            "overallAvg": 4
+        },
+        {
+            "courses_pass": 9,
+            "overallAvg": 9
+        },
+        {
+            "courses_pass": 21,
+            "overallAvg": 21
+        },
+        {
+            "courses_pass": 11,
+            "overallAvg": 11
+        },
+        {
+            "courses_pass": 14,
+            "overallAvg": 14
+        },
+        {
+            "courses_pass": 17,
+            "overallAvg": 17
+        },
+        {
+            "courses_pass": 16,
+            "overallAvg": 16
+        },
+        {
+            "courses_pass": 12,
+            "overallAvg": 12
+        },
+        {
+            "courses_pass": 12,
+            "overallAvg": 12
+        },
+        {
+            "courses_pass": 82,
+            "overallAvg": 82
+        }
+    ]
+}
