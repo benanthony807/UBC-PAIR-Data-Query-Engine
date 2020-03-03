@@ -954,7 +954,6 @@ describe("InsightFacade PerformQuery", () => {
             },
             OPTIONS: {
                 COLUMNS: [
-                    "courses_pass",
                     "overallAvg"
                 ]
             },
@@ -966,7 +965,7 @@ describe("InsightFacade PerformQuery", () => {
                 APPLY: [
                     {
                         overallAvg: {
-                            MAX: "courses_avg"
+                            MAX: "courses_pass"
                         }
                     }
                 ]
