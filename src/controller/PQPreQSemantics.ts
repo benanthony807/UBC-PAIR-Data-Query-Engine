@@ -115,6 +115,7 @@ export default class PQPreQSemantics {
     public checkColumnSemantics(query: any): boolean {
         let listOfApplyItemsPreFlat: any = [];
         let listOfApplyItems: any = [];
+        // If there is an APPLY, populate a list of APPLY items
         if (Object.keys(query).length === 3 && Object.keys(query["TRANSFORMATIONS"])[1] === "APPLY") {
             let numApplyKeys = query["TRANSFORMATIONS"]["APPLY"].length;
             for (let i = 0; i < numApplyKeys; i++) {
@@ -132,6 +133,8 @@ export default class PQPreQSemantics {
                     this.errorMessage = result;
                     return false;
                 }
+
+                // If there is a TRANSFORMATIONS...
             } else if (Object.keys(query).length === 3) {
                 // Step 1: If no _, item must be in APPLY (APPLY won't have any _ in it).
                 if (key.indexOf("_") === -1) {

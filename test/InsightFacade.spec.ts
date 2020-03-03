@@ -954,10 +954,22 @@ describe("InsightFacade PerformQuery", () => {
             },
             OPTIONS: {
                 COLUMNS: [
-                    "courses_dept",
-                    "courses_avg"
+                    "courses_pass",
+                    "overallAvg"
+                ]
+            },
+            TRANSFORMATIONS: {
+                GROUP: [
+                    "courses_pass",
+                    "courses_id"
                 ],
-                ORDER: "courses_avg"
+                APPLY: [
+                    {
+                        overallAvg: {
+                            MAX: "courses_avg"
+                        }
+                    }
+                ]
             }
         };
         let result = insightFacade.performQuery(query);
