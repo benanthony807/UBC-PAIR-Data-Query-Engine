@@ -1,6 +1,6 @@
 import {assert, expect} from "chai";
 import * as fs from "fs-extra";
-import {InsightDataset, InsightDatasetKind, InsightError, NotFoundError, } from "../src/controller/IInsightFacade";
+import {InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "../src/controller/IInsightFacade";
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
@@ -29,7 +29,8 @@ describe("InsightFacade Add/Remove Dataset", function () {
         valid1course: "./test/data/valid1course.zip",
         AAN: "./test/data/AAN.zip",
         notazip: "./test/data/notazip.txt",
-        rooms: "./test/data/rooms.zip"
+        rooms: "./test/data/rooms.zip",
+        roomsnotnamedrooms: "./test/data/roomsnotnamedrooms.zip"
     };
     let datasets: { [id: string]: string } = {};
     let insightFacade: InsightFacade;
@@ -74,6 +75,22 @@ describe("InsightFacade Add/Remove Dataset", function () {
         const expected: string[] = [id];
         return insightFacade
             .addDataset(id, datasets[id], InsightDatasetKind.Rooms)
+            .then((result: string[]) => {
+                expect(result).to.deep.equal(expected);
+            })
+            .catch((err: any) => {
+                expect.fail(err, expected, "Should not have rejected");
+            });
+    });
+
+    it("Should add a valid rooms dataset not named rooms", function () {
+        const id: string = "roomsnotnamedrooms";
+        const expected: string[] = [id, "rooms"];
+        return insightFacade
+            .addDataset(id, datasets[id], InsightDatasetKind.Rooms)
+            .then(() => {
+                return insightFacade.addDataset("rooms", datasets["rooms"], InsightDatasetKind.Rooms);
+            })
             .then((result: string[]) => {
                 expect(result).to.deep.equal(expected);
             })
@@ -806,10 +823,10 @@ describe("InsightFacade PerformQuery", () => {
             path: "./test/data/courses.zip",
             kind: InsightDatasetKind.Courses,
         },
-        // roomsnotnamedrooms: {
-        //     path: "./test/data/roomsnotnamedrooms.zip",
-        //     kind: InsightDatasetKind.Rooms,
-        // }
+        roomsnotnamedrooms: {
+            path: "./test/data/roomsnotnamedrooms.zip",
+            kind: InsightDatasetKind.Rooms,
+        }
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];
@@ -1013,6 +1030,22 @@ describe("InsightFacade PerformQuery", () => {
         let query =  { WHERE: {}, OPTIONS: {
                 COLUMNS: [ "AAN_dept", "AAN_avg" ],
                 ORDER: "AAN_avg" } };
+        let result = insightFacade.performQuery(query);
+        Log.trace(result);
+    });
+
+    // it("test performQuery using a dataset not named rooms", function () {
+    //     let query =  { WHERE: {}, OPTIONS: {
+    //             COLUMNS: [ "roomsnotnamedrooms_name", "roomsnotnamedrooms_lat" ],
+    //             ORDER: "roomsnotnamedrooms_name" } };
+    //     let result = insightFacade.performQuery(query);
+    //     Log.trace(result);
+    // });
+
+    it("test performQuery using a dataset not named rooms", function () {
+        let query =  { WHERE: {}, OPTIONS: {
+                COLUMNS: [ "rooms_name", "rooms_lat" ],
+                ORDER: "rooms_name" } };
         let result = insightFacade.performQuery(query);
         Log.trace(result);
     });
