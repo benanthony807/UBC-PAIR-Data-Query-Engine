@@ -2,43 +2,17 @@
     "title": "Valid room Transformation",
     "query": {
         "WHERE": {
-            "AND": [
-                {
-                    "IS": {
-                        "rooms_name": "*LSC*"
-                    }
-                },
-                {
-                    "GT": {
-                        "rooms_seats": 300
-                    }
-                }
-            ]
+            "IS": {
+                "rooms_name": "*LSC*"
+            }
         },
         "OPTIONS": {
             "COLUMNS": [
                 "rooms_name",
-                "maxSeats"
-            ],
-            "ORDER": {
-                "dir": "DOWN",
-                "keys": [
-                    "maxSeats"
-                ]
-            }
-        },
-        "TRANSFORMATIONS": {
-            "GROUP": [
-                "rooms_name"
-            ],
-            "APPLY": [
-                {
-                    "maxSeats": {
-                        "MAX": "rooms_seats"
-                    }
-                }
+                "rooms_shortname",
+                "rooms_number"
             ]
         }
     },
     "isQueryValid": true,
-    "result":[{"rooms_name":"LSC_1001","maxSeats":350},{"rooms_name":"LSC_1002","maxSeats":350}]}
+    "result":[{"rooms_name":"LSC_1001","rooms_shortname":"LSC","rooms_number":"1001"},{"rooms_name":"LSC_1002","rooms_shortname":"LSC","rooms_number":"1002"},{"rooms_name":"LSC_1003","rooms_shortname":"LSC","rooms_number":"1003"}]}

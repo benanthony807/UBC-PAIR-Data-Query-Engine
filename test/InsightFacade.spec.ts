@@ -1,12 +1,6 @@
-import { expect } from "chai";
-import { assert } from "chai";
+import {assert, expect} from "chai";
 import * as fs from "fs-extra";
-import {
-    InsightDataset,
-    InsightDatasetKind,
-    InsightError,
-    NotFoundError,
-} from "../src/controller/IInsightFacade";
+import {InsightDataset, InsightDatasetKind, InsightError, NotFoundError, } from "../src/controller/IInsightFacade";
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
 import TestUtil from "./TestUtil";
@@ -811,7 +805,11 @@ describe("InsightFacade PerformQuery", () => {
         courses: {
             path: "./test/data/courses.zip",
             kind: InsightDatasetKind.Courses,
-        }
+        },
+        // roomsnotnamedrooms: {
+        //     path: "./test/data/roomsnotnamedrooms.zip",
+        //     kind: InsightDatasetKind.Rooms,
+        // }
     };
     let insightFacade: InsightFacade;
     let testQueries: ITestQuery[] = [];
@@ -934,15 +932,28 @@ describe("InsightFacade PerformQuery", () => {
         let query = {
             WHERE: {
                 GT: {
-                    courses_avg: 97
+                    courses_avg: 0
                 }
             },
             OPTIONS: {
                 COLUMNS: [
-                    "courses_dept",
+                    "courses_title",
+                    "overallAvg",
+                    "courses_avg"
+                ]
+            },
+            TRANSFORMATIONS: {
+                GROUP: [
+                    "courses_title",
                     "courses_avg"
                 ],
-                ORDER: "courses_avg"
+                APPLY: [
+                    {
+                        overallAvg: {
+                            MIN: "courses_avg"
+                        }
+                    }
+                ]
             }
         };
         let result = insightFacade.performQuery(query);

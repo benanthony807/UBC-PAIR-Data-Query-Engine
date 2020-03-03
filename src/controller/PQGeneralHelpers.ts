@@ -32,13 +32,29 @@ export default class PQGeneralHelpers {
         }
 
         // Step 3: Check field of id_field
-        let field = key.substring(key.indexOf("_") + 1, key.length); // ex. courses_avg -> avg
+        let field = key.substring(key.indexOf("_") + 1, key.length); // ex. courses_avg -> avg, rooms_name -> name
         if (!PQGeneralHelpers.listOfAcceptableFields.includes(field)) {
             return "COLUMNS has an invalid field ";
         }
+        // if we're looking at rooms_name, make sure it's rooms_shortname + "_" + rooms_number
+        // if (field === "name") {
+        //     if (this.isNameValid(key) === false) {
+        //         return "Rooms_names is not valid";
+        //     }
+        // }
 
         return true;
     }
+
+    // private isNameValid(key: any): boolean { // ex. key = rooms_name
+    //     let shortname = ;// get the
+    //     let number =;
+    //     let properRoomsName = shortname + "_" + number;
+    //     if (key !== properRoomsName) {
+    //         return false;
+    //     }
+    //     return true;
+    // }
 
     /**
      * Translates query key_value format to JSON value format
