@@ -48,7 +48,16 @@ export default class PQPreQSemantics {
      *      ex. {"COLUMNS": []"courses_avg"] | queryKey = "courses" | datasetToUse = "courses"}
      */
     private isKeyLoaded(query: any, datasetToUse: Dataset): boolean {
-        let firstItem = query["OPTIONS"]["COLUMNS"][0]; // ex. "courses_avg", "rooms_type"
+        let firstItem = "";
+        // If no TRANSFORMATIONS, first item will be first key in COLUMNS
+        if (Object.keys(query).length === 2) {
+            firstItem = query["OPTIONS"]["COLUMNS"][0]; // ex. "courses_avg", "rooms_type"
+        }
+        // If yes TRANSFORMATIONS, first item will be first key in GROUP
+        if (Object.keys(query).length === 3) {
+            firstItem = query["TRANSFORMATIONS"]["GROUP"][0]; // ex. "courses_avg", "rooms_type"
+        }
+
         let queryKeyID = firstItem.substring(0, firstItem.indexOf("_")); // isolates the id, ex. "courses"
         return queryKeyID === datasetToUse["id"];
     }

@@ -220,8 +220,17 @@ export default class PQPreQSyntax {
      * ex. datasets: [courses, AAN, ...] | Query: {"COLUMNS": ["courses_avg"]} | key = courses | exists in datasets
      */
     public queryEstablishDataset(query: any, datasets: Dataset[]): any {
-        let firstKeyInColumns = query["OPTIONS"]["COLUMNS"][0]; // courses_avg
-        let datasetID = firstKeyInColumns.substring( 0, firstKeyInColumns.indexOf("_")); // courses, rooms
+        let datasetID = "";
+        // If no TRANSFORMATIONS, set according to first key in COLUMNS
+        if (Object.keys(query).length === 2) {
+            let firstKeyInColumns = query["OPTIONS"]["COLUMNS"][0]; // courses_avg
+            datasetID = firstKeyInColumns.substring( 0, firstKeyInColumns.indexOf("_")); // courses, rooms
+        }
+        // If yes TRANSFORMATIONS, set according to first key in GROUP
+        if (Object.keys(query).length === 3) {
+            let firstKeyInGroup = query["TRANSFORMATIONS"]["GROUP"][0]; // courses_avg
+            datasetID = firstKeyInGroup.substring( 0, firstKeyInGroup.indexOf("_")); // courses, rooms
+        }
         for (let dataset of datasets) {
             if (dataset["id"] === datasetID) {
                 PQGeneralHelpers.dataSetID = datasetID;

@@ -1,0 +1,29 @@
+{
+    "title": "Valid Transformation APPLY MIN",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 97
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "overallAvg"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_pass",
+                "courses_id"
+            ],
+            "APPLY": [
+                {
+                    "overallAvg": {
+                        "MAX": "courses_pass"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"overallAvg":16},{"overallAvg":15},{"overallAvg":1},{"overallAvg":14},{"overallAvg":12},{"overallAvg":12},{"overallAvg":10},{"overallAvg":22},{"overallAvg":14},{"overallAvg":25},{"overallAvg":17},{"overallAvg":24},{"overallAvg":11},{"overallAvg":9},{"overallAvg":17},{"overallAvg":16},{"overallAvg":11},{"overallAvg":9},{"overallAvg":4},{"overallAvg":9},{"overallAvg":21},{"overallAvg":11},{"overallAvg":14},{"overallAvg":17},{"overallAvg":16},{"overallAvg":12},{"overallAvg":12},{"overallAvg":82}]}
