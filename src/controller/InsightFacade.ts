@@ -156,7 +156,7 @@ export default class InsightFacade implements IInsightFacade {
         Log.trace("Step 4: Run the query");
         let runQueryResult = this.runQuery.runQuery(query, datasetToUse);
 
-        // ================== ERROR HANDLER ================== //
+        // ================== ERROR HANDLgrER ================== //
         if (typeof runQueryResult === "string") {
             Log.trace( "Reached Error Handler");
             // RESULT TOO LARGE
