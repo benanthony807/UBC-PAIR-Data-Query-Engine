@@ -1,5 +1,5 @@
 {
-    "title": "Valid Transformation APPLY MIN",
+    "title": "Valid Transformation APPLY MIN-courses_avg",
     "query": {
         "WHERE": {
             "GT": {

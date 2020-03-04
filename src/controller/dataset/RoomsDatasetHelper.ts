@@ -104,7 +104,7 @@ export default class RoomsDatasetHelper {
     private buildingBuilder(node: any) {
         let building: Building = new Building();
         this.buildingLevelTrSearcher(node, building.buildingLevelRoomData);
-        Log.trace("found a building in index.htm, got its shortname, fullname, and address");
+        // Log.trace("found a building in index.htm, got its shortname, fullname, and address");
         this.buildings.push(building);
     }
 
@@ -117,7 +117,7 @@ export default class RoomsDatasetHelper {
     private roomBuilder(building: Building) {
         let tbody: any = this.findHTMLBody(building.htmlObj);
         this.roomLevelRecursion(tbody, building);
-        Log.trace("room has been filled at this point, is ready to be pushed to rooms provided it's not empty");
+        // Log.trace("room has been filled at this point, is ready to be pushed to rooms provided it's not empty");
     }
 
     private isEmptyBuilding(room: Room) {
@@ -264,7 +264,7 @@ export default class RoomsDatasetHelper {
                 Log.trace("filled the remaining fields for each room, discarded those with incomplete fields");
                 let count: number = 0;
                 for (let r of this.rooms) {
-                    Log.trace(`room # ${++count}: lat: ${r.lat} lon: ${r.lon}`);
+                    // Log.trace(`room # ${++count}: lat: ${r.lat} lon: ${r.lon}`);
                     // shortname: ${r.shortname} fullname: ${r.fullname} seats: ${r.seats}
                     // type: ${r.type} furniture: ${r.furniture} address: ${r.address}
                     // number: ${r.number} href: ${r.href} lat: ${r.lat} lon: ${r.lon}

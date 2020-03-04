@@ -179,7 +179,7 @@ export default class PQTransformer {
     }
 
     public doMax(key: any, sectionGroup: any): number {
-        let currMax: number = 0;
+        let currMax: number = sectionGroup[0][key];
         let groupLength = sectionGroup.length;
         for (let i = 0; i < groupLength; i++) {
             let section = sectionGroup[i];
@@ -191,7 +191,7 @@ export default class PQTransformer {
     }
 
     public doMin(key: any, sectionGroup: any): number {
-        let currMin: number = 100000000000;
+        let currMin: number = sectionGroup[0][key];
         let groupLength = sectionGroup.length;
         for (let i = 0; i < groupLength; i++) {
             let section = sectionGroup[i];

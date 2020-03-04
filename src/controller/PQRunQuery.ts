@@ -147,7 +147,7 @@ export default class PQRunQuery extends PQPreQSyntax {
                 let numOfGroupChildren = group.length;
                 for (let k = 0; k < numOfGroupChildren; k++) {
                     let groupChild: any = group[k]; // "courses_avg"
-                    Log.trace("groupChild: " + groupChild);
+                    // Log.trace("groupChild: " + groupChild);
                     if (!listOfKeysAlreadyAdded.includes(groupChild)) {
                         let key = PQGeneralHelpers.translate(groupChild);
                         let value = section[key];
