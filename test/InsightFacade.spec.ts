@@ -891,59 +891,6 @@ describe("InsightFacade PerformQuery", () => {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    // it("roomtest w courses in group", function () {
-    //     let query =  {
-    //         WHERE: {
-    //             OR: [
-    //                 {
-    //                     IS: {
-    //                         rooms_furniture: "*Tables*"
-    //                     }
-    //                 },
-    //                 {
-    //                     GT: {
-    //                         rooms_seats: 300
-    //                     }
-    //                 }
-    //             ]
-    //         },
-    //         OPTIONS: {
-    //             COLUMNS: [
-    //                 "rooms_lat",
-    //                 "rooms_lon",
-    //                 "rooms_shortname"
-    //             ],
-    //             ORDER: {
-    //                 dir: "DOWN",
-    //                 keys: [
-    //                     "rooms_lat"
-    //                 ]
-    //             }
-    //         },
-    //         TRANSFORMATIONS: {
-    //             GROUP: [
-    //                 "rooms_shortname",
-    //                 "rooms_lat",
-    //                 "rooms_lon"
-    //             ],
-    //             APPLY: [
-    //                 {
-    //                     maxSeats: {
-    //                         MAX: "rooms_seats"
-    //                     }
-    //                 },
-    //                 {
-    //                     maxSeats: {
-    //                         MAX: 1
-    //                     }
-    //                 }
-    //             ]
-    //         }
-    //     };
-    //     let result = insightFacade.performQuery(query);
-    //     Log.trace(result);
-    // });
-
     /** This is a flexible test where we replace queries */
     it("bobloblaw", function () {
         let query = {
@@ -953,20 +900,27 @@ describe("InsightFacade PerformQuery", () => {
                 }
             },
             OPTIONS: {
+                ORDER: {
+                    keys: [
+                        "courses_avg"
+                    ],
+                    dir: "UP"
+                },
                 COLUMNS: [
-                    "courses_pass",
-                    "overallAvg"
+                    "courses_title",
+                    "overallAvg",
+                    "courses_avg"
                 ]
             },
             TRANSFORMATIONS: {
                 GROUP: [
-                    "courses_pass",
-                    "courses_id"
+                    "courses_title",
+                    "courses_avg"
                 ],
                 APPLY: [
                     {
                         overallAvg: {
-                            MIN: "courses_avg"
+                            COUNT: "courses_avg"
                         }
                     }
                 ]
