@@ -6,7 +6,7 @@ import fs = require("fs");
 import restify = require("restify");
 import Log from "../Util";
 import InsightFacade from "../controller/InsightFacade";
-import {InsightError} from "../controller/IInsightFacade";
+import {InsightDatasetKind, InsightError} from "../controller/IInsightFacade";
 
 /**
  * This configures the REST endpoints for the server.
