@@ -182,7 +182,7 @@ export default class PQPreQSyntax {
 
         // Step 4: The two keys must be "dir" and "keys"
         if (!(Object.keys(order).includes("dir") && Object.keys(order).includes("keys"))) {
-            return "Order key must have dir and key";
+            return "Order key must have dir and keys";
         }
 
         // Step 4: dir must be UP or DOWN
