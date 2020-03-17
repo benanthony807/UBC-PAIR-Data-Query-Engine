@@ -149,6 +149,32 @@ describe("Facade D3", function () {
         }
     });
 
+    it("PUT test for two datasets, add two diff datasets: should pass", function () {
+        try {
+            return chai.request("http://localhost:4321")
+                .put("/dataset/AAN/courses")
+                .send(fs.readFileSync("test/data/AAN.zip"))
+                .set("Content-Type", "application/x-zip-compressed")
+                .then(function (res: Response) {
+                    Log.trace("response: " + res);
+                    return chai.request("http://localhost:4321")
+                        .put("/dataset/valid1course/courses")
+                        .send(fs.readFileSync("test/data/valid1course.zip"))
+                        .set("Content-Type", "application/x-zip-compressed")
+                        .then(function (res2: Response) {
+                            expect(res2.status).to.be.equal(200);
+                        })
+                        .catch(function (err) {
+                            Log.trace(err);
+                            expect.fail();
+                        });
+                });
+        } catch (err) {
+            Log.trace(`failed in the outer catch block with ${err}`);
+            expect.fail();
+        }
+    });
+
     it("DELETE test for courses dataset: should succeed", function () {
         try {
             return chai.request("http://localhost:4321")
@@ -260,6 +286,30 @@ describe("Facade D3", function () {
             return chai.request("http://localhost:4321")
                 .put("/dataset/AAN/courses")
                 .send(fs.readFileSync("test/data/AAN.zip"))
+                .set("Content-Type", "application/x-zip-compressed")
+                .then(() => {
+                    return chai.request("http://localhost:4321")
+                        .get("/datasets");
+                })
+                .then(function (res: Response) {
+                    Log.trace("response: " + res);
+                    expect(res.status).to.be.equal(200);
+                })
+                .catch(function (err) {
+                    Log.trace(err);
+                    expect.fail();
+                });
+        } catch (err) {
+            Log.trace(`failed in the outer catch block with ${err}`);
+            expect.fail();
+        }
+    });
+
+    it("GET test for rooms dataset: should succeed", function () {
+        try {
+            return chai.request("http://localhost:4321")
+                .put("/dataset/rooms/rooms")
+                .send(fs.readFileSync("test/data/rooms.zip"))
                 .set("Content-Type", "application/x-zip-compressed")
                 .then(() => {
                     return chai.request("http://localhost:4321")
