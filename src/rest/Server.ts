@@ -50,24 +50,24 @@ export default class Server {
         const that = this;
         return new Promise(function (fulfill, reject) {
             try {
-                Log.info("Server::start() - start");
-
-                that.rest = restify.createServer({
-                    name: "insightUBC",
-                });
-                that.rest.use(restify.bodyParser({mapFiles: true, mapParams: true}));
-                that.rest.use(
-                    function crossOrigin(req, res, next) {
-                        res.header("Access-Control-Allow-Origin", "*");
-                        res.header("Access-Control-Allow-Headers", "X-Requested-With");
-                        return next();
-                    });
-
-                // This is an example endpoint that you can invoke by accessing this URL in your browser:
-                // http://localhost:4321/echo/hello
-                that.rest.get("/echo/:msg", Server.echo);
-
-                // NOTE: your endpoints should go here
+                // Log.info("Server::start() - start");
+                //
+                // that.rest = restify.createServer({
+                //     name: "insightUBC",
+                // });
+                // that.rest.use(restify.bodyParser({mapFiles: true, mapParams: true}));
+                // that.rest.use(
+                //     function crossOrigin(req, res, next) {
+                //         res.header("Access-Control-Allow-Origin", "*");
+                //         res.header("Access-Control-Allow-Headers", "X-Requested-With");
+                //         return next();
+                //     });
+                //
+                // // This is an example endpoint that you can invoke by accessing this URL in your browser:
+                // // http://localhost:4321/echo/hello
+                // that.rest.get("/echo/:msg", Server.echo);
+                //
+                // // NOTE: your endpoints should go here
                 // that.rest.put("/dataset/:id/:kind",
                 //     (req: restify.Request, res: restify.Response, next: restify.Next) => {
                 //     let buffer: Buffer = req.body;
@@ -120,21 +120,21 @@ export default class Server {
                 //     res.json(200, {result: that.insightFacade.listDatasets()});
                 //     return next();
                 // });
-
-                // This must be the last endpoint!
-                that.rest.get("/.*", Server.getStatic);
-
-                that.rest.listen(that.port, function () {
-                    Log.info("Server::start() - restify listening: " + that.rest.url);
-                    fulfill(true);
-                });
-
-                that.rest.on("error", function (err: string) {
-                    // catches errors in restify start; unusual syntax due to internal
-                    // node not using normal exceptions here
-                    Log.info("Server::start() - restify ERROR: " + err);
-                    reject(err);
-                });
+                //
+                // // This must be the last endpoint!
+                // that.rest.get("/.*", Server.getStatic);
+                //
+                // that.rest.listen(that.port, function () {
+                //     Log.info("Server::start() - restify listening: " + that.rest.url);
+                //     fulfill(true);
+                // });
+                //
+                // that.rest.on("error", function (err: string) {
+                //     // catches errors in restify start; unusual syntax due to internal
+                //     // node not using normal exceptions here
+                //     Log.info("Server::start() - restify ERROR: " + err);
+                //     reject(err);
+                // });
 
             } catch (err) {
                 Log.error("Server::start() - ERROR: " + err);
