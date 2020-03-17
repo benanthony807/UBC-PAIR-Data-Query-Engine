@@ -1,7 +1,7 @@
-import Dataset from "./dataset/Dataset";
+import Dataset from "../dataset/Dataset";
 import PQPreQSyntax from "./PQPreQSyntax";
 import PQFilter from "./PQFilter";
-import Log from "../Util";
+import Log from "../../Util";
 import PQTransformer from "./PQTransformer";
 import PQGeneralHelpers from "./PQGeneralHelpers";
 
