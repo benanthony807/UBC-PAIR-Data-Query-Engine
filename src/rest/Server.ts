@@ -15,12 +15,12 @@ export default class Server {
 
     private port: number;
     private rest: restify.Server;
-    private insightFacade: InsightFacade;
+    private static insightFacade: InsightFacade;
 
     constructor(port: number) {
         Log.info("Server::<init>( " + port + " )");
         this.port = port;
-        this.insightFacade = new InsightFacade();
+        Server.insightFacade = new InsightFacade();
     }
 
     /**
@@ -68,58 +68,13 @@ export default class Server {
                 that.rest.get("/echo/:msg", Server.echo);
 
                 // NOTE: your endpoints should go here
-                // that.rest.put("/dataset/:id/:kind",
-                //     (req: restify.Request, res: restify.Response, next: restify.Next) => {
-                //     let buffer: Buffer = req.body;
-                //     let content: string = buffer.toString("base64");
-                //
-                //     return that.insightFacade.addDataset(req.params.id, content, req.params.kind)
-                //         .then((result: string[]) => {
-                //             res.json(200, {result: result});
-                //             return next;
-                //         })
-                //         .catch((err: any) => {
-                //             res.json(400, {error: `put request rejected with: ${err}`});
-                //             return next();
-                //         });
-                // });
-                //
-                // that.rest.del("/dataset/:id", (req: restify.Request, res: restify.Response, next: restify.Next) => {
-                //     return that.insightFacade.removeDataset(req.params.id)
-                //         .then((result: string) => {
-                //             res.json(200, {result: result});
-                //             return next();
-                //         })
-                //         .catch((err: any) => {
-                //             if (err instanceof InsightError) {
-                //                 // not sure if this is what instanceof does
-                //                 res.json(400,
-                //                     {error: `Something went wrong trying to remove dataset ${req.params.id}`});
-                //             } else {
-                //                 res.json(404, {error: `Address with id = ${req.params.id} does not exist.`});
-                //             }
-                //             return next();
-                //         });
-                // });
-                //
-                // that.rest.post("/query", (req: restify.Request, res: restify.Response, next: restify.Next) => {
-                //     // I'm just guessing req.body contains the query but that's a huge guess
-                //     let query: any = req.body;
-                //     return that.insightFacade.performQuery(query)
-                //         .then((arr: any[]) => {
-                //             res.json(200, {result: arr});
-                //             return next();
-                //         })
-                //         .catch((err: any) => {
-                //             res.json(400, {error: `Something went wrong trying to make a query: ${err}`});
-                //             return next();
-                //         });
-                // });
-                //
-                // that.rest.get("/datasets", (req: restify.Request, res: restify.Response, next: restify.Next) => {
-                //     res.json(200, {result: that.insightFacade.listDatasets()});
-                //     return next();
-                // });
+                that.rest.put("/dataset/:id/:kind", Server.put);
+
+                that.rest.del("/dataset/:id", Server.del);
+
+                that.rest.post("/query", Server.post);
+
+                that.rest.get("/datasets", Server.get);
 
                 // This must be the last endpoint!
                 that.rest.get("/.*", Server.getStatic);
@@ -159,12 +114,67 @@ export default class Server {
         return next();
     }
 
+    private static put(req: restify.Request, res: restify.Response, next: restify.Next) {
+        let buffer: Buffer = req.body;
+        let content: string = buffer.toString("base64");
+
+        return Server.insightFacade.addDataset(req.params.id, content, req.params.kind)
+            .then((result: string[]) => {
+                res.json(200, {result: result});
+                return next;
+            })
+            .catch((err: any) => {
+                res.json(400, {error: `put request rejected with: ${err}`});
+                return next();
+            });
+    }
+
     private static performEcho(msg: string): string {
         if (typeof msg !== "undefined" && msg !== null) {
             return `${msg}...${msg}`;
         } else {
             return "Message not provided";
         }
+    }
+
+    private static del(req: restify.Request, res: restify.Response, next: restify.Next) {
+        return Server.insightFacade.removeDataset(req.params.id)
+            .then((result: string) => {
+                res.json(200, {result: result});
+                return next();
+            })
+            .catch((err: any) => {
+                if (err instanceof InsightError) {
+                    // not sure if this is what instanceof does
+                    res.json(400,
+                        {error: `Something went wrong trying to remove dataset ${req.params.id}`});
+                } else {
+                    res.json(404, {error: `Address with id = ${req.params.id} does not exist.`});
+                }
+                return next();
+            });
+    }
+
+    private static post(req: restify.Request, res: restify.Response, next: restify.Next) {
+        // I'm just guessing req.body contains the query but that's a huge guess
+        let query: any = req.body;
+        return Server.insightFacade.performQuery(query)
+            .then((arr: any[]) => {
+                res.json(200, {result: arr});
+                return next();
+            })
+            .catch((err: any) => {
+                res.json(400, {error: `Something went wrong trying to make a query: ${err}`});
+                return next();
+            });
+    }
+
+    private static get(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Server.insightFacade.listDatasets()
+            .then((arr) => {
+                res.json(200, {result: arr});
+                return next();
+            });
     }
 
     private static getStatic(req: restify.Request, res: restify.Response, next: restify.Next) {
