@@ -103,17 +103,19 @@ function buildWhere(doc, dataType, prevNot) {
 
     switch (numConditions) {
         case 0: return {};
-        case 1: if (conditionType === "NOT") {
-            result["NOT"] = buildWhereChild(firstCondition, dataType);
+        case 1:
+            if (conditionType === "NOT") {
+            result["NOT"] = buildWhereChild(firstCondition, dataType, true);
             } else {
-                return buildWhereChild(firstCondition, dataType);
+                return buildWhereChild(firstCondition, dataType, false);
             }
             break;
-        case 2: if (conditionType === "NOT") {
+        case 2:
+            if (conditionType === "NOT") {
             result["NOT"] = buildWhere(doc, dataType, true);
         } else {
             for (let condition of listOfConditions) {
-                result[conditionType] = buildWhereChild(condition, dataType);
+                result[conditionType] = buildWhereChild(condition, dataType, false);
             }
         }
             break;
@@ -122,7 +124,7 @@ function buildWhere(doc, dataType, prevNot) {
     return result;
 }
 
-function buildWhereChild(c, dataType) {
+function buildWhereChild(c, dataType, prevNot) {
     let result = {};
 
     let listOfOperators = c.getElementsByClassName('control operators')[0].children[0].children; // [EQ, GT, IS, LS]
@@ -135,11 +137,13 @@ function buildWhereChild(c, dataType) {
     let parent;
     let child = {};
 
-    // ========= NOT CASE ========= //
-    // Ex. "WHERE": { "NOT": {"GT": ... } }
-    if (c.getElementsByClassName('control not')[0].children[0].checked === true) {
-        result["NOT"] = buildWhereChild(c);
-        return result;
+    if (prevNot === false) {
+        // ========= NOT CASE ========= //
+        // Ex. "WHERE": { "NOT": {"GT": ... } }
+        if (c.getElementsByClassName('control not')[0].children[0].checked === true) {
+            result["NOT"] = buildWhereChild(c, dataType, true);
+            return result;
+        }
     }
 
     // ========= BUILD PARENT ========= //
@@ -156,15 +160,20 @@ function buildWhereChild(c, dataType) {
     for (let field of listOfFields) {
         if (field.selected === true) {
             selectedField = dataType + "_" + field.value;
+            break;
         }
     }
     // GET VALUE: Ex. { "...": 98 }
+    // TODO: fix the string vs number thing: "98" vs 98
     selectedTerm = c.getElementsByClassName('control term')[0].children[0].value;
+    if (selectedTerm.match("[0-9]+")) {
+        selectedTerm = Number(selectedTerm);
+    }
 
     // ========= AVENGERS ASSEMBLE ========= //
     parent = selectedOperator; // "GT"
     child[selectedField] = selectedTerm; // "Average": 98
-    result[parent] = child; // { "GT": { "Average: 98 } }
+    result[parent] = child; // { "GT": { "Average": 98 } }
 
     return result;
 }
@@ -184,7 +193,11 @@ function buildColumns(doc, dataType) {
 
     for (let field of listOfFields) {
         if (field.children[0].checked === true) {
-            result.push(dataType + "_" + field.children[0].value);
+            if (field.className === "control field") {
+                result.push(dataType + "_" + field.children[0].value);
+            } else {
+                result.push(field.children[0].value);
+            }
         }
     }
 
@@ -313,6 +326,7 @@ function buildTransformationGrandchild(doc, dataType, controlOperators, controlF
         }
     }
 
+    result[parent] = child;
     return result;
 }
 

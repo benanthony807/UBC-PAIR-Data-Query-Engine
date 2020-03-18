@@ -23,7 +23,7 @@ CampusExplorer.sendQuery = function (query) {
         xhr.setRequestHeader('Content-type', 'application/json');
 
         // The function to be executed when the request completes successfully
-        // Example from mozilla:
+        // Example from Mozilla:
         // xhr.onload = function () {
         //     if (xhr.readyState === xhr.DONE) {
         //         if (xhr.status === 200) {
@@ -46,6 +46,9 @@ CampusExplorer.sendQuery = function (query) {
         xhr.onerror = function () {
             reject('Error!');
         };
+
+        // The server needs the query to be a string
+        query = JSON.stringify(query);
 
         // send() accepts an optional parameter which lets you specify the request's body, in our case the query
         // so by default the full thing is actually: XMLHttpRequest.send(request's body);
