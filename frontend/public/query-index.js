@@ -10,32 +10,18 @@
 
 // TODO: implement!
 
+document.getElementById('submit-button').addEventListener('click', function () {
+    let query = CampusExplorer.buildQuery();
 
-// EXAMPLE
-/**
- * var btn = document.getElementById("btn");
- * var animalContainer = document.getElementById("animal-info");
- *
- * btn.addEventListener("click", function() {
- *    // AJAX call:
- *    var ourRequest = new XMLHttpRequest();
- *    ourRequest.open('GET', 'https://...');
- *    ourRequest.onload = function() {
- *        var ourData = JSON.prase(ourRequest.responseText);
- *        renderHTML(ourData);
- *    };
- *    ourRequest.send();
- * });
- *
- * // add HTML to the page; more specifically, add html to a div element
- * function renderHTML(data) {
- * var htmlString = "";
- *
- * // loop through data.
- * for (i = 0; i < data.length; i++) {
- *     htmlString += "<p>" + data[i]name + "is a " + data[i].species ".</p>"
- * }
- *
- *  animalContainer.insertAdjacentHTML('beforeend', htmlString);
- * }
- */
+    // Send query resolves with an object. (The retrieved converted string->object of the UI)
+    CampusExplorer.sendQuery(query)
+        .then(function (result) {
+            // renderResult needs an object (JSON.parse) as a param
+            // let res = JSON.parse(result);
+            CampusExplorer.renderResult(result);
+        })
+        .catch(function (err) {
+            // do something
+    })
+
+});

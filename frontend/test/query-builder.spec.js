@@ -1,5 +1,5 @@
-describe("buildQuery test suite", function() {
 
+describe("buildQuery test suite", function() {
     let queryFixtures = TTT.getQueryFixtures();
     let queryDescriptions = TTT.getQueryDescriptions();
     for (let queryName in queryFixtures) {
@@ -14,5 +14,4 @@ describe("buildQuery test suite", function() {
             }
         }
     }
-
 });
