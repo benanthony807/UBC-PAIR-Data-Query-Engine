@@ -23,7 +23,6 @@
 
 CampusExplorer.buildQuery = function () {
     let query = {};
-
     // ========= DETERMINE COURSES OR ROOMS DOCUMENT ========= //
     let doc;        //  courses or rooms sub document
     let dataType;   // "courses" or "rooms"
@@ -35,14 +34,12 @@ CampusExplorer.buildQuery = function () {
         doc      = document.getElementById('form-container').children[2];
         dataType = "rooms";
     }
-
     // ================== BUILD THE QUERY ================== //
     query["WHERE"]   = buildWhere   (doc, dataType, false);
     query["OPTIONS"] = buildOptions (doc, dataType);
     if (needTransformation(doc)) {
         query["TRANSFORMATIONS"] = buildTransformations(doc, dataType);
     }
-
     return query;
 };
 
@@ -72,20 +69,20 @@ function buildWhere(doc, dataType, prevNot) {
             }
         }
     }
-
     switch (numConditions) {
         case 0: return {};
         case 1: return buildWhereChild(firstCondition, dataType, false);
         case 2: if (conditionType === "NOT") {
                     result["NOT"] = buildWhere(doc, dataType, true);
                 } else {
+                    let childContainer = [];
                     for (let condition of listOfConditions) {
-                        result[conditionType] = buildWhereChild(condition, dataType, false);
+                        childContainer.push(buildWhereChild(condition, dataType, false));
                     }
+                    result[conditionType] = childContainer;
                 }
                 break;
     }
-
     return result;
 }
 
@@ -198,7 +195,11 @@ function buildOrder(doc, dataType) {
     let keys = [];
     for (let field of listOfFields) {
         if (field.selected === true) {
-            keys.push(dataType + "_" + field.value);
+            if (field.className === "transformation") {
+                keys.push(field.value);
+            } else {
+                keys.push(dataType + "_" + field.value);
+            }
         }
     }
     // ==== ASSEMBLE C2 ORDER ==== //
