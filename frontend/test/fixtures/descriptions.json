@@ -1,5 +1,8 @@
 {
     "query1": "simple query IS comparison for department with two columns and old order syntax",
     "query2": "simple query: SELECT dept, avg WHERE avg > 97",
-    "query4": "complex C3 query: has everything"
+    "query3": "complex C3 query: has everything",
+    "query4": "room query with no conditions and one 'UP' order",
+    "query5": "courses zValTransGroupTwoItem.json query",
+    "query6": "courses query with 2 conditions, 2 orders, 2 transformations"
 }
