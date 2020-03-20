@@ -19,7 +19,7 @@ export default class Scheduler implements IScheduler {
         let timeSlotIndex: number = 0;
         for (let i: number = 0; i < sections.length; i++) {
             let section = sections[i];
-            if (!timeSlotMap[this.pickTimeSlot(timeSlotIndex)].contains(section.courses_title) &&
+            if (!timeSlotMap[this.pickTimeSlot(timeSlotIndex)].includes(section.courses_title) &&
                 this.getNumEnrolled(section) <= room.rooms_seats) {
                 result.push([room, section, this.pickTimeSlot(timeSlotIndex)]);
                 if (timeSlotIndex === 14) {
