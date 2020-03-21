@@ -2,7 +2,7 @@ import {IScheduler, SchedRoom, SchedSection, TimeSlot} from "./IScheduler";
 
 export default class Scheduler implements IScheduler {
 
-    // a map (i.e. an object) with TimeSlots as keys, arrays of {course_title, room_fullname}
+    // a map (i.e. an object) with TimeSlots as keys, arrays of {course_uuid, rooms_shortname+rooms_number}
     // used to check to make sure a timeslot doesn't already have the same section of a course
     // or the same room with a different course already booked
     private timeSlotMap: any;
@@ -20,8 +20,8 @@ export default class Scheduler implements IScheduler {
         let result: Array<[SchedRoom, SchedSection, TimeSlot]> = new Array<[SchedRoom, SchedSection, TimeSlot]>();
         // if there are more rooms than there are sections, this will remove the rooms with the lowest
         // utility from rooms (where utility = 0.7 * (# of seat) + 0.3 * (1 - (avg dist from other rooms))
-        if (rooms.length > sections.length / 15) {
-            Scheduler.pickBestRooms(rooms, Math.floor(sections.length / 15) - rooms.length);
+        if (rooms.length > sections.length / 15 && sections.length > 15) {
+            Scheduler.pickBestRooms(rooms, Math.floor(rooms.length - sections.length / 15));
         }
 
         // sort both arrays for sections and rooms into descending order based on enrolment/capacity
@@ -43,8 +43,8 @@ export default class Scheduler implements IScheduler {
             if (this.isValidTuple(room, section, timeSlot)) {
                 result.push([room, section, timeSlot]);
                 this.timeSlotMap[timeSlot].push({
-                    course: section.courses_title,
-                    room: room.rooms_fullname
+                    course: section.courses_uuid,
+                    room: `${room.rooms_shortname} ${room.rooms_number}`
                 });
                 if (this.timeSlotIndex === 14) {
                     this.timeSlotIndex = 0;
@@ -165,7 +165,7 @@ export default class Scheduler implements IScheduler {
 
     private containsSection(section: SchedSection, timeSlot: TimeSlot) {
         for (let element of this.timeSlotMap[timeSlot]) {
-            if (element.course === section.courses_title) {
+            if (element.course === section.courses_uuid) {
                 return true;
             }
         }
@@ -202,7 +202,7 @@ export default class Scheduler implements IScheduler {
         let utilityArray: Array<{ name: string, utility: number }> = [];
         for (let room of rooms) {
             let util: number = room.rooms_seats * 0.7 + 0.3 * (1 - this.getAvgDist(room, rooms, removeThisMany));
-            utilityArray.push({name: room.rooms_fullname, utility: util});
+            utilityArray.push({name: room.rooms_shortname + room.rooms_number, utility: util});
         }
         utilityArray.sort((a, b) => {
             return b.utility - a.utility;
@@ -211,7 +211,7 @@ export default class Scheduler implements IScheduler {
             // TODO: this is using findIndex, unsure if this is how it works though
             // rooms.splice(rooms.indexOf(utilityArray[i].name));
             rooms.splice(rooms.findIndex((r) => {
-                return r.rooms_fullname === utilityArray[i].name;
+                return `${r.rooms_shortname} ${r.rooms_number}` === utilityArray[i].name;
             }));
         }
     }
