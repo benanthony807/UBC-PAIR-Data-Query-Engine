@@ -5,40 +5,33 @@ import PQGeneralHelpers from "./PQGeneralHelpers";
 import PQPreQTransfChecker from "./PQPreQTransfChecker";
 
 export default class PQPreQSyntax {
-    public errorMessage: string;
-    public filteredResults: any[];
-    public helpers: PQGeneralHelpers;
-    private transformation: PQPreQTransfChecker;
+    public errorMessage:        string;
+    public filteredResults:     any[];
+    public helpers:             PQGeneralHelpers;
+    private transformation:     PQPreQTransfChecker;
 
     constructor() {
-        this.errorMessage = "";
-        this.filteredResults = [];
-        this.helpers = new PQGeneralHelpers();
-        this.transformation = new PQPreQTransfChecker();
+        this.errorMessage       = "";
+        this.filteredResults    = [];
+        this.helpers            = new PQGeneralHelpers();
+        this.transformation     = new PQPreQTransfChecker();
     }
 
-    // ================================== SYNTAX CHECKS ================================== //
-
-    /**
-     * Checks syntax requirements
-     * Input: query: {WHERE: ..., OPTIONS: ... (, TRANSFORMATIONS: ...)}
-     * Output: string with error message if error
-     */
     public isInputQueryValid(query: any): any {
-        // Step 1: Query should not be null or undefined
+        // CHECK: Query should not be null or undefined
         if (query === null || query === undefined) {
             this.errorMessage = "Query was found to be null or 'undefined'";
             return this.errorMessage;
         }
 
+        // CHECK: Query must have 2 or 3 keys
         let qLength = Object.keys(query).length;
-        // Step 1.5: Query must have 2 or 3 keys
         if (!(qLength === 2 || qLength === 3)) {
             this.errorMessage = "Query must have 2 or 3 keys. Currently has: " + qLength;
             return this.errorMessage;
         }
 
-        // Step 2: Query has 2 or 3 keys: WHERE and OPTIONS (and TRANSFORMATIONS). They do NOT have to be in order.
+        // CHECK: Query has WHERE and OPTIONS (and TRANSFORMATIONS). They do NOT have to be in order.
         Log.trace("Length of query " + qLength);
         if (qLength === 2) {
             if (!(Object.keys(query).includes("WHERE") && Object.keys(query).includes("OPTIONS"))) {
@@ -47,14 +40,13 @@ export default class PQPreQSyntax {
             }
         }
         if (qLength === 3) {
-            if (!(Object.keys(query).includes("WHERE") &&
-                Object.keys(query).includes("OPTIONS") &&
-                Object.keys(query).includes("TRANSFORMATIONS"))) {
-                this.errorMessage = "Query has " + qLength + " keys. " +
-                    "There must be Three keys: WHERE, OPTIONS, and TRANSFORMATIONS";
+            if (!(Object.keys(query).includes("WHERE")   &&
+                  Object.keys(query).includes("OPTIONS") &&
+                  Object.keys(query).includes("TRANSFORMATIONS"))) {
+                this.errorMessage = "There are three keys. They must be WHERE, OPTIONS, and TRANSFORMATIONS";
                 return this.errorMessage;
             }
-            // Step 3: If there is a TRANSFORMATIONS key, check its grammar
+            // CHECK: If there is a TRANSFORMATIONS key, check its grammar
             let isTransformationValidResult = this.transformation.isTransformationsValid(query);
             if (typeof isTransformationValidResult === "string") {
                 this.errorMessage = isTransformationValidResult;
@@ -62,7 +54,7 @@ export default class PQPreQSyntax {
             }
         }
 
-        // Step 4: Check WHERE and OPTIONS grammar
+        // CHECK: WHERE and OPTIONS grammar are valid
         if (!(this.isWhereValid(query) && this.isOptionsValid(query))) {
             return this.errorMessage;
         }
@@ -73,9 +65,9 @@ export default class PQPreQSyntax {
 
     /**
      * Checks WHERE grammar
-     * Conditions: WHERE must have <= 1 keys. Below are valid:
-     *      ex. {"WHERE": {"AND": ...}}
-     *      ex. {"WHERE": {}}
+     * Condition 1: WHERE must have 0 or 1 value that is an object
+     *      Valid ex. {"WHERE": {"AND": ...}}
+     *      Valid ex. {"WHERE": {}}
      */
     public isWhereValid(query: any): boolean {
         if (query["WHERE"] === null || Array.isArray(query["WHERE"])) {
@@ -86,52 +78,48 @@ export default class PQPreQSyntax {
 
     /**
      * Checks OPTIONS grammar
-     * Conditions: OPTIONS must have one or two keys and first key must be COLUMNS:
-     *      ex. {"OPTIONS": {"COLUMNS": [...], "ORDER": ...}}
-     *      ex. {"OPTIONS": {"COLUMNS": [...]}}
-     * Conditions: COLUMNS can have identical child keys:
-     *      ex. {"OPTIONS": {"COLUMNS": ["courses_avg", "courses_avg"]}}
+     * Condition 1: OPTIONS must have one or two values
+     * Condition 2: OPTIONS must include COLUMNS. ORDER is optional.
      */
     public isOptionsValid(query: any): boolean {
         let options = query["OPTIONS"];
-        // Step 1: OPTIONS is not undefined / null
-        if (options === undefined || options === null) {
-            this.errorMessage = "ERROR: OPTIONS is undefined / null";
+        let columns = query["OPTIONS"]["COLUMNS"];
+
+        // CHECK: COLUMNS and OPTIONS must not be null/undefined
+        if (columns === null || columns === undefined || options === undefined || options === null) {
+            this.errorMessage = "ERROR: COLUMNS and/or ORDER must not be null / undefined";
             return false;
         }
 
-        // Step 2: OPTIONS has one or two keys
-        if (
-            !(
-                Object.keys(options).length === 1 ||
-                Object.keys(options).length === 2
-            )
-        ) {
+        let optionKeys = Object.keys(options);
+        let columnKeys = Object.keys(columns);
+
+        // CHECK: COLUMNS is not empty
+        if (columnKeys.length === 0) {
+            this.errorMessage = "ERROR: COLUMNS cannot be empty!";
+            return false;
+        }
+
+        // CHECK: OPTIONS has one or two values
+        if (!(optionKeys.length === 1 || optionKeys.length === 2)) {
             this.errorMessage = "ERROR: OPTIONS must have one or two keys";
             return false;
         }
 
-        // Step 3: OPTIONS must have COLUMNS
-        if (!Object.keys(options).includes("COLUMNS")) {
-            this.errorMessage = "OPTIONS must have COLUMNS";
+        // CHECK: OPTIONS must include COLUMNS
+        if (!optionKeys.includes("COLUMNS")) {
+            this.errorMessage = "ERROR: OPTIONS must include COLUMNS";
             return false;
         }
 
-        // Step 4: COLUMNS must not be null / undefined / empty
-        let columns = query["OPTIONS"]["COLUMNS"];
-        if (
-            columns === null ||
-            columns === undefined ||
-            Object.keys(columns).length === 0
-        ) {
-            this.errorMessage = "ERROR: COLUMNS must not be null / undefined / empty";
-            return false;
-        }
-
-        // Step 5: If ORDER exists, it must be valid
-        if (Object.keys(options).length === 2) {
+        // CHECK: If ORDER exists, it must be called ORDER and must be valid;
+        if (optionKeys.length === 2) {
+            if (!optionKeys.includes("ORDER")) {
+                this.errorMessage = "ERROR: Cannot find 'ORDER'";
+                return false;
+            }
             let isOrderValidResult = this.isOrderValid(query);
-            if (typeof isOrderValidResult === "string") {
+            if (typeof this.isOrderValid(query) === "string") {
                 this.errorMessage = isOrderValidResult;
                 return false;
             }
@@ -142,20 +130,16 @@ export default class PQPreQSyntax {
 
     /**
      *  Checks ORDER grammar
-     *  Conditions: ORDER must have exactly one child key
-     *  Conditions: Child key must be one of the column's child keys
+     *  Condition 1: ORDER must have at least one key
+     *  Condition 2: ORDER can be in C1 or C2 format
+     *  Condition 3: If C1 format, ORDER can only have one key that is a string
+     *  Condition 4: IF C2 format, ORDER must have 2 keys: 'dir' and 'keys'
      */
     public isOrderValid(query: any): any {
-        let columns = query["OPTIONS"]["COLUMNS"]; // ex. ["courses_avg", "courses_dept", ...]
+        let columns = query["OPTIONS"]["COLUMNS"];
+        let order   = query["OPTIONS"]["ORDER"];
 
-        // Step 1: ORDER key must be called "ORDER"
-        // Note: options has already been checked for null/undefined upstream
-        if (!Object.keys(query["OPTIONS"]).includes("ORDER")) {
-            return "ERROR: OPTIONS must include ORDER";
-        }
-        let order = query["OPTIONS"]["ORDER"];
-
-        // Step 2: If ORDER key is a string...
+        // CHECK: If ORDER key is a string...
         //      VALID:      ex. "ORDER": "courses_avg"
         //      INVALID:    ex. "ORDER": ["courses_avg"]
         if (typeof order === "string") {
@@ -169,30 +153,30 @@ export default class PQPreQSyntax {
             return true;
         }
 
-        // Step 2: If ORDER key is an object that's not a list
+        // CHECK: If ORDER key is an object that's not a list
         // ex. ORDER: {dir: "DOW", keys: ["courses_avg"]}
         if (!(typeof order === "object" && !Array.isArray(order))) {
             return "ORDER must be a non-array object";
         }
 
-        // Step 3: There must be exactly two keys
+        // CHECK: There must be exactly two keys
         if (Object.keys(order).length !== 2) {
             return "Order key is not just a string, so it must have two keys";
         }
 
-        // Step 4: The two keys must be "dir" and "keys"
+        // CHECK: The two keys must be "dir" and "keys"
         if (!(Object.keys(order).includes("dir") && Object.keys(order).includes("keys"))) {
-            return "Order key must have dir and key";
+            return "Order key must have dir and keys";
         }
 
-        // Step 4: dir must be UP or DOWN
+        // CHECK: dir must be UP or DOWN
         // let dirValue = Object.values(order)[0];
         let dirValue = order["dir"];
         if (!(dirValue === "UP" || dirValue === "DOWN")) {
             return "dir must be UP or DOWN, instead got... " + dirValue;
         }
 
-        // Step 5: "keys" must a non-empty array
+        // CHECK: "keys" must a non-empty array
         if (!Array.isArray(order["keys"])) {
             return "'keys' key in ORDER must be an array";
         }
@@ -200,7 +184,7 @@ export default class PQPreQSyntax {
             return "'keys' key in ORDER must not be empty";
         }
 
-        // Step 6: values in "keys" must be in COLUMNS
+        // CHECK: values in "keys" must be in COLUMNS
         let keysValues: any; // Must explicitly state keysValue is of type any to be able to do for loop below
         keysValues = Object.values(order["keys"]);
         assert(Array.isArray(keysValues));
