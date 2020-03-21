@@ -144,7 +144,7 @@ describe("Scheduler tests", function () {
             ]];
 
     before(function () {
-//
+        //
     });
 
     beforeEach(function () {
