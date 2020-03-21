@@ -2,67 +2,97 @@ import {IScheduler, SchedRoom, SchedSection, TimeSlot} from "./IScheduler";
 
 export default class Scheduler implements IScheduler {
 
+    // a map (i.e. an object) with TimeSlots as keys, arrays of {course_title, room_fullname}
+    // used to check to make sure a timeslot doesn't already have the same section of a course
+    // or the same room with a different course already booked
+    private timeSlotMap: any;
+    private isTimeSlotFilled: boolean[];
+    private timeSlotIndex: number;
+
+    constructor() {
+        this.timeSlotMap = Scheduler.buildTimeSlotMap();
+        this.isTimeSlotFilled = Array(15).fill(false);
+        this.resetIsTimeSlotFilled();
+        this.timeSlotIndex = 0;
+    }
+
     public schedule(sections: SchedSection[], rooms: SchedRoom[]): Array<[SchedRoom, SchedSection, TimeSlot]> {
         let result: Array<[SchedRoom, SchedSection, TimeSlot]> = new Array<[SchedRoom, SchedSection, TimeSlot]>();
+        // if there are more rooms than there are sections, this will remove the rooms with the lowest
+        // utility from rooms (where utility = 0.7 * (# of seat) + 0.3 * (1 - (avg dist from other rooms))
+        if (rooms.length > sections.length / 15) {
+            Scheduler.pickBestRooms(rooms, Math.floor(sections.length / 15) - rooms.length);
+        }
+
         // sort both arrays for sections and rooms into descending order based on enrolment/capacity
         rooms.sort(function (a, b) {
             return b.rooms_seats - a.rooms_seats;
         });
+
         sections.sort((a: SchedSection, b: SchedSection) => {
-            return this.getNumEnrolled(b) - this.getNumEnrolled(a);
+            return Scheduler.getNumEnrolled(b) - Scheduler.getNumEnrolled(a);
         });
-        // a map where keys are timeslots, values are arrays of courses scheduled in that timeslot
-        // used to make sure no 2 courses are scheduled in the same timeslot
-        let timeSlotMap: any = this.buildTimeSlotMap();
+
+
         let roomIndex: number = 0;
         let room: SchedRoom = rooms[roomIndex];
-        let timeSlotIndex: number = 0;
-        for (let i: number = 0; i < sections.length; i++) {
-            let section = sections[i];
-            if (!timeSlotMap[this.pickTimeSlot(timeSlotIndex)].includes(section.courses_title) &&
-                this.getNumEnrolled(section) <= room.rooms_seats) {
-                result.push([room, section, this.pickTimeSlot(timeSlotIndex)]);
-                if (timeSlotIndex === 14) {
-                    timeSlotIndex = 0;
+
+        for (let section of sections) {
+            let timeSlot: TimeSlot = this.pickTimeSlot();
+
+            if (this.isValidTuple(room, section, timeSlot)) {
+                result.push([room, section, timeSlot]);
+                this.timeSlotMap[timeSlot].push({
+                    course: section.courses_title,
+                    room: room.rooms_fullname
+                });
+                if (this.timeSlotIndex === 14) {
+                    this.timeSlotIndex = 0;
+                    this.resetIsTimeSlotFilled();
                     roomIndex++;
                     if (roomIndex >= rooms.length) {
                         return result;
                     }
                     room = rooms[roomIndex];
                 } else {
-                    timeSlotIndex++;
+                    this.isTimeSlotFilled[this.timeSlotIndex] = true;
+                    this.timeSlotIndex++;
                 }
             } else {
-                if (this.getNumEnrolled(section) <= room.rooms_seats) {
-                    i = i;
-                   // put the section back in the queue somehow to be tried again
+                if (Scheduler.sectionFitsInRoom(section, room)) {
+                    this.findTimeSlotForSection(section, room, result);
                 }
             }
         }
         return result;
     }
 
-    // so we have two days, tues/thurs or mon/wed/fri
-    // m/w/f has 9 time slots, t/th has 6
-    // so we have 15 slots total
-    // and we're given a list of rooms that's variable, and a list of courses to schedule that's also variable
-    // but we can assume the list of courses and rooms contains no duplicates and are both non empty
-    // says nothing about if there are enough rooms for all of the courses, which could be an edge case
-    // so that paper I read suggested the first thing you want to do is place them all with
-    //  instructors and timeslots, then do rooms later
-    // I think maybe it's better to start with rooms
-    // try to distribute which rooms get used as evenly as possible
-    // and then fit the time slots in after
-    // and then with whatever doesn't fit, place them in the empty rooms/timeslots remaining
+    // a tuple is valid (i.e. you can add this section in this room at this timeslot to the results array)
+    // if the timeSlotMap doesn't already have the same section or the same room booked at that time
+    private isValidTuple(room: SchedRoom, section: SchedSection, timeSlot: TimeSlot) {
+        return !this.containsSection(section, timeSlot) &&
+            !this.isTimeSlotFilled[this.timeSlotIndex] &&
+            Scheduler.sectionFitsInRoom(section, room);
+    }
+
+    private static sectionFitsInRoom(section: SchedSection, room: SchedRoom) {
+        return Scheduler.getNumEnrolled(section) <= room.rooms_seats;
+    }
 
     // returns distance (in meters) between two rooms
-    private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    private static calculateDistance(room1: SchedRoom, room2: SchedRoom): number {
         // distance function taken from https://www.movable-type.co.uk/scripts/latlong.html
+
+        let lat1: number = room1.rooms_lat;
+        let lon1: number = room1.rooms_lon;
+        let lat2: number = room2.rooms_lat;
+        let lon2: number = room2.rooms_lon;
+
         let earthRad = 6371e3; // metres
-        let φ1 = this.toRadians(lat1);
-        let φ2 = this.toRadians(lat2);
-        let Δφ = this.toRadians((lat2 - lat1));
-        let Δλ = this.toRadians(lon2 - lon1);
+        let φ1 = Scheduler.toRadians(lat1);
+        let φ2 = Scheduler.toRadians(lat2);
+        let Δφ = Scheduler.toRadians((lat2 - lat1));
+        let Δλ = Scheduler.toRadians(lon2 - lon1);
 
         let a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
         let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
@@ -70,16 +100,16 @@ export default class Scheduler implements IScheduler {
         return earthRad * c;
     }
 
-    private toRadians(deg: number): number {
+    private static toRadians(deg: number): number {
         return deg * Math.PI / 180;
     }
 
-    private getNumEnrolled(section: SchedSection): number {
+    private static getNumEnrolled(section: SchedSection): number {
         return section.courses_audit + section.courses_pass + section.courses_fail;
     }
 
-    private pickTimeSlot(timeSlotCount: number): TimeSlot {
-        switch (timeSlotCount) {
+    private pickTimeSlot(): TimeSlot {
+        switch (this.timeSlotIndex) {
             case 0:
                 return "MWF 0800-0900";
             case 1:
@@ -113,8 +143,8 @@ export default class Scheduler implements IScheduler {
         }
     }
 
-    private buildTimeSlotMap(): any {
-       return {
+    private static buildTimeSlotMap(): any {
+        return {
             "MWF 0800-0900": [],
             "MWF 0900-1000": [],
             "MWF 1000-1100": [],
@@ -131,5 +161,78 @@ export default class Scheduler implements IScheduler {
             "TR  1400-1530": [],
             "TR  1530-1700": [],
         };
+    }
+
+    private containsSection(section: SchedSection, timeSlot: TimeSlot) {
+        for (let element of this.timeSlotMap[timeSlot]) {
+            if (element.course === section.courses_title) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+// this should try to put the section in the closest timeslot to the one that it was originally intended for
+    // and if every single timeslot is tried then for now we just naiively give up, in the future maybe can do
+    // something with that
+    // should it do anything with i? or mark the section it placed in as somehow used now?
+    private findTimeSlotForSection
+    (section: SchedSection, room: SchedRoom, result: Array<[SchedRoom, SchedSection, TimeSlot]>) {
+        for (let i = 0; i < Object.keys(this.timeSlotMap).length; i++) {
+            let timeSlot = Object.keys(this.timeSlotMap)[i];
+            if (this.isValidTuple(room, section, timeSlot as TimeSlot)) {
+                result.push([room, section, timeSlot as TimeSlot]);
+                this.isTimeSlotFilled[i] = true;
+                return;
+            }
+        }
+        // the section doesn't fit into any section with this room
+        //    should we try again with a different room? or give up
+    }
+
+    private resetIsTimeSlotFilled() {
+        for (let i = 0; i < 15; i++) {
+            this.isTimeSlotFilled[i] = false;
+        }
+    }
+
+    // removeThisMany is the floor of the difference between the rooms and the sections / 15, which means
+    // there will be enough or one extra room to fit all the sections
+    private static pickBestRooms(rooms: SchedRoom[], removeThisMany: number) {
+        let utilityArray: Array<{ name: string, utility: number }> = [];
+        for (let room of rooms) {
+            let util: number = room.rooms_seats * 0.7 + 0.3 * (1 - this.getAvgDist(room, rooms, removeThisMany));
+            utilityArray.push({name: room.rooms_fullname, utility: util});
+        }
+        utilityArray.sort((a, b) => {
+            return b.utility - a.utility;
+        });
+        for (let i = utilityArray.length - removeThisMany; i < utilityArray.length; i++) {
+            // TODO: this is using findIndex, unsure if this is how it works though
+            // rooms.splice(rooms.indexOf(utilityArray[i].name));
+            rooms.splice(rooms.findIndex((r) => {
+                return r.rooms_fullname === utilityArray[i].name;
+            }));
+        }
+    }
+
+    private static getAvgDist(room: SchedRoom, rooms: SchedRoom[], removeThisMany: number): number {
+        // initialize an array of size removeThisMany with all blank values, these will be updated
+        // as we iterate through the rooms array
+        let distArray: number[] = Array(removeThisMany).fill(0);
+        for (let schedRoom of rooms) {
+            for (let storedDist of distArray) {
+                let currDist: number = Scheduler.calculateDistance(schedRoom, room);
+                // if the distance between these rooms is bigger than anything we've seen before, bump out
+                // whatever's being stored and exchange it for this one
+                // todo: this is slow, definitely a better way to do this than sorting each time
+                if (currDist > storedDist) {
+                    storedDist = currDist;
+                    distArray.sort((a, b) => b - a);
+                    break;
+                }
+            }
+        }
+        return distArray.reduce((acc, currVal) => acc + currVal / removeThisMany);
     }
 }
