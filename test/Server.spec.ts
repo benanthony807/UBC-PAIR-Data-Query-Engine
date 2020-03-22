@@ -5,7 +5,7 @@ import chai = require("chai");
 import chaiHttp = require("chai-http");
 import Response = ChaiHttp.Response;
 import {expect} from "chai";
-import * as fs from "fs";
+import * as fs from "fs-extra";
 import Log from "../src/Util";
 
 describe("Facade D3", function () {
@@ -30,10 +30,14 @@ describe("Facade D3", function () {
     });
 
     beforeEach(function () {
+        const cacheDir = __dirname + "/../data";
+        Log.test(`BeforeTest: ${this.currentTest.title}`);
         try {
+            fs.removeSync(cacheDir);
+            fs.mkdirSync(cacheDir);
             fs.unlinkSync("data/datasets.txt");
         } catch (err) {
-            //
+            // Log.error(err);
         }
     });
 
