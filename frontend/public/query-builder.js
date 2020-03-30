@@ -27,7 +27,7 @@ CampusExplorer.buildQuery = function () {
     let doc;        //  courses or rooms sub document
     let dataType;   // "courses" or "rooms"
 
-    if            (document.getElementById('form-container').children[1].attributes[0].value === "tab-panel active") {
+    if (document.getElementById('form-container').children[1].attributes[0].value === "tab-panel active") {
         doc      = document.getElementById('form-container').children[1];
         dataType = "courses";
     } else if     (document.getElementById('form-container').children[2].attributes[0].value === "tab-panel active") {
@@ -69,19 +69,20 @@ function buildWhere(doc, dataType, prevNot) {
             }
         }
     }
-    switch (numConditions) {
-        case 0: return {};
-        case 1: return buildWhereChild(firstCondition, dataType, false);
-        case 2: if (conditionType === "NOT") {
-                    result["NOT"] = buildWhere(doc, dataType, true);
-                } else {
-                    let childContainer = [];
-                    for (let condition of listOfConditions) {
-                        childContainer.push(buildWhereChild(condition, dataType, false));
-                    }
-                    result[conditionType] = childContainer;
-                }
-                break;
+    if (numConditions === 0) {
+        return {};
+    } else if (numConditions === 1) {
+        return buildWhereChild(firstCondition, dataType, false);
+    } else {
+        if (conditionType === "NOT") {
+            result["NOT"] = buildWhere(doc, dataType, true);
+        } else {
+            let childContainer = [];
+            for (let condition of listOfConditions) {
+                childContainer.push(buildWhereChild(condition, dataType, false));
+            }
+            result[conditionType] = childContainer;
+        }
     }
     return result;
 }
