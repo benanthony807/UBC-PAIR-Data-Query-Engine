@@ -1,0 +1,87 @@
+
+======== OVERALL ========
+{'BODY ', ' OPTIONS (', ' TRANSFORMATIONS)? '}
+zValQuery1a: Overall - Simple                                               query: { "WHERE": {"GT": {"courses_avg": 97 }}, "OPTIONS": { "COLUMNS": [ "courses_title", "overallAvg" ], "ORDER": { "dir": "UP", "keys": [ "courses_dept"] } }, "TRANSFORMATIONS": { "GROUP": [ "courses_title", "courses_avg" ], "APPLY": [{"overallAvg":{"AVG":"courses_avg"}}]}}
+zValQuery1b: Overall - Out of order                                         query: {"OPTIONS", "TRANSFORMATIONS", "WHERE"}
+
+zInvQuery1a: Overall - TRANSFORMATIONS - misspelled                         query: {OPTIONS, WHERE, TRANSFORM}
+zInvQuery1b: Overall - TRANSFORMATIONS - misspelled                         query: {OPTIONS, WHERE, transformations}
+zInvQuery1c: Overall - OPTIONS - misspelled                                 query: {OPTI, WHERE, TRANSFORM}
+zInvQuery1d: Overall - OPTIONS - misspelled                                 query: {options, WHERE, TRANSFORM}
+zInvQuery1e: Overall - WHERE - misspelled                                   query: {OPTIONS, WHE, TRANSFORM}
+zInvQuery1f: Overall - WHERE - misspelled                                   query: {OPTIONS, where, TRANSFORM}
+
+======== OPTIONS ========
+ZValQuery2: OPTIONS - syntax - out of order                                 OPTIONS: {ORDER, COLUMNS}
+
+======== COLUMNS ========
+zInvQuery3: COLUMNS - semantics - key not in GROUP or APPLY                 COLUMNS: {"courses_avg", "courses_dept"} ... GROUP: "courses_avg" ... APPLY: "overallAvg"
+
+======== ORDER ========
+ORDER: ' ('{ dir:'  DIRECTION ', keys: [ ' ANYKEY (',' ANYKEY)* ']}') | ANYKEY
+zValQuery4a: ORDER - syntax - out of order                                  ORDER: {keys, dir}
+
+zInvQuery4a: ORDER - syntax - dir misspelled (not present)                  ORDER: {d, keys}
+zInvQuery4b: ORDER - syntax - keys misspelled (not present)                 ORDER: {dir, ke}
+
+dir:'  DIRECTION ' || DIRECTION ::= 'UP' | 'DOWN'
+zInvQuery4c: ORDER - syntax - dir - UP misspelled                           DIR: up
+zInvQuery4d: ORDER - syntax - dir - UP misspelled                           DIR: U
+
+zValQuery4b: ORDER - syntax - keys - duplicate elements in list             KEYS: ["courses_avg", "courses_avg"]
+zInvQuery4e: ORDER - syntax - keys - not a list                             KEYS: {}
+zInvQuery4f: ORDER - syntax - keys - empty list                             KEYS: []
+zInvQuery4g: ORDER - semantics - keys - underscorless key not in APPLY      KEYS: ["hello"] ... APPLY: ["overallAvg"]
+zInvQuery4h: ORDER - semantics - keys - underscore key not in COLUMNS       KEYS: ["courses_avg", "courses_dept"] ... COLUMNS: ["courses_avg"]
+
+======== TRANSFORMATIONS ========
+'TRANSFORMATIONS: {' GROUP ', ' APPLY '}'
+zValQuery5a: TRANSFORMATIONS - syntax - out of order:                       TRANSFORMATIONS: {' APPLY ', ' GROUP '}
+zInvQuery5a: TRANSFORMATIONS - syntax - not an object:                      TRANSFORMATIONS: []
+zInvQuery5b: TRANSFORMATIONS - syntax - empty object:                       TRANSFORMATIONS: {}
+zInvQuery5c: TRANSFORMATIONS - syntax - only 1 properly spelled key:        TRANSFORMATIONS: {' GROUP '}
+zInvQuery5d: TRANSFORMATIONS - syntax - 2 keys, one misspelled:             TRANSFORMATIONS: {' GROUP ', 'APP'}
+zInvQuery5e: TRANSFORMATIONS - syntax - 3 keys:                             TRANSFORMATIONS: {' GROUP ', 'APP', 'THIRD_KEY'}
+
+==== GROUP ====
+'GROUP: [' (key ',')* key ']'
+zValQuery6a: GROUP - syntax - one valid key                                 GROUP: [validKey1]
+zValQuery6b: GROUP - syntax - two different valid keys                      GROUP: [validKey1, validKey2]
+zValQuery6c: GROUP - semantics - two duplicate valid keys                   GROUP: [validKey1, validKey1]
+zValQuery6d: GROUP - semantics - key not in columns                         GROUP: [validKey1]
+
+zInvQuery_: GROUP - syntax - not a list                                     GROUP: {}
+zInvQuery_: GROUP - syntax - empty list                                     GROUP: []
+zInvQuery_: GROUP - semantics - key - not a valid idstring                  GROUP: [cour_avg]
+zInvQuery_: GROUP - semantics - key - not a valid field                     GROUP: [courses_av]
+zInvQuery_: GROUP - semantics - key - no '_'                                GROUP: [coursesavg]
+zInvQuery_: GROUP - semantics - valid key and invalid key                   GROUP: [courses_avg, cour_av]
+
+==== APPLY ====
+'APPLY: [' (APPLYRULE (', ' APPLYRULE )* )? ']'
+zValQuery_: APPLY - syntax - one valid key                                  APPLY: [validKey1]
+zValQuery_: APPLY - syntax - two different valid keys                       APPLY: [validKey1, validKey2]
+zValQuery_: APPLY - semantics - key not in columns                          APPLY: [validKey1]
+
+zInvQuery_: APPLY - syntax - not a list                                     APPLY: {}
+zInvQuery_: APPLY - syntax - empty list                                     APPLY: []
+zInvQuery_: APPLY - semantics - two duplicate valid keys                    APPLY: [validKey1, validKey1]
+
+APPLYRULE ::= '{' applykey ': {' APPLYTOKEN ':' key '}}'
+zInvQuery_: APPLYRULE - syntax - not an object                              APPLY: [[validKey]]
+zInvQuery_: APPLYRULE - syntax - empty object                               APPLY: [{}]
+zInvQuery_: APPLYRULE - syntax - multiple keys in applyrule object          APPLY: [{courses_avg: {...}, courses_dept: {...}}]
+applykey ::= [^_]+ // one or more of any character except underscore.
+zInvQuery_: APPLYKEY - syntax - _ only                                      APPLY: [{_: ...}]
+zInvQuery_: APPLYKEY - syntax - has _                                       APPLY: [{courses_avg: ...}]
+APPLYTOKEN ::= 'MAX' | 'MIN' | 'AVG' | 'COUNT' | 'SUM'
+zInvQuery_: APPLYTOKEN - syntax - not an object                             APPLY: [{courses_avg: []}]
+zInvQuery_: APPLYTOKEN - syntax - empty object                              APPLY: [{courses_avg: {}}]
+zInvQuery_: APPLYTOKEN - syntax - multiple keys in applytoken object        APPLY: [{courses_avg: {...}, courses_dept: {...}}]
+zInvQuery_: APPLYTOKEN - syntax - misspelled                                APPLY: [{courses_avg: {MA: ...}}]
+zInvQuery_: APPLYTOKEN - syntax - misspelled                                APPLY: [{courses_avg: {max: ...}}]
+zInvQuery_: APPLYTOKEN - semantics - key - not a valid idstring             APPLY: [{courses_avg: {MAX: cour_avg}}]
+zInvQuery_: APPLYTOKEN - semantics - key - not a valid field                APPLY: [{courses_avg: {MAX: courses_av}}]
+zInvQuery_: APPLYTOKEN - semantics - key - not '_'                          APPLY: [{courses_avg: {MAX: courses_av}}]
+
+

@@ -1,11 +1,16 @@
 <component name="ProjectDictionaryState">
   <dictionary name="SKu T-Type">
     <words>
+      <w>applykey</w>
+      <w>applyrule</w>
+      <w>applytoken</w>
       <w>asce</w>
       <w>conditiontype</w>
+      <w>coursesavg</w>
       <w>datasets</w>
       <w>fullname</w>
       <w>shortname</w>
+      <w>underscorless</w>
       <w>webstorm</w>
     </words>
   </dictionary>

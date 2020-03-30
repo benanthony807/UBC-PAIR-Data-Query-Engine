@@ -1,9 +1,9 @@
-// import PQPreQSyntax from "../src/controller/PQPreQSyntax";
+// import PQPreQSyntax from "../src/controller/performQuery/PQPreQSyntax";
 // import Log from "../src/Util";
 // import InsightFacade from "../src/controller/InsightFacade";
 // import * as assert from "assert";
-// import PQRunQuery from "../src/controller/PQRunQuery";
-// import PQPreQSemantics from "../src/controller/PQPreQSemantics";
+// import PQRunQuery from "../src/controller/performQuery/PQRunQuery";
+// import PQPreQSemantics from "../src/controller/performQuery/PQPreQSemantics";
 //
 // describe("Syntax Tests", function () {
 //     let insightFacade: InsightFacade = new InsightFacade();
@@ -98,7 +98,7 @@
 //                 ]
 //             }
 //         };
-//         assert.equal(syntaxChecker.isInputQueryValid(query), "Order key must have dir and key");
+//         assert.equal(syntaxChecker.isInputQueryValid(query), "Order key must have dir and keys");
 //     });
 //
 //     it("Accept: dir-keys flipped", function () {
