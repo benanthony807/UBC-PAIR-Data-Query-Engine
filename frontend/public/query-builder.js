@@ -27,7 +27,7 @@ CampusExplorer.buildQuery = function () {
     let doc;        //  courses or rooms sub document
     let dataType;   // "courses" or "rooms"
 
-    if            (document.getElementById('form-container').children[1].attributes[0].value === "tab-panel active") {
+    if (document.getElementById('form-container').children[1].attributes[0].value === "tab-panel active") {
         doc      = document.getElementById('form-container').children[1];
         dataType = "courses";
     } else if     (document.getElementById('form-container').children[2].attributes[0].value === "tab-panel active") {
