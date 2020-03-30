@@ -125,7 +125,7 @@ export default class PQPreQSemantics {
         let listOfApplyItemsPreFlat: any = [];
         let listOfApplyItems: any = [];
         // If there is an APPLY, populate a list of APPLY items
-        if (Object.keys(query).length === 3 && Object.keys(query["TRANSFORMATIONS"])[1] === "APPLY") {
+        if (Object.keys(query).length === 3 && Object.keys(query["TRANSFORMATIONS"]).includes("APPLY")) {
             let numApplyKeys = query["TRANSFORMATIONS"]["APPLY"].length;
             for (let i = 0; i < numApplyKeys; i++) {
                 listOfApplyItemsPreFlat.push(Object.keys(query["TRANSFORMATIONS"]["APPLY"][i]));
