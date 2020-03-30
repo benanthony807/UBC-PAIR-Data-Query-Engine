@@ -51,7 +51,7 @@
     "query43": "Rooms - Lat - LT - input: number (decimal) - output: number",
     "query44": "Rooms - Furniture + Lat - IS + LT - input: mix - output: mix",
 
-
-
-
+    "query45": "All - Complex everything",
+    "query46": "Any - Complex everything",
+    "query47": "None - Complex everything"
 }
