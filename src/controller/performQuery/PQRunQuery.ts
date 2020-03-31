@@ -29,11 +29,11 @@ export default class PQRunQuery extends PQPreQSyntax {
         }
         // Step 2a: NO FILTER, pass all sections as query result
         if (Object.keys(query["WHERE"]).length === 0) {
-            Log.trace("No WHERE detected, returning all sections...");
+            // Log.trace("No WHERE detected, returning all sections...");
             queryResults = this.allSectionsInDataset;
         } else {
             // Step 2b: YES FILTER
-            Log.trace("WHERE detected, doing filter...");
+            // Log.trace("WHERE detected, doing filter...");
             queryResults = new PQFilter(
                 this.allSectionsInDataset
             ).doFilter(query["WHERE"], 0);

@@ -14,11 +14,14 @@ zInvQuery1g: Overall - GROUP - replaces TRANSFORMATIONS                     quer
 
 ======== OPTIONS ========
 ZValQuery2: OPTIONS - syntax - out of order                                 OPTIONS: {ORDER, COLUMNS}
+ZInvQuery2a: OPTIONS - syntax - empty                                       OPTIONS: []
 
 ======== COLUMNS ========
-zValQuery3a: COLUMNS - semantics - key only in APPLY                        COLUMNS: {"overallAvg"} ... GROUP: "courses_avg" ... APPLY: "overallAvg"
-zValQuery3b: COLUMNS - semantics - key only in GROUP                        COLUMNS: {"courses_avg"} ... GROUP: "courses_avg" ... APPLY: "overallAvg"
-zInvQuery3a: COLUMNS - semantics - key not in GROUP or APPLY                COLUMNS: {"courses_avg", "courses_dept"} ... GROUP: "courses_avg" ... APPLY: "overallAvg"
+zValQuery3a: COLUMNS - semantics - key only in APPLY                        COLUMNS: ["overallAvg"] ... GROUP: "courses_avg" ... APPLY: "overallAvg"
+zValQuery3b: COLUMNS - semantics - key only in GROUP                        COLUMNS: ["courses_avg"] ... GROUP: "courses_avg" ... APPLY: "overallAvg"
+zInvQuery3a: COLUMNS - semantics - key not in GROUP or APPLY                COLUMNS: ["courses_avg", "courses_dept"] ... GROUP: "courses_avg" ... APPLY: "overallAvg"
+zInvQuery3b: COLUMNS - syntax - empty                                       COLUMNS: []
+
 
 ======== ORDER ========
 ORDER: ' ('{ dir:'  DIRECTION ', keys: [ ' ANYKEY (',' ANYKEY)* ']}') | ANYKEY
@@ -27,6 +30,7 @@ zValQuery4a: ORDER - syntax - out of order                                  ORDE
 zInvQuery4a: ORDER - syntax - dir misspelled (not present)                  ORDER: {d, keys}
 zInvQuery4b: ORDER - syntax - keys misspelled (not present)                 ORDER: {dir, ke}
 zInvQuery4i: ORDER - syntax - dir has >2 keys                               ORDER: {dir, keys, third_key}
+zInvQuery4j: ORDER - syntax - empty                                         ORDER: {}
 
 dir:'  DIRECTION ' || DIRECTION ::= 'UP' | 'DOWN'
 zInvQuery4c: ORDER - syntax - dir - UP misspelled                           DIR: up
@@ -59,7 +63,7 @@ zValQuery6d: GROUP - semantics - key not in columns                         GROU
 zInvQuery6a: GROUP - syntax - not a list                                    GROUP: {}
 zInvQuery6b: GROUP - syntax - empty list                                    GROUP: []
 zInvQuery6c: GROUP - semantics - key - not a valid idstring                 GROUP: [cour_avg]
-zInvQuery6c: GROUP - semantics - valid key and invalid key                  GROUP: [courses_avg, cour_av]
+zInvQuery6c: GROUP - semantics - key - valid key and invalid key            GROUP: [courses_avg, cour_av]
 zInvQuery6d: GROUP - semantics - key - not a valid field                    GROUP: [courses_av]
 zInvQuery6e: GROUP - semantics - key - no '_'                               GROUP: [coursesavg]
 

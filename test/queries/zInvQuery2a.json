@@ -3,17 +3,11 @@
     "query": {
         "WHERE": {"GT": {"courses_avg": 97 }},
         "OPTIONS": {
-            "COLUMNS": [ "courses_title", "overallAvg" ],
-            "ORDER": {
-                "dir": "UP",
-                "keys": [ "courses_title"],
-                "thirdkey": []
-            } },
-
+        },
         "TRANSFORMATIONS": {
             "GROUP": [ "courses_title", "courses_avg" ],
             "APPLY": [{"overallAvg":{"AVG":"courses_avg"}}]}
     },
     "isQueryValid": false,
     "result": "Insight Error"
-    }
+}
