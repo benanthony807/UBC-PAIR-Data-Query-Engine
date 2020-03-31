@@ -1,0 +1,38 @@
+{
+    "title": "Valid Transformation APPLY MIN-courses_fail",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 97
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_title"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_title"
+            ],
+            "APPLY": [
+                {
+                    "overallMinAvg": {
+                        "MIN": "courses_avg"
+                    }
+                },
+                {
+                    "overallMaxAvg": {
+                        "MAX": "courses_avg"
+                    }
+                },
+                {
+                    "overallMinAvg2": {
+                        "MIN": "courses_avg"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_title":"career planning"},{"courses_title":"thesis"},{"courses_title":"res mthd in educ"},{"courses_title":"multimedia sys"},{"courses_title":"assess lrn diffi"},{"courses_title":"educ stds autism"},{"courses_title":"dev el sk df&hrd"},{"courses_title":"acad assess schl"},{"courses_title":"sem in autism"},{"courses_title":"cor des ed res"},{"courses_title":"coll&uni teachng"},{"courses_title":"diff geometry i"},{"courses_title":"algb topology i"},{"courses_title":"algb geometry i"},{"courses_title":"harmonic anal i"},{"courses_title":"cl pro prim care"},{"courses_title":"fam nrs pract"},{"courses_title":"eth&profl issues"},{"courses_title":"work int health"}]}

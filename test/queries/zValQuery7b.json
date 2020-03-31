@@ -1,0 +1,26 @@
+{
+    "title": "Valid Transformation - different order of keys",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_audit": 5
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_avg"
+            ],
+            "ORDER": {
+                "dir": "DOWN",
+                "keys": ["courses_avg"]
+            }
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_avg"
+            ],
+            "APPLY": []
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_avg":95},{"courses_avg":94.44},{"courses_avg":94},{"courses_avg":93.33},{"courses_avg":91.4},{"courses_avg":91.22},{"courses_avg":91},{"courses_avg":90.8},{"courses_avg":90.53},{"courses_avg":89.96},{"courses_avg":89.67},{"courses_avg":89.5},{"courses_avg":88.79},{"courses_avg":88.57},{"courses_avg":88.5},{"courses_avg":88.25},{"courses_avg":88.2},{"courses_avg":88},{"courses_avg":87.4},{"courses_avg":87.26},{"courses_avg":87.14},{"courses_avg":87.03},{"courses_avg":87},{"courses_avg":86.89},{"courses_avg":86.19},{"courses_avg":86},{"courses_avg":85.8},{"courses_avg":85.78},{"courses_avg":85.73},{"courses_avg":85.67},{"courses_avg":85.6},{"courses_avg":85.58},{"courses_avg":85.56},{"courses_avg":85.14},{"courses_avg":85.13},{"courses_avg":84.83},{"courses_avg":84.71},{"courses_avg":84.6},{"courses_avg":84.59},{"courses_avg":84.5},{"courses_avg":84.44},{"courses_avg":84.38},{"courses_avg":84.14},{"courses_avg":84.09},{"courses_avg":83.86},{"courses_avg":83.49},{"courses_avg":82.95},{"courses_avg":82.67},{"courses_avg":82.56},{"courses_avg":81.09},{"courses_avg":80.81},{"courses_avg":80.53},{"courses_avg":80.29},{"courses_avg":80.04},{"courses_avg":79.64},{"courses_avg":79.45},{"courses_avg":78.63},{"courses_avg":78.54},{"courses_avg":77.93},{"courses_avg":77.65},{"courses_avg":77.36},{"courses_avg":77.05},{"courses_avg":77},{"courses_avg":76.99},{"courses_avg":76.83},{"courses_avg":76.21},{"courses_avg":76.19},{"courses_avg":76},{"courses_avg":75.65},{"courses_avg":75.37},{"courses_avg":75.16},{"courses_avg":74.73},{"courses_avg":74.04},{"courses_avg":73.86},{"courses_avg":73.44},{"courses_avg":73.4},{"courses_avg":71.78},{"courses_avg":71.57},{"courses_avg":71.14},{"courses_avg":70.77},{"courses_avg":70.38},{"courses_avg":70.12},{"courses_avg":69.97},{"courses_avg":69.84},{"courses_avg":69.54},{"courses_avg":68.98},{"courses_avg":68.69},{"courses_avg":67.66},{"courses_avg":67.26},{"courses_avg":60.04}]}

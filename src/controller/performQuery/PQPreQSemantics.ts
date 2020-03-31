@@ -15,8 +15,12 @@ export default class PQPreQSemantics {
 
     /** Checks semantic requirements in COLUMN and ORDER */
     public semanticsAreValid(query: any, datasetToUse: Dataset): any {
-        // Step 0: If TRANSFORMATIONS exists, Populate APPLY keys for ORDER and APPLY check downstream:
+        // Step 0: If TRANSFORMATIONS exists, Check and Populate APPLY keys for ORDER and APPLY check downstream:
         if (Object.keys(query).length === 3) {
+            if (this.transfChecker.applyKeySyntaxIsOkay(query["TRANSFORMATIONS"]["APPLY"]) === false) {
+                this.errorMessage = "Apply rule violated";
+                return this.errorMessage;
+            }
             this.transfChecker.populateListOfApplyKeys(query);
         }
 

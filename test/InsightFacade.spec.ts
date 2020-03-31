@@ -895,15 +895,28 @@ describe("InsightFacade PerformQuery", () => {
     /** This is a flexible test where we replace queries */
     it("bobloblaw", function () {
         let query = {
-            WHERE: {GT: {courses_avg: 97 }},
+            WHERE: {
+                GT: {
+                    courses_avg: 97
+                }
+            },
             OPTIONS: {
-                COLUMNS: [ "courses_title", "overallAvg" ],
-                ORDER: {
-                    dir: "UP",
-                    keys: [ "courses_title"] } },
+                COLUMNS: [
+                    "courses_title",
+                    "overallAvg"
+                ]
+            },
             TRANSFORMATIONS: {
-                APPLY: [{overallAvg: {AVG: "courses_avg"}}],
-                GROUP: [ "courses_title", "courses_avg" ]
+                GROUP: [
+                    "courses_title"
+                ],
+                APPLY: [
+                    {
+                        overallAvg: {
+                            MIN: "courses_id"
+                        }
+                    }
+                ]
             }
         };
         let result = insightFacade.performQuery(query);
