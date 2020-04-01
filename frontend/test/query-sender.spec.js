@@ -6,7 +6,7 @@ describe("sendQuery test suite", function() {
         if (queryFixtures.hasOwnProperty(queryName)) {
             let query = queryFixtures[queryName];
             if (TTT.hasHtmlFixture(queryName)) {
-                it(`~Sea${queryName}~Should be able to send a ${queryDescriptions[queryName]}`, function () {
+                it(`~Sea${queryName}~Should be able to send a ${queryDescriptions[queryName]}`, function() {
                     expect(CampusExplorer.sendQuery(query)).to.sendAjaxRequest(query);
                 });
             }

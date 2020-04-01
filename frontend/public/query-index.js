@@ -9,19 +9,3 @@
  */
 
 // TODO: implement!
-
-document.getElementById('submit-button').addEventListener('click', function () {
-    let query = CampusExplorer.buildQuery();
-
-    // Send query resolves with an object. (The retrieved converted string->object of the UI)
-    CampusExplorer.sendQuery(query)
-        .then(function (result) {
-            // renderResult needs an object (JSON.parse) as a param
-            // let res = JSON.parse(result);
-            CampusExplorer.renderResult(result);
-        })
-        .catch(function (err) {
-            // do something
-    })
-
-});

@@ -1,5 +1,3 @@
 {
     "query1":{"WHERE": {"IS": {"courses_dept": "cpsc"} }, "OPTIONS": {"COLUMNS": ["courses_dept", "courses_id"], "ORDER": "courses_id"} },
-    "query2":{"WHERE": {"GT": {"courses_avg": 97}}, "OPTIONS": { "COLUMNS": ["courses_dept", "courses_avg"], "ORDER": "courses_avg"}},
-    "query3":{"WHERE":{"NOT":{"GT":{"courses_avg":20}}},"OPTIONS":{"COLUMNS":["courses_avg","courses_dept","Hi"],"ORDER":{"dir":"DOWN","keys":["courses_avg","courses_dept"]}},"TRANSFORMATIONS":{"GROUP":["courses_avg","courses_dept"],"APPLY":[{"Hi":{"COUNT":"courses_audit"}}]}}
 }
