@@ -20,7 +20,7 @@ export default class Scheduler implements IScheduler {
         let result: Array<[SchedRoom, SchedSection, TimeSlot]> = new Array<[SchedRoom, SchedSection, TimeSlot]>();
         // if there are more rooms than there are sections, this will remove the rooms with the lowest
         // utility from rooms (where utility = 0.7 * (# of seat) + 0.3 * (1 - (avg dist from other rooms))
-        if (rooms.length > Math.ceil(sections.length / 15) && sections.length > 15) {
+        if (rooms.length > sections.length / 15 && sections.length > 15) {
             Scheduler.pickBestRooms(rooms, Math.floor(rooms.length - sections.length / 15));
         }
 
@@ -38,12 +38,12 @@ export default class Scheduler implements IScheduler {
         let room: SchedRoom = rooms[roomIndex];
 
         for (let section of sections) {
-            let timeSlot: TimeSlot = this.timeSlotPicker();
+            let timeSlot: TimeSlot = this.pickTimeSlot();
 
             if (this.isValidTuple(room, section, timeSlot)) {
                 result.push([room, section, timeSlot]);
                 this.timeSlotMap[timeSlot].push({
-                    course: section.courses_dept + section.courses_id,
+                    course: section.courses_uuid,
                     room: `${room.rooms_shortname} ${room.rooms_number}`
                 });
                 if (this.timeSlotIndex === 14) {
@@ -71,7 +71,7 @@ export default class Scheduler implements IScheduler {
     // if the timeSlotMap doesn't already have the same section or the same room booked at that time
     private isValidTuple(room: SchedRoom, section: SchedSection, timeSlot: TimeSlot) {
         return !this.containsSection(section, timeSlot) &&
-            !this.isTimeSlotFilled[Scheduler.getTimeSlotIndex(timeSlot)] &&
+            !this.isTimeSlotFilled[this.timeSlotIndex] &&
             Scheduler.sectionFitsInRoom(section, room);
     }
 
@@ -108,20 +108,6 @@ export default class Scheduler implements IScheduler {
         return section.courses_audit + section.courses_pass + section.courses_fail;
     }
 
-    // if the current timeslot has already been filled by some prev iteration of the for loop that couldn't
-    // fit a section into a timeslot, this function will give you the first not full timeslot
-    // this way everything in indices less than what's returned will be already full, and the for loop
-    // doesn't have to continue going to its else block and looking ahead for timeslots
-    // this basically doesn't do anything, it just makes the for loop easier to follow
-    private timeSlotPicker(): TimeSlot {
-        if (this.isTimeSlotFilled[this.timeSlotIndex]) {
-            this.timeSlotIndex++;
-            return this.timeSlotPicker();
-        } else {
-            return this.pickTimeSlot();
-        }
-    }
-
     private pickTimeSlot(): TimeSlot {
         switch (this.timeSlotIndex) {
             case 0:
@@ -150,7 +136,7 @@ export default class Scheduler implements IScheduler {
                 return "TR  1100-1230";
             case 12:
                 return "TR  1230-1400";
-            case 13:
+            case 14:
                 return "TR  1400-1530";
             default:
                 return "TR  1530-1700";
@@ -179,8 +165,7 @@ export default class Scheduler implements IScheduler {
 
     private containsSection(section: SchedSection, timeSlot: TimeSlot) {
         for (let element of this.timeSlotMap[timeSlot]) {
-            // this should be dept + id
-            if (element.course === section.courses_dept + section.courses_id) {
+            if (element.course === section.courses_uuid) {
                 return true;
             }
         }
@@ -193,22 +178,16 @@ export default class Scheduler implements IScheduler {
     // should it do anything with i? or mark the section it placed in as somehow used now?
     private findTimeSlotForSection
     (section: SchedSection, room: SchedRoom, result: Array<[SchedRoom, SchedSection, TimeSlot]>) {
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < Object.keys(this.timeSlotMap).length; i++) {
             let timeSlot = Object.keys(this.timeSlotMap)[i];
             if (this.isValidTuple(room, section, timeSlot as TimeSlot)) {
                 result.push([room, section, timeSlot as TimeSlot]);
                 this.isTimeSlotFilled[i] = true;
-                this.timeSlotMap[timeSlot].push({
-                    course: section.courses_dept + section.courses_id,
-                    room: `${room.rooms_shortname} ${room.rooms_number}`
-                });
                 return;
             }
         }
         // the section doesn't fit into any section with this room
         //    should we try again with a different room? or give up
-        //    one thing could do is insert the section 15 - timeSlotIndex
-        //    timeslots down the line so it gets tried in the next room
     }
 
     private resetIsTimeSlotFilled() {
@@ -230,9 +209,10 @@ export default class Scheduler implements IScheduler {
         });
         for (let i = utilityArray.length - removeThisMany; i < utilityArray.length; i++) {
             // TODO: this is using findIndex, unsure if this is how it works though
+            // rooms.splice(rooms.indexOf(utilityArray[i].name));
             rooms.splice(rooms.findIndex((r) => {
-                return r.rooms_shortname + r.rooms_number === utilityArray[i].name;
-            }), 1);
+                return `${r.rooms_shortname} ${r.rooms_number}` === utilityArray[i].name;
+            }));
         }
     }
 
@@ -255,40 +235,4 @@ export default class Scheduler implements IScheduler {
         }
         return distArray.reduce((acc, currVal) => acc + currVal / removeThisMany);
     }
-
-    private static getTimeSlotIndex(timeSlot: TimeSlot): number {
-        switch (timeSlot) {
-            case "MWF 0800-0900":
-                return 0;
-            case "MWF 0900-1000":
-                return 1;
-            case "MWF 1000-1100":
-                return 2;
-            case "MWF 1100-1200":
-                return 3;
-            case "MWF 1200-1300":
-                return 4;
-            case "MWF 1300-1400":
-                return 5;
-            case "MWF 1400-1500":
-                return 6;
-            case "MWF 1500-1600":
-                return 7;
-            case "MWF 1600-1700":
-                return 8;
-            case "TR  0800-0930":
-                return 9;
-            case "TR  0930-1100":
-                return 10;
-            case "TR  1100-1230":
-                return 11;
-            case "TR  1230-1400":
-                return 12;
-            case "TR  1400-1530":
-                return 13;
-            default:
-                return 14;
-        }
-    }
 }
-
