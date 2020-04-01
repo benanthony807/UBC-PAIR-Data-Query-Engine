@@ -1,4 +1,4 @@
-import Log from "../../Util";
+import Log from "../Util";
 import Decimal from "decimal.js";
 
 export default class PQTransformer {

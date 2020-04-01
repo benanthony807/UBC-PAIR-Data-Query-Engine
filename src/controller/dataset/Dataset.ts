@@ -13,25 +13,25 @@ export default class Dataset {
         that.data = data;
     }
 
-    public static getNumRows(kind: InsightDatasetKind, data: any[]): number {
+    public getNumRows(kind: InsightDatasetKind): number {
         if (kind === InsightDatasetKind.Courses) {
-            return this.countCourseSections(data);
+            return this.countCourseSections();
         } else {
-            return this.countRooms(data);
+            return this.countRooms();
         }
     }
 
-    private static countRooms(data: any[]) {
+    private countRooms() {
         let count: number = 0;
-        for (let room of data) {
+        for (let room of this.data) {
             count++;
         }
         return count;
     }
 
-    private static countCourseSections(data: any[]) {
+    private countCourseSections() {
         let count: number = 0;
-        for (let course of data) {
+        for (let course of this.data) {
             for (let section of course["result"]) {
                 count++;
             }

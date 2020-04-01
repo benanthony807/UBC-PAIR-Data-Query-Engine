@@ -1,5 +1,5 @@
-import Dataset from "../dataset/Dataset";
-import Log from "../../Util";
+import Dataset from "./dataset/Dataset";
+import Log from "../Util";
 import PQGeneralHelpers from "./PQGeneralHelpers";
 import PQPreQTransfChecker from "./PQPreQTransfChecker";
 
