@@ -128,17 +128,8 @@ function buildWhereChild(c, dataType, prevNot) {
     // =========================== BUILD CHILD VALUE =========================== //
     // Ex. { "...": 98 }
     selectedTerm = c.getElementsByClassName('control term')[0].children[0].value;
-
-    // IS always returns a string
-    // string -> IS -> string
-    // number -> IS -> string
-
-    // number -> EQ -> number
-    // string -> EQ -> string
-    if (selectedOperator !== "IS") {
-        if (selectedTerm.match("^[-+]?[0-9]+[.]?[0-9]*([eE][-+]?[0-9]+)?$")) {
-            selectedTerm = Number(selectedTerm);
-        }
+    if (selectedTerm.match("[0-9]+")) {
+        selectedTerm = Number(selectedTerm);
     }
 
     // =========================== AVENGERS ASSEMBLE =========================== //
