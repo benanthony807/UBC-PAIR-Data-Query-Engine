@@ -156,7 +156,7 @@ export default class InsightFacade implements IInsightFacade {
         Log.trace("Step 4: Run the query");
         let runQueryResult = this.runQuery.runQuery(query, datasetToUse);
 
-        // ================== ERROR HANDLgrER ================== //
+        // ================== ERROR HANDLER ================== //
         if (typeof runQueryResult === "string") {
             Log.trace( "Reached Error Handler");
             // RESULT TOO LARGE
@@ -180,7 +180,7 @@ export default class InsightFacade implements IInsightFacade {
             const insightDataset: InsightDataset = {
                 id: dataset["id"],
                 kind: dataset["kind"],
-                numRows: dataset.getNumRows(dataset["kind"]),
+                numRows: Dataset.getNumRows(dataset["kind"], dataset["data"]),
             };
             insightDatasets.push(insightDataset);
         }
