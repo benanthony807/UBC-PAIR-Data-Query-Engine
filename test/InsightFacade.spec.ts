@@ -896,27 +896,16 @@ describe("InsightFacade PerformQuery", () => {
     it("bobloblaw", function () {
         let query = {
             WHERE: {
-                GT: {
-                    courses_avg: 97
+                IS: {
+                    courses_dept: "adhe"
                 }
             },
             OPTIONS: {
                 COLUMNS: [
-                    "courses_title",
-                    "overallAvg"
-                ]
-            },
-            TRANSFORMATIONS: {
-                GROUP: [
-                    "courses_title"
+                    "courses_dept",
+                    "courses_avg"
                 ],
-                APPLY: [
-                    {
-                        overallAvg: {
-                            MIN: "courses_id"
-                        }
-                    }
-                ]
+                ORDER: "courses_avg"
             }
         };
         let result = insightFacade.performQuery(query);

@@ -119,7 +119,7 @@ export default class PQPreQSyntax {
                 return false;
             }
             let isOrderValidResult = this.isOrderValid(query);
-            if (typeof this.isOrderValid(query) === "string") {
+            if (typeof isOrderValidResult === "string") {
                 this.errorMessage = isOrderValidResult;
                 return false;
             }

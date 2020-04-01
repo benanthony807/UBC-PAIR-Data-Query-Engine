@@ -53,9 +53,20 @@ export default class PQPreQTransfChecker {
         for (let item of group) { // "courses_title"
             // Step 1: GROUP has valid keys
             let field = item.substring(item.indexOf("_") + 1); // "title"
-            if (!(PQGeneralHelpers.listOfAcceptableFields.includes(field))) {
-                this.errorMessage = "Error in GROUP: Must be a valid field";
-                return false;
+            // if (!(PQGeneralHelpers.listOfAcceptableFields.includes(field))) {
+            //     this.errorMessage = "Error in GROUP: Must be a valid field";
+            //     return false;
+            // }
+            if (PQGeneralHelpers.dataSetKind === "courses") {
+                if (!(PQGeneralHelpers.listOfAcceptableCoursesFields.includes(field))) {
+                    this.errorMessage = "Error in GROUP: Must be a valid courses field";
+                    return false;
+                }
+            } else { // PQGeneralHelpers.dataSetKind === "rooms"
+                if (!(PQGeneralHelpers.listOfAcceptableRoomsFields.includes(field))) {
+                    this.errorMessage = "Error in GROUP: Must be a valid rooms field";
+                    return false;
+                }
             }
 
             // Step 2: GROUP does not reference multiple datasets
@@ -125,11 +136,8 @@ export default class PQPreQTransfChecker {
 
         // Step 5: APPLY's grandchild key should be one of  "AVG" / "MAX" / "MIN" / "COUNT" / "SUM"
         let applyGrandchildKey = Object.keys(applyGrandchild)[0]; // {"AVG": "courses_avg"} -> "AVG"
-        if (!(applyGrandchildKey === "AVG" ||
-            applyGrandchildKey === "MAX" ||
-            applyGrandchildKey === "MIN" ||
-            applyGrandchildKey === "SUM" ||
-            applyGrandchildKey === "COUNT")) {
+        if (!(applyGrandchildKey === "AVG" || applyGrandchildKey === "MAX" || applyGrandchildKey === "MIN" ||
+            applyGrandchildKey === "SUM" || applyGrandchildKey === "COUNT")) {
             this.errorMessage = "APPLY grandchild key should be one of AVG / MAX / MIN / COUNT / SUM";
             return false;
         }
@@ -142,17 +150,9 @@ export default class PQPreQTransfChecker {
             return false;
         }
         let field = applyGrandchildValue.substring(applyGrandchildValue.indexOf("_") + 1); // "avg"
-        if (!(PQGeneralHelpers.listOfAcceptableFields.includes(field))) {
-            this.errorMessage = "Must be a valid id_field";
-            return false;
-        }
 
-        // Step 7: APPLY's grandchild value should have a typeof number for MAX/MIN/AVG/SUM
-        if (applyGrandchildKey !== "COUNT")  { // applyGrandchildKey will be one of AVG MAX MIN SUM
-            if (!(PQGeneralHelpers.acceptableNumberFields.includes(field))) {
-                this.errorMessage = "APPLY key is " + applyGrandchildKey + ", so type of field must be a number";
-                return false;
-            }
+        if (this.isFieldContextuallyOkay(field, applyGrandchildKey) === false) {
+            return false;
         }
 
         // Step 8: APPLY's grandchild id should not reference multiple datasets
@@ -162,6 +162,34 @@ export default class PQPreQTransfChecker {
             return false;
         }
 
+        return true;
+    }
+
+    private isFieldContextuallyOkay(field: any, applyGrandchildKey: any): boolean {
+        if (PQGeneralHelpers.dataSetKind === "courses") {
+            if (!PQGeneralHelpers.listOfAcceptableCoursesFields.includes(field)) {
+                this.errorMessage = "Must be a valid courses field";
+                return false;
+            }
+        } else { // PQGeneralHelpers.dataSetKind === "rooms"
+            if (!PQGeneralHelpers.listOfAcceptableRoomsFields.includes(field)) {
+                this.errorMessage = "Must be a valid rooms field";
+                return false;
+            }
+        }
+
+        // Step 7: APPLY's grandchild value should have a typeof number for MAX/MIN/AVG/SUM
+        if (applyGrandchildKey !== "COUNT")  { // applyGrandchildKey will be one of AVG MAX MIN SUM
+            if (PQGeneralHelpers.dataSetKind === "courses") {
+                if (!PQGeneralHelpers.acceptableCoursesNumberFields.includes(field)) {
+                    return false;
+                }
+            } else { // PQGeneralHelpers.dataSetKind === "rooms")
+                if (!PQGeneralHelpers.acceptableRoomsNumberFields.includes(field)) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
@@ -191,13 +219,6 @@ export default class PQPreQTransfChecker {
         PQPreQTransfChecker.listOfApplyKeys = listOfApplyKeysPreFlat.flat();
     }
 
-    // APPLY: [ {"overallAvg": {}}, {"overallDept": {}} ] is normal
-    // APPLY: [ {"overallAvg": ..., "overallAvg":  ...} ] is okay
-    // APPLY: [ {"overallAvg": ..., "overallDept": ...} ] is NOT okay
-
-    // APPLY: [ {"overallAvg": {"MAX": ...} } ]               is normal
-    // APPLY: [ {"overallAvg": {"MAX": ..., "MAX": ...} } ]   is okay
-    // APPLY: [ {"overallAvg": {"MAX": ..., "COUNT": ...} } ] is NOT okay
     public applyKeySyntaxIsOkay(listOfKeys: any): boolean {
         let listOfApplyElements = listOfKeys;
         for (let element of listOfApplyElements) {
