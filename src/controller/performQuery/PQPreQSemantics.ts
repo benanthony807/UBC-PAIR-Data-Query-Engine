@@ -117,12 +117,7 @@ export default class PQPreQSemantics {
             }
 
             let orderField = orderKey.substring(orderKey.indexOf("_") + 1, orderKey.length); // ex. courses_avg -> avg
-            if (PQGeneralHelpers.dataSetKind === "courses") {
-                return PQGeneralHelpers.listOfAcceptableCoursesFields.includes(orderField);
-            }
-            if (PQGeneralHelpers.dataSetKind === "rooms") {
-                return PQGeneralHelpers.listOfAcceptableRoomsFields.includes(orderField);
-            }
+            return PQGeneralHelpers.listOfAcceptableFields.includes(orderField);
         }
 
         // At this point the orderKey does not have an _, so look at APPLY's keys

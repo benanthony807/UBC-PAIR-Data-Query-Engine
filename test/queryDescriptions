@@ -12,10 +12,6 @@ zInvQuery1e: Overall - WHERE - misspelled                                   quer
 zInvQuery1f: Overall - WHERE - misspelled                                   query: {OPTIONS, where, TRANSFORM}
 zInvQuery1g: Overall - GROUP - replaces TRANSFORMATIONS                     query: {WHERE, OPTIONS, GROUP}
 
-======== WHERE ========
-zInvQuery10a: WHERE - semantics - MCOMPARATOR - courses_seats               query: {WHERE: GT: courses_seats: 97)
-zInvQuery10b: WHERE - semantics - MCOMPARATOR - courses_furniture           query: {WHERE: GT: courses_furniture: 97)
-
 ======== OPTIONS ========
 ZValQuery2: OPTIONS - syntax - out of order                                 OPTIONS: {ORDER, COLUMNS}
 ZInvQuery2a: OPTIONS - syntax - empty                                       OPTIONS: []
@@ -23,17 +19,9 @@ ZInvQuery2a: OPTIONS - syntax - empty                                       OPTI
 ======== COLUMNS ========
 zValQuery3a: COLUMNS - semantics - key only in APPLY                        COLUMNS: ["overallAvg"] ... GROUP: "courses_avg" ... APPLY: "overallAvg"
 zValQuery3b: COLUMNS - semantics - key only in GROUP                        COLUMNS: ["courses_avg"] ... GROUP: "courses_avg" ... APPLY: "overallAvg"
-zValQuery3c: COLUMNS - semantics - all m and s keys                         COLUMNS: [avg, dept, fail, pass, etc]
-zValQuery3c: COLUMNS - semantics - all m and s keys + APPLYKEY              COLUMNS: [avg, dept, fail, pass, etc]
 zInvQuery3a: COLUMNS - semantics - key not in GROUP or APPLY                COLUMNS: ["courses_avg", "courses_dept"] ... GROUP: "courses_avg" ... APPLY: "overallAvg"
 zInvQuery3b: COLUMNS - syntax - empty                                       COLUMNS: []
-zInvQuery3e: COLUMNS - syntax - not a list                                  COLUMNS: {}
-zInvQuery3c: COLUMNS - semantics - all m and s keys + APPLYKEY + extra      COLUMNS: [avg, dept, fail, pass, etc]
-zInvQuery3d: COLUMNS - semantics - all m and s keys + APPLYKEY + rooms key  COLUMNS: [avg, dept, fail, pass, etc]
-zInvQuery3f: COLUMNS - semantics - courses_avg and courses_seats            COLUMNS: ["courses_avg", "courses_seats"]
-zInvQuery3g: COLUMNS - semantics - courses_seats                            COLUMNS: ["courses_seats"]
-zInvQuery3h: COLUMNS - semantics - rooms_avg                                COLUMNS: ["rooms_avg"]
-zInvQuery3i: COLUMNS - semantics - rooms_dept                               COLUMNS: ["rooms_dept"]
+
 
 ======== ORDER ========
 ORDER: ' ('{ dir:'  DIRECTION ', keys: [ ' ANYKEY (',' ANYKEY)* ']}') | ANYKEY
@@ -78,8 +66,6 @@ zInvQuery6c: GROUP - semantics - key - not a valid idstring                 GROU
 zInvQuery6c: GROUP - semantics - key - valid key and invalid key            GROUP: [courses_avg, cour_av]
 zInvQuery6d: GROUP - semantics - key - not a valid field                    GROUP: [courses_av]
 zInvQuery6e: GROUP - semantics - key - no '_'                               GROUP: [coursesavg]
-zInvQuery6f: GROUP - semantics - key - all m/s keys + rooms key             GROUP: [coursesavg]
-zInvQuery6g: GROUP - semantics - key - courses_seats                        GROUP: [courses_seats]
 
 ==== APPLY ====
 'APPLY: [' (APPLYRULE (', ' APPLYRULE )* )? ']'
@@ -123,9 +109,7 @@ zInvQuery9i: APPLYTOKEN - semantics - MIN - Department                      APPL
 zInvQuery9j: APPLYTOKEN - semantics - MIN - ID                              APPLY: [{overallAvg: {AVG:courses_avg}}, {overallMin: {MIN:courses_avg}}]
 zInvQuery9k: APPLYTOKEN - semantics - MIN - Instructor                      APPLY: [{overallAvg: {AVG:courses_avg}}, {overallMin: {MIN:courses_avg}}]
 zInvQuery9l: APPLYTOKEN - semantics - MIN - Title                           APPLY: [{overallAvg: {AVG:courses_avg}}, {overallMin: {MIN:courses_avg}}]
-zInvQuery9m: APPLYTOKEN - semantics - MIN - UUID                            APPLY: [{overallAvg: {AVG:courses_avg}}, {overallMin: {MIN:courses_avg}}]
-zInvQuery9n: APPLYTOKEN - semantics - MIN - rooms key                       APPLY: [{overallMin: {MIN:rooms_lon}}]
-zInvQuery9o: APPLYTOKEN - semantics - MIN - courses_seats                   APPLY: [{overallMin: {MIN:courses_seats}}]
+zValQuery9m: APPLYTOKEN - semantics - MIN - UUID                            APPLY: [{overallAvg: {AVG:courses_avg}}, {overallMin: {MIN:courses_avg}}]
 
 
 

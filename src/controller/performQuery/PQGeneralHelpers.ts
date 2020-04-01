@@ -1,18 +1,15 @@
 export default class PQGeneralHelpers {
     public static dataSetID: string = "courses"; // "courses" by default, will be changed in establishDataset
     public static dataSetKind: string = "courses"; // "courses" by default, will be changed in establishDataset
-    public static listOfAcceptableCoursesFields = [
-        "dept", "id", "avg", "instructor", "title", "pass", "fail", "audit", "uuid", "year" ];
+    public static listOfAcceptableFields = [ "dept", "id", "avg", "instructor", "title",
+        "pass", "fail", "audit", "uuid", "year", "fullname", "shortname", "number", "name",
+        "address", "lat", "lon", "seats", "type", "furniture", "href"
+    ];
 
-    public static listOfAcceptableRoomsFields = [ "fullname", "shortname", "number", "name",
-        "address", "lat", "lon", "seats", "type", "furniture", "href" ];
+    public static acceptableStringFields = ["dept", "id", "instructor", "title", "uuid",
+        "fullname", "shortname", "number", "name", "address", "type", "furniture", "href"];
 
-    public static acceptableCoursesStringFields = ["dept", "id", "instructor", "title", "uuid"];
-    public static acceptableRoomsStringFields   = ["fullname", "shortname", "number", "name", "address", "type",
-        "furniture", "href" ];
-
-    public static acceptableCoursesNumberFields = ["avg", "pass", "fail", "audit", "year"];
-    public static acceptableRoomsNumberFields   = ["lat", "lon", "seats"];
+    public static acceptableNumberFields = ["avg", "pass", "fail", "audit", "year", "lat", "lon", "seats"];
 
     public setDataSetID(value: string) {
         PQGeneralHelpers.dataSetID = value;
@@ -36,16 +33,15 @@ export default class PQGeneralHelpers {
 
         // Step 3: Check field of id_field
         let field = key.substring(key.indexOf("_") + 1, key.length); // ex. courses_avg -> avg, rooms_name -> name
-        if (PQGeneralHelpers.dataSetKind === "courses") {
-            if (!PQGeneralHelpers.listOfAcceptableCoursesFields.includes(field)) {
-                return "COLUMNS has an invalid courses field ";
-            }
-        } else { // PQGeneralHelpers.dataSetKind === "rooms"
-            if (!PQGeneralHelpers.listOfAcceptableRoomsFields.includes(field)) {
-                return "COLUMNS has an invalid rooms field ";
-            }
+        if (!PQGeneralHelpers.listOfAcceptableFields.includes(field)) {
+            return "COLUMNS has an invalid field ";
         }
-
+        // if we're looking at rooms_name, make sure it's rooms_shortname + "_" + rooms_number
+        // if (field === "name") {
+        //     if (this.isNameValid(key) === false) {
+        //         return "Rooms_names is not valid";
+        //     }
+        // }
 
         return true;
     }

@@ -87,25 +87,17 @@ export default class PQFilterCheckers {
 
         // Step 3: Compare fields depending on filter type
         if (currFilterType === "IS") {
-            if (PQGeneralHelpers.dataSetKind === "courses") {
-                if (!PQGeneralHelpers.acceptableCoursesStringFields.includes(leafField)) {
-                    return ("Invalid/Inappropriate field " + leafField + " in " + currFilterType);
-                }
-            } else { // PQGeneralHelpers.dataSetKind === "rooms")
-                if (!PQGeneralHelpers.acceptableRoomsStringFields.includes(leafField)) {
-                    return ("Invalid/Inappropriate field " + leafField + " in " + currFilterType);
-                }
+            if (!PQGeneralHelpers.acceptableStringFields.includes(leafField)) {
+                return (
+                    "Invalid/Inappropriate key " + key + " in " + currFilterType
+                );
+            } else {
+                return true;
             }
-        } else { // currFilterType === "GT" || "LT" || "EQ"
-            if (PQGeneralHelpers.dataSetKind === "courses") {
-                if (!PQGeneralHelpers.acceptableCoursesNumberFields.includes(leafField)) {
-                    return ("Invalid/Inappropriate field " + leafField + " in " + currFilterType);
-                }
-            } else { // PQGeneralHelpers.dataSetKind === "rooms")
-                if (!PQGeneralHelpers.acceptableRoomsNumberFields.includes(leafField)) {
-                    return ("Invalid/Inappropriate field " + leafField + " in " + currFilterType);
-                }
-            }
+        }
+        // GT LT EQ
+        if (!PQGeneralHelpers.acceptableNumberFields.includes(leafField)) {
+            return "Invalid/Inappropriate key " + key + " in " + currFilterType;
         }
         return true;
     }
