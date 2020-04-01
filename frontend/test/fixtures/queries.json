@@ -19,39 +19,14 @@
     "query16":{"WHERE": {"EQ": {"courses_audit": 1}}, "OPTIONS": {"COLUMNS": []}},
     "query17":{"WHERE": {"NOT":{"EQ": {"courses_audit": 1}}}, "OPTIONS": {"COLUMNS": []}},
 
-    "query18":{"WHERE": {"EQ": {"courses_audit": 1}},       "OPTIONS": {"COLUMNS": []}},
+    "query18":{"WHERE": {"EQ": {"courses_audit": 1}},    "OPTIONS": {"COLUMNS": []}},
     "query19":{"WHERE": {"EQ": {"courses_audit": "hi"}},    "OPTIONS": {"COLUMNS": []}},
-    "query20":{"WHERE": {"EQ": {"courses_audit": "'1'"}},   "OPTIONS": {"COLUMNS": []}},
+    "query20":{"WHERE": {"EQ": {"courses_audit": "'1'"}},    "OPTIONS": {"COLUMNS": []}},
 
     "query21":{"WHERE": {"GT": {"courses_audit": 1}},    "OPTIONS": {"COLUMNS": []}},
     "query22":{"WHERE": {"LT": {"courses_audit": 1}},    "OPTIONS": {"COLUMNS": []}},
     "query23":{"WHERE": {"IS": {"courses_audit": "hi"}}, "OPTIONS": {"COLUMNS": []}},
     "query24":{"WHERE": {"IS": {"courses_audit": "1"}},  "OPTIONS": {"COLUMNS": []}},
 
-    "query25":{"WHERE": {"IS": {"rooms_href": "*AL*"}},  "OPTIONS": {"COLUMNS": []}},
-    "query26":{"WHERE": {"IS": {"rooms_href": "*AL*"}},  "OPTIONS": {"COLUMNS": ["rooms_href"]}},
-    "query27":{"WHERE": {"IS": {"rooms_href": "*AL*"}},  "OPTIONS": {"COLUMNS": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type"]}},
-    "query28":{"WHERE": {"IS": {"rooms_href": "*AL*"}},  "OPTIONS": {"COLUMNS": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type", "1"],"ORDER": {"dir": "DOWN","keys": ["1"]}}, "TRANSFORMATIONS": {"GROUP": [], "APPLY": [{"1": {"COUNT": "rooms_address"}}]}},
 
-    "query29":{"WHERE": {"NOT": {"IS": {"rooms_type": "*AL*"}}},  "OPTIONS": {"COLUMNS": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type", "1"],"ORDER": {"dir": "DOWN","keys": ["1"]}}, "TRANSFORMATIONS": {"GROUP": ["rooms_address"], "APPLY": [{"1": {"COUNT": "rooms_address"}}]}},
-    "query30":{"WHERE": {"NOT": {"IS": {"rooms_type": "*AL*"}}},  "OPTIONS": {"COLUMNS": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type", "1"],"ORDER": {"dir": "DOWN","keys": ["1"]}}, "TRANSFORMATIONS": {"GROUP": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type"], "APPLY": [{"1": {"COUNT": "rooms_address"}}]}},
-    "query31":{"WHERE": {"NOT": {"IS": {"rooms_type": "*AL*"}}},  "OPTIONS": {"COLUMNS": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type", "1"],"ORDER": {"dir": "DOWN","keys": ["rooms_seats","1"]}}, "TRANSFORMATIONS": {"GROUP": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type"], "APPLY": [{"1": {"COUNT": "rooms_address"}}, {"seatAvg": {"AVG": "rooms_seats"}}]}},
-    "query32":{"WHERE": {"NOT": {"IS": {"rooms_type": "*AL*"}}},  "OPTIONS": {"COLUMNS": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type", "1"],"ORDER": {"dir": "UP","keys": ["rooms_seats","1","seatAvg"]}}, "TRANSFORMATIONS": {"GROUP": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type"], "APPLY": [{"1": {"COUNT": "rooms_address"}}, {"seatAvg": {"AVG": "rooms_seats"}},{"hello": {"MAX": "rooms_furniture"}}]}},
-
-    "query33":{"WHERE": {"IS": {"rooms_fullname": "Hugh Dempster Pavilion"}},  "OPTIONS": {"COLUMNS": ["rooms_address"]}},
-    "query34":{"WHERE": {"IS": {"rooms_shortname": "H D"}},  "OPTIONS": {"COLUMNS": ["rooms_address"]}},
-    "query35":{"WHERE": {"IS": {"rooms_number": "97"}},  "OPTIONS": {"COLUMNS": ["rooms_address"]}},
-    "query36":{"WHERE": {"IS": {"rooms_number": "H1N1"}},  "OPTIONS": {"COLUMNS": ["rooms_address"]}},
-    "query37":{"WHERE": {"IS": {"rooms_name": "*AL*"}},  "OPTIONS": {"COLUMNS": ["rooms_name"]}},
-    "query38":{"WHERE": {"IS": {"rooms_address": "hi"}},  "OPTIONS": {"COLUMNS": ["rooms_name"]}},
-    "query39":{"WHERE": {"IS": {"rooms_lat": "97"}},  "OPTIONS": {"COLUMNS": ["rooms_name"]}},
-    "query40":{"WHERE": {"IS": {"rooms_lat": "hi"}},  "OPTIONS": {"COLUMNS": ["rooms_name"]}},
-    "query41":{"WHERE": {"GT": {"rooms_lat": -200.1234}},  "OPTIONS": {"COLUMNS": ["rooms_name"]}},
-    "query42":{"WHERE": {"GT": {"rooms_lat": "hi"}},  "OPTIONS": {"COLUMNS": ["rooms_name"]}},
-    "query43":{"WHERE": {"LT": {"rooms_lat": 97.4235}},  "OPTIONS": {"COLUMNS": ["rooms_name"]}},
-    "query44":{"WHERE": {"AND": [{"IS": {"rooms_furniture": "Classroom-Movable Tables & Chairs"}}, {"LT": {"rooms_lat": 97.4235}}]},  "OPTIONS": {"COLUMNS": ["rooms_name"]}},
-
-    "query45":{"WHERE": {"AND": [{"NOT": {"IS": {"rooms_fullname": "*P*"}}},{"NOT": {"IS": {"rooms_furniture": "*A*"}}},{"LT": {"rooms_lon": 1}},{"NOT": {"IS": {"rooms_href": "*hi*"}}}]}, "OPTIONS": {"COLUMNS": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type", "hi","hello"], "ORDER": {"dir": "DOWN", "keys": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type", "hi","hello"]}}, "TRANSFORMATIONS": {"GROUP": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type"],"APPLY": [{"hi": {"COUNT": "rooms_fullname"}},{"hello": {"AVG": "rooms_seats"}}]}},
-    "query46":{"WHERE": {"OR":  [{"NOT": {"IS": {"rooms_fullname": "*P*"}}},{"NOT": {"IS": {"rooms_furniture": "*A*"}}},{"LT": {"rooms_lon": 1}},{"NOT": {"IS": {"rooms_href": "*hi*"}}}]}, "OPTIONS": {"COLUMNS": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type", "hi","hello"], "ORDER": {"dir": "DOWN", "keys": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type", "hi","hello"]}}, "TRANSFORMATIONS": {"GROUP": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type"],"APPLY": [{"hi": {"COUNT": "rooms_fullname"}},{"hello": {"AVG": "rooms_seats"}}]}},
-    "query47":{"WHERE": {"NOT": {"OR": [{"NOT": {"IS": {"rooms_fullname": "*P*"}}},{"NOT": {"IS": {"rooms_furniture": "*A*"}}},{"LT": {"rooms_lon": 1}},{"NOT": {"IS": {"rooms_href": "*hi*"}}}]}}, "OPTIONS": {"COLUMNS": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type", "hi","hello"], "ORDER": {"dir": "DOWN", "keys": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type", "hi","hello"]}}, "TRANSFORMATIONS": {"GROUP": ["rooms_address", "rooms_fullname", "rooms_furniture", "rooms_href", "rooms_lat", "rooms_lon", "rooms_name", "rooms_number", "rooms_seats", "rooms_shortname", "rooms_type"],"APPLY": [{"hi": {"COUNT": "rooms_fullname"}},{"hello": {"AVG": "rooms_seats"}}]}}
 }

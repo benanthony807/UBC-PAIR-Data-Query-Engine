@@ -14,18 +14,4 @@ describe("buildQuery test suite", function() {
             }
         }
     }
-    // ===== FOR TESTING SPECIFIC QUERIES. REPLACE queryName = ... =====
-    // let queryFixtures = TTT.getQueryFixtures();
-    // let queryDescriptions = TTT.getQueryDescriptions();
-    // let queryName = "query45";
-    //     if (queryFixtures.hasOwnProperty(queryName)) {
-    //         if (TTT.hasHtmlFixture(queryName)) {
-    //             it(`~Bee${queryName}~Should be able to build a ${queryDescriptions[queryName]}`, function () {
-    //                 TTT.insertHtmlFixture(queryName);
-    //                 let actualQuery = CampusExplorer.buildQuery();
-    //                 let expectedQuery = queryFixtures[queryName];
-    //                 expect(actualQuery).to.equalQuery(expectedQuery);
-    //             });
-    //         }
-    //     }
 });

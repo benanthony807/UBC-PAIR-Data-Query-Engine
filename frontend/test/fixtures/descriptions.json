@@ -28,30 +28,6 @@
     "query23": "IS field gives string - input string",
     "query24": "IS field gives string - input number",
 
-    "query25": "Rooms - No  Columns - Wildcard",
-    "query26": "Rooms - One Columns - Wildcard",
-    "query27": "Rooms - All Columns - Wildcard",
-    "query28": "Rooms - All Columns Plus One - Wildcard - Order(1) Desc - No Group - Yes Apply(1)",
 
-    "query29": "Rooms - All Columns Plus One - Wildcard - Order(1) Desc - Yes Group(1) - Yes Apply(1)",
-    "query30": "Rooms - All Columns Plus One - Wildcard - Order(1) Desc - Yes Group(all) - Yes Apply(1)",
-    "query31": "Rooms - All Columns Plus One - Wildcard - Order(2) Desc - Yes Group(all) - Yes Apply(2)",
-    "query32": "Rooms - All Columns Plus One - Wildcard - Order(3) Asce - Yes Group(all) - Yes Apply(3)",
 
-    "query33": "Rooms - Full Name - IS - input: string - output: string",
-    "query34": "Rooms - Short Name - IS - input: string - output: string",
-    "query35": "Rooms - Number - IS - input: number - output: string",
-    "query36": "Rooms - Number - IS - input: string - output: string",
-    "query37": "Rooms - Name - IS - input: string - output: string",
-    "query38": "Rooms - Address - IS - input: string - output: string",
-    "query39": "Rooms - Lat - IS - input: number - output: string",
-    "query40": "Rooms - Lat - IS - input: string - output: string",
-    "query41": "Rooms - Lat - GT - input: number (decimal) - output: number",
-    "query42": "Rooms - Lat - IS - input: string - output: string",
-    "query43": "Rooms - Lat - LT - input: number (decimal) - output: number",
-    "query44": "Rooms - Furniture + Lat - IS + LT - input: mix - output: mix",
-
-    "query45": "All - Complex everything",
-    "query46": "Any - Complex everything",
-    "query47": "None - Complex everything"
 }
