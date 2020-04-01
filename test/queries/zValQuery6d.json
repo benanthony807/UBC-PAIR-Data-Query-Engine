@@ -6,9 +6,8 @@
             "COLUMNS": ["overallAvg" ]
         },
         "TRANSFORMATIONS": {
-            "APPLY": [{"overallAvg":{"AVG":"courses_avg"}}],
-            "GROUP": [ "courses_dept"]
-        }
+            "GROUP": [ "courses_dept"],
+            "APPLY": [{"overallAvg":{"AVG":"courses_avg"}}]}
     },
     "isQueryValid": true,
     "result":[{"overallAvg":98.04},{"overallAvg":98},{"overallAvg":97.5},{"overallAvg":98.75},{"overallAvg":98.01},{"overallAvg":97.9},{"overallAvg":98.14},{"overallAvg":98.98}]}
