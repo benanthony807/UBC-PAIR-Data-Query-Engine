@@ -16,8 +16,8 @@ export default class PQPreQTransfChecker {
         if (Object.keys(transformations).length !== 2) {
             return "TRANSFORMATIONS must have 2 keys";
         }
-        // Step 2: The two keys of TRANSFORMATIONS are GROUP and APPLY, no need to be in order
-        if (!(Object.keys(transformations).includes("GROUP") && Object.keys(transformations).includes("APPLY"))) {
+        // Step 2: The two keys of TRANSFORMATIONS are GROUP and APPLY
+        if (!(Object.keys(transformations)[0] === "GROUP" && Object.keys(transformations)[1] === "APPLY")) {
             return"The two keys of TRANSFORMATIONS must be GROUP and APPLY";
         }
 
@@ -44,6 +44,26 @@ export default class PQPreQTransfChecker {
             this.errorMessage = ("GROUP must have at least 1 item in it");
             return false;
         }
+        // // Step 3: GROUP has every valid id_field in COLUMNS (GROUP can have extra)
+        // // ex. "COLUMNS":   [ "courses_dept", "courses_title", "overallAvg" ]
+        // //     "GROUP":     [ "courses_dept", "courses_title" ] is okay
+        // //     "GROUP":     [ "courses_dept", "courses_title", "courses_avg" ] is okay
+        // //     "GROUP":     [ "courses_dept", "courses_title", "courses_title" ] is okay
+        // //     "GROUP":     [ "courses_dept" ] is NOT okay
+        // let listOfValidUnderscoreItemsPreFlat: any = [];
+        // let listOfValidUnderscoreItems: any;
+        // let listOfUnderscoreGroupItems: any = Object.values(group);
+        // for (let key of query["OPTIONS"]["COLUMNS"]) {
+        //     if (this.helpers.keyIsValidColumnUnderscoreItem(key)) {
+        //         listOfValidUnderscoreItemsPreFlat.push(key);
+        //     }
+        // }
+        // listOfValidUnderscoreItems = listOfValidUnderscoreItemsPreFlat.flat();
+        // if (!(listOfValidUnderscoreItems.every((val: any) => listOfUnderscoreGroupItems.includes(val)))) {
+        //     this.errorMessage = ("id_field items in COLUMNS must be included in GROUP");
+        //     return false;
+        // }
+
         return true;
     }
 
