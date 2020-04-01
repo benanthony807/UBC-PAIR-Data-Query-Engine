@@ -31,5 +31,3 @@ CampusExplorer.sendQuery = function (query) {
         xhr.send(query);
     });
 };
-
-

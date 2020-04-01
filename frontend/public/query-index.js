@@ -20,6 +20,6 @@ document.getElementById('submit-button').addEventListener('click', function () {
         })
         .catch(function (err) {
             // do something
-    })
+        })
 
 });

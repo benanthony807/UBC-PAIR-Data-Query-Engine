@@ -12,9 +12,9 @@ import Dataset from "./dataset/Dataset";
 import CoursesDatasetHelper from "./dataset/CoursesDatasetHelper";
 import Course from "./dataset/Course";
 import RoomsDatasetHelper from "./dataset/RoomsDatasetHelper";
-import PQRunQuery from "./performQuery/PQRunQuery";
-import PQPreQSyntax from "./performQuery/PQPreQSyntax";
-import PQPreQSemantics from "./performQuery/PQPreQSemantics";
+import PQRunQuery from "./PQRunQuery";
+import PQPreQSyntax from "./PQPreQSyntax";
+import PQPreQSemantics from "./PQPreQSemantics";
 
 
 /**

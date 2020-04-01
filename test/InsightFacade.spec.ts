@@ -418,7 +418,7 @@ export interface ITestQuery {
 //                 expect.fail("should not have failed: " + err);
 //             });
 //     });
-//
+
 //     it("Should add a valid rooms dataset", function () {
 //         const id: string = "rooms";
 //         const expected: string[] = [id];
@@ -891,21 +891,85 @@ describe("InsightFacade PerformQuery", () => {
         Log.test(`AfterTest: ${this.currentTest.title}`);
     });
 
-    // ====================================== TESTS =============================== //
+    // it("roomtest w courses in group", function () {
+    //     let query =  {
+    //         WHERE: {
+    //             OR: [
+    //                 {
+    //                     IS: {
+    //                         rooms_furniture: "*Tables*"
+    //                     }
+    //                 },
+    //                 {
+    //                     GT: {
+    //                         rooms_seats: 300
+    //                     }
+    //                 }
+    //             ]
+    //         },
+    //         OPTIONS: {
+    //             COLUMNS: [
+    //                 "rooms_lat",
+    //                 "rooms_lon",
+    //                 "rooms_shortname"
+    //             ],
+    //             ORDER: {
+    //                 dir: "DOWN",
+    //                 keys: [
+    //                     "rooms_lat"
+    //                 ]
+    //             }
+    //         },
+    //         TRANSFORMATIONS: {
+    //             GROUP: [
+    //                 "rooms_shortname",
+    //                 "rooms_lat",
+    //                 "rooms_lon"
+    //             ],
+    //             APPLY: [
+    //                 {
+    //                     maxSeats: {
+    //                         MAX: "rooms_seats"
+    //                     }
+    //                 },
+    //                 {
+    //                     maxSeats: {
+    //                         MAX: 1
+    //                     }
+    //                 }
+    //             ]
+    //         }
+    //     };
+    //     let result = insightFacade.performQuery(query);
+    //     Log.trace(result);
+    // });
+
     /** This is a flexible test where we replace queries */
     it("bobloblaw", function () {
         let query = {
             WHERE: {
-                IS: {
-                    courses_dept: "adhe"
+                GT: {
+                    courses_avg: 97
                 }
             },
             OPTIONS: {
                 COLUMNS: [
-                    "courses_dept",
-                    "courses_avg"
+                    "courses_pass",
+                    "overallAvg"
+                ]
+            },
+            TRANSFORMATIONS: {
+                GROUP: [
+                    "courses_pass",
+                    "courses_id"
                 ],
-                ORDER: "courses_avg"
+                APPLY: [
+                    {
+                        overallAvg: {
+                            MIN: "courses_avg"
+                        }
+                    }
+                ]
             }
         };
         let result = insightFacade.performQuery(query);
@@ -925,6 +989,25 @@ describe("InsightFacade PerformQuery", () => {
         // Log.trace(result);
     });
 
+
+    //         const expected: InsightDataset[] = [];
+//         return insightFacade
+//             .listDatasets()
+//             .then((result: InsightDataset[]) => {
+//                 expect(result).to.deep.equal(expected);
+//             })
+//             .catch((err: any) => {
+//                 expect.fail("should not have failed with " + err);
+//             });
+//     /** This test should use cpsc.zip. WHERE: {} with ORDER should return the whole list with ORDER, not reject */
+//     it("{} WHERE should return ordered list}", function () {
+//         let query =  { WHERE: {}, OPTIONS: {
+//                 COLUMNS: [ "courses_dept", "courses_avg" ],
+//                 ORDER: "courses_avg" } };
+//         let result = insightFacade.performQuery(query);
+//         Log.trace(result);
+//     });
+
     // Dynamically create and run a test for each query in testQueries.
     // Creates an extra "test" called "Should run test queries" as a byproduct.
     it("Should run test queries", function () {
@@ -940,6 +1023,7 @@ describe("InsightFacade PerformQuery", () => {
         });
     });
 
+    /** General test for queries */
     // /** This test should use AAN.zip. WHERE: {} with ORDER should return the whole list with ORDER, not reject */
     // it("{} WHERE should return ordered list}", function () {
     //     let query =  { WHERE: {}, OPTIONS: {
@@ -956,5 +1040,3 @@ describe("InsightFacade PerformQuery", () => {
     //     Log.trace(result);
     // });
 });
-
-
